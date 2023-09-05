@@ -6,7 +6,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"photo"
+
+	"photo/photo"
 
 	"github.com/google/uuid"
 )
@@ -46,15 +47,13 @@ func (s LocalStorage) New(path string) {
 }
 
 func (s LocalStorage) Store(id string, image image.Image, thumbnail image.Image) error {
-	path := filepath.Join(s.path, userId)
+	path := filepath.Join(s.path, id)
 	err := os.MkdirAll(path, os.ModePerm)
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Can not create path [%v] for user [%v]", s.path))
 		return err
 	}
-	for photo := range photos {
-
-	}
+	// TODO: finish up
 	return nil
 }
 
