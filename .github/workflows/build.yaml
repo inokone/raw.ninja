@@ -19,11 +19,13 @@ jobs:
           go install github.com/swaggo/swag/cmd/swag@latest
 
       - name: Init swagger
-        working-directory: ./src
+        working-directory: ./cmd
         run: swag init
 
       - name: Build
-        run: go build -v ./src/
+        working-directory: ./cmd
+        run: go build -v .
 
       - name: Test
-        run: go test -v ./src/
+        working-directory: ./cmd
+        run: go test -v .
