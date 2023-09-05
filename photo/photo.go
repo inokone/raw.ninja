@@ -23,6 +23,6 @@ type Descriptor struct {
 }
 
 type Photo struct {
-	Image image.Image
-	Desc  Descriptor
+	Raw  []byte
+	Desc Descriptor
 }
