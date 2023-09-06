@@ -7,8 +7,10 @@ import (
 	"golang.org/x/image/draw"
 )
 
-const thumbWidth float64 = 200
-const thumbHeight float64 = 200
+const (
+	thumbWidth  float64 = 200
+	thumbHeight float64 = 200
+)
 
 func thumbnail(original image.Image) (image.Image, error) {
 	ratio := math.Max(float64(original.Bounds().Size().X)/thumbWidth, float64(original.Bounds().Size().Y)/thumbHeight)
