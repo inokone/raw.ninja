@@ -1,15 +1,11 @@
 package main
 
 import (
+	"flag"
 	"log"
+	"os"
 
 	"github.com/inokone/photostorage/common"
-	"github.com/inokone/photostorage/docs"
-	controller "github.com/inokone/photostorage/web"
-
-	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var config *common.AppConfig
@@ -23,12 +19,23 @@ func init() {
 }
 
 func main() {
-	common.InitDb(config.Database)
+	var (
+		migrate     = flag.Bool("migrate", false, "Start migration of the database. Default: [false]")
+		application = flag.Bool("application", true, "Start the web application on the provided port. Default: [true].")
+		port        = flag.Int("port", 8080, "Port of the webapplication. Default: [8080]")
+	)
+	flag.Parse()
 
-	r := gin.Default()
-	docs.SwaggerInfo.BasePath = "/api/v1"
-	v1 := r.Group("/api/v1")
-	controller.Init(v1)
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	r.Run(":8080")
+	err := common.InitDb(config.Database)
+	if err != nil {
+		log.Fatal("Could not set up connection to database. Application spinning down.")
+		os.Exit(1)
+	}
+
+	if *migrate {
+		Migrate()
+	}
+	if *application {
+		App(*port)
+	}
 }

@@ -10,7 +10,7 @@ import (
 var DB *gorm.DB
 
 func InitDb(c RDBConfig) error {
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=enable", c.Host, c.Username, c.Password, c.Database, c.Port)
+	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", c.Host, c.Username, c.Password, c.Database, c.Port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return err

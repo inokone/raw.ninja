@@ -1,22 +1,20 @@
 package common
 
 import (
-	"fmt"
-	"log"
-	"os"
-	"strconv"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 type RDBConfig struct {
-	Host            string
-	Port            int
-	Database        string
-	Username        string
-	Password        string
-	MaxIdleConns    int
-	MaxOpenConns    int
-	ConnMaxLifetime time.Duration
+	Host            string        `mapstructure:"DB_HOST"`
+	Port            int           `mapstructure:"DB_PORT"`
+	Database        string        `mapstructure:"DB_NAME"`
+	Username        string        `mapstructure:"DB_USER"`
+	Password        string        `mapstructure:"DB_PASS"`
+	MaxIdleConns    int           `mapstructure:"DB_MAX_IDLE_CONN"`
+	MaxOpenConns    int           `mapstructure:"DB_MAX_OPEN_CONN"`
+	ConnMaxLifetime time.Duration `mapstructure:"DB_CONN_LIFETIME"`
 }
 
 type AppConfig struct {
@@ -24,41 +22,23 @@ type AppConfig struct {
 }
 
 func LoadConfig() (*AppConfig, error) {
-	r := RDBConfig{}
-	r.Host = getEnv("DB_HOST", "localhost")
-	port, err := strconv.Atoi(getEnv("DB_PORT", "5432"))
-	if err != nil {
-		port = 5432
-		log.Printf("Environment variable DB_PORT (%v) can not be converted to int. Using default value [%v]", os.Getenv("DB_PORT"), port)
-	}
-	r.Port = port
-	r.Database = getEnv("DB_NAME", "photostorage")
-	r.Username = os.Getenv("DB_USER")
-	r.Password = os.Getenv("DB_PASS")
-	duration, err := time.ParseDuration(getEnv("DB_CONN_LIFETIME", "1h"))
-	if err != nil {
-		duration = time.Hour
-		log.Printf("Environment variable DB_CONN_LIFETIME (%v) can not be converted to time. Using default value [%v]", os.Getenv("DB_CONN_LIFETIME"), fmt.Sprint(r.ConnMaxLifetime))
-	}
-	r.ConnMaxLifetime = duration
-	count, err := strconv.Atoi(getEnv("DB_MAX_IDLE_CONN", "10"))
-	if err != nil {
-		count = 10
-		log.Printf("Environment variable DB_MAX_IDLE_CONN (%v) can not be converted to int. Using default value [%v]", os.Getenv("DB_MAX_IDLE_CONN"), count)
-	}
-	r.MaxIdleConns = count
-	count, err = strconv.Atoi(getEnv("DB_MAX_OPEN_CONN", "100"))
-	if err != nil {
-		count = 100
-		log.Printf("Environment variable DB_MAX_OPEN_CONN (%v) can not be converted to int. Using default value [%v]", os.Getenv("DB_MAX_OPEN_CONN"), count)
-	}
-	r.MaxOpenConns = count
-	return &AppConfig{Database: r}, nil
-}
+	var config RDBConfig
+	viper.AddConfigPath("/etc/photostorage/")
+	viper.AddConfigPath("$HOME/.photostorage")
+	viper.AddConfigPath(".")
+	viper.SetConfigType("env")
+	viper.SetConfigName("local")
+	viper.AutomaticEnv()
 
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
+	err := viper.ReadInConfig()
+	if err != nil {
+		return nil, err
 	}
-	return fallback
+
+	err = viper.Unmarshal(&config)
+	if err != nil {
+		return nil, err
+	}
+	result := AppConfig{Database: config}
+	return &result, nil
 }

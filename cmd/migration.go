@@ -9,7 +9,7 @@ import (
 	"github.com/inokone/photostorage/photo"
 )
 
-func migrate() {
+func Migrate() {
 	common.InitDb(config.Database)
 	common.DB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
 	common.DB.AutoMigrate(&user.User{}, &descriptor.Descriptor{}, &photo.Photo{})
