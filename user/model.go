@@ -1,12 +1,14 @@
-package common
+package user
 
 import (
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
 	"encoding/base64"
 )
 
 type User struct {
+	ID       uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
 	Email    string
 	PassHash string
 	Phone    string

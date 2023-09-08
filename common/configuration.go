@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -22,7 +23,8 @@ type AppConfig struct {
 	Database RDBConfig
 }
 
-func (r *RDBConfig) New() {
+func LoadConfig() (*AppConfig, error) {
+	r := RDBConfig{}
 	r.Host = getEnv("DB_HOST", "localhost")
 	port, err := strconv.Atoi(getEnv("DB_PORT", "5432"))
 	if err != nil {
@@ -36,7 +38,7 @@ func (r *RDBConfig) New() {
 	duration, err := time.ParseDuration(getEnv("DB_CONN_LIFETIME", "1h"))
 	if err != nil {
 		duration = time.Hour
-		log.Printf("Environment variable DB_CONN_LIFETIME (%v) can not be converted to time. Using default value [%v]", os.Getenv("DB_CONN_LIFETIME"), string(r.ConnMaxLifetime))
+		log.Printf("Environment variable DB_CONN_LIFETIME (%v) can not be converted to time. Using default value [%v]", os.Getenv("DB_CONN_LIFETIME"), fmt.Sprint(r.ConnMaxLifetime))
 	}
 	r.ConnMaxLifetime = duration
 	count, err := strconv.Atoi(getEnv("DB_MAX_IDLE_CONN", "10"))
@@ -51,6 +53,7 @@ func (r *RDBConfig) New() {
 		log.Printf("Environment variable DB_MAX_OPEN_CONN (%v) can not be converted to int. Using default value [%v]", os.Getenv("DB_MAX_OPEN_CONN"), count)
 	}
 	r.MaxOpenConns = count
+	return &AppConfig{Database: r}, nil
 }
 
 func getEnv(key, fallback string) string {
@@ -58,8 +61,4 @@ func getEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
-}
-
-func (a *AppConfig) New() {
-	a.Database.New()
 }

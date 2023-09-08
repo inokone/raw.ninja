@@ -1,4 +1,4 @@
-package store
+package image
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-type ImageStore interface {
+type Store interface {
 	Store(id string, raw []byte, thumbnail image.Image) error
 
 	Thumbnails(ids ...string) ([]image.Image, error)

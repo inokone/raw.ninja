@@ -1,8 +1,10 @@
-package photo
+package descriptor
 
 import (
 	"image"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Format int64
@@ -13,16 +15,12 @@ const (
 )
 
 type Descriptor struct {
+	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
 	FileName  string
 	Uploaded  time.Time
 	Format    Format
 	Width     int
 	Height    int
-	Thumbnail image.Image
+	Thumbnail image.Image `gorm:"-"`
 	Tags      []string
-}
-
-type Photo struct {
-	Raw  []byte
-	Desc Descriptor
 }
