@@ -14,13 +14,15 @@ const (
 	ARW
 )
 
+type Tag string
+
 type Descriptor struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	FileName  string
+	FileName  string    `gorm:"type:varchar(255);not null"`
 	Uploaded  time.Time
 	Format    Format
 	Width     int
 	Height    int
 	Thumbnail image.Image `gorm:"-"`
-	Tags      []string
+	Tags      []Tag       `gorm:"type:text[]"`
 }

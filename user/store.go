@@ -8,7 +8,7 @@ type Store struct {
 	db *gorm.DB
 }
 
-func (s Store) New(db *gorm.DB) {
+func (s *Store) New(db *gorm.DB) {
 	s.db = db
 }
 

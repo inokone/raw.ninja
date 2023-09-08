@@ -8,7 +8,7 @@ type DescriptorStore struct {
 	db *gorm.DB
 }
 
-func (s DescriptorStore) New(db *gorm.DB) {
+func (s *DescriptorStore) New(db *gorm.DB) {
 	s.db = db
 }
 

@@ -9,9 +9,9 @@ import (
 
 type User struct {
 	ID       uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	Email    string
-	PassHash string
-	Phone    string
+	Email    string    `gorm:"type:varchar(255);uniqueIndex;not null"`
+	PassHash string    `gorm:"type:varchar(100)"`
+	Phone    string    `gorm:"type:varchar(20)"`
 }
 
 func (u *User) New(email string, password string, phone string) error {
