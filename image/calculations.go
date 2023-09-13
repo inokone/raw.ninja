@@ -1,7 +1,9 @@
 package image
 
 import (
+	"bytes"
 	"image"
+	"image/jpeg"
 	"math"
 
 	"io"
@@ -27,12 +29,19 @@ func (p Cr2Processor) Process(raw io.Reader) (image.Image, error) {
 	return result, err
 }
 
+func Factory(extension string) (RawProcessor, error) {
+	if extension == "cr2" {
+		return Cr2Processor{}, nil
+	}
+	return nil, image.ErrFormat
+}
+
 const (
 	thumbWidth  float64 = 200
 	thumbHeight float64 = 200
 )
 
-func thumbnail(original image.Image) (image.Image, error) {
+func Thumbnail(original image.Image) (image.Image, error) {
 	ratio := math.Max(float64(original.Bounds().Size().X)/thumbWidth, float64(original.Bounds().Size().Y)/thumbHeight)
 	width := int(ratio * float64(original.Bounds().Size().X))
 	height := int(ratio * float64(original.Bounds().Size().Y))
@@ -41,4 +50,14 @@ func thumbnail(original image.Image) (image.Image, error) {
 	// Resize
 	draw.NearestNeighbor.Scale(result, result.Rect, original, original.Bounds(), draw.Over, nil)
 	return result, nil
+}
+
+func ExportJpeg(image image.Image) ([]byte, error) {
+	buf := new(bytes.Buffer)
+	err := jpeg.Encode(buf, image, nil)
+	return buf.Bytes(), err
+}
+
+func ImportJpeg(b []byte) (image.Image, error) {
+	return jpeg.Decode(bytes.NewReader(b))
 }

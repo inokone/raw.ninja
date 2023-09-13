@@ -13,3 +13,19 @@ type Photo struct {
 	User user.User             `gorm:"foreignKey:ID"`
 	Desc descriptor.Descriptor `gorm:"foreignKey:ID"`
 }
+
+func (p Photo) AsGet() (*Get, error) {
+	desc, error := p.Desc.AsGet()
+	if error != nil {
+		return nil, error
+	}
+	return &Get{
+		ID:   p.ID.String(),
+		Desc: *desc,
+	}, nil
+}
+
+type Get struct {
+	ID   string         `json:"id"`
+	Desc descriptor.Get `json:"descriptor"`
+}

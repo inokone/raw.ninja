@@ -24,3 +24,26 @@ func (u *User) New(email string, password string, phone string) error {
 	u.PassHash = base64.RawStdEncoding.EncodeToString(hash)
 	return nil
 }
+
+func (u *User) VerifyPassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.PassHash), []byte(password))
+	return err != nil
+}
+
+type Login struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type AuthenticatedUser struct {
+	ID           uuid.UUID `json:"id"`
+	Email        string    `json:"email"`
+	RefreshToken string    `json:"refresh_token"`
+	UserType     string    `json:"user_type" validate:"required,eq=ADMIN|eq=USER"`
+}
+
+type Register struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Phone    string `json:"phone"`
+}
