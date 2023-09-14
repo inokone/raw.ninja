@@ -19,21 +19,26 @@ import (
 // Upload godoc
 // @Summary Photo upload endpoint
 // @Schemes
-// @Description Upload a RAW file with other parameters
+// @Tags photos
+// @Description Upload a RAW file with descriptor
 // @Accept json
 // @Produce json
-// @Success 200 {}
+// @Param photo formData file true "Photo to store"
+// @Success 201 {object} controller.StatusMessage
+// @Failure 400 {object} controller.StatusMessage
+// @Failure 415 {object} controller.StatusMessage
+// @Failure 500 {object} controller.StatusMessage
 // @Router /upload [post]
 func Upload(g *gin.Context) {
 	file, err := g.FormFile("file")
 
 	if err != nil {
-		g.JSON(http.StatusInternalServerError, gin.H{"msg": err})
+		g.JSON(http.StatusBadRequest, StatusMessage{Code: 400, Message: "Could not extract uploaded file from request!"})
 	}
 	var raw string
 	err = g.SaveUploadedFile(file, raw)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, "Uploaded file damaged!")
+		g.JSON(http.StatusBadRequest, StatusMessage{Code: 400, Message: "Uploaded file is damaged!"})
 	}
 	target, err := createPhoto(
 		*currentUser(g),
@@ -42,15 +47,16 @@ func Upload(g *gin.Context) {
 		raw,
 	)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, "Uploaded file damaged!")
+		g.JSON(http.StatusUnsupportedMediaType, StatusMessage{Code: 415, Message: "Uploaded file format is not supported!"})
 	}
 	store := store()
 	store.Store(*target)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, "Uploaded file could not be stored!")
+		g.JSON(http.StatusInternalServerError, StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
 	}
-	g.JSON(http.StatusOK, gin.H{
-		"msg": fmt.Sprintf("File upload successful for %s.", file.Filename),
+	g.JSON(http.StatusCreated, StatusMessage{
+		Code:    201,
+		Message: fmt.Sprintf("File upload successful for %s.", file.Filename),
 	})
 }
 
@@ -60,7 +66,13 @@ func createPhoto(user user.User, filename, extension, raw string) (*photo.Photo,
 		return nil, err
 	}
 	imported, err := i.Process(bytes.NewReader([]byte(raw)))
+	if err != nil {
+		return nil, err
+	}
 	thumbnail, err := image.Thumbnail(imported)
+	if err != nil {
+		return nil, err
+	}
 	return &photo.Photo{
 		Desc: descriptor.Descriptor{
 			FileName:  filename,
@@ -76,10 +88,13 @@ func createPhoto(user user.User, filename, extension, raw string) (*photo.Photo,
 // List godoc
 // @Summary List user's photo descriptors endpoint
 // @Schemes
+// @Tags photos
 // @Description Returns all photo descriptors for the current user
 // @Accept json
 // @Produce json
-// @Success 200 {[]Get} List of photo descriptors
+// @Success 200 {array} photo.Response
+// @Failure 404 {object} controller.StatusMessage
+// @Failure 500 {object} controller.StatusMessage
 // @Router /photos [get]
 func List(g *gin.Context) {
 	store := store()
@@ -88,19 +103,19 @@ func List(g *gin.Context) {
 	result, error := store.List(user.ID.String())
 
 	if error != nil {
-		g.JSON(http.StatusNotFound, "Photos do not exist!")
+		g.JSON(http.StatusNotFound, StatusMessage{Code: 404, Message: "Photos do not exist!"})
 	}
 
-	images := make([]photo.Get, len(result))
+	images := make([]photo.Response, len(result))
 	for i, photo := range result {
-		p, error := photo.AsGet()
+		p, error := photo.AsResp()
 		if error != nil {
 			break
 		}
 		images[i] = *p
 	}
 	if error != nil {
-		g.JSON(http.StatusInternalServerError, "Photos could not be exported!")
+		g.JSON(http.StatusInternalServerError, StatusMessage{Code: 500, Message: "Photos could not be exported!"})
 	}
 
 	g.JSON(http.StatusOK, images)
@@ -109,10 +124,14 @@ func List(g *gin.Context) {
 // Get godoc
 // @Summary Get photo endpoint
 // @Schemes
+// @Tags photos
 // @Description Returns the photo descriptor with the provided ID
 // @Accept json
 // @Produce json
-// @Success 200 {Get} The photo with id
+// @Param id path int true "ID of the photo information to collect"
+// @Success 200 {object} photo.Response
+// @Failure 404 {object} controller.StatusMessage
+// @Failure 500 {object} controller.StatusMessage
 // @Router /photos/:id [get]
 func Get(g *gin.Context) {
 	id := g.Param("id")
@@ -121,13 +140,19 @@ func Get(g *gin.Context) {
 	result, error := store.Get(id)
 
 	if error != nil {
-		g.JSON(http.StatusNotFound, "Photos does not exist!")
+		g.JSON(http.StatusNotFound, StatusMessage{
+			Code:    404,
+			Message: "Photos does not exist!",
+		})
 	}
 
-	exported, error := result.AsGet()
+	exported, error := result.AsResp()
 
 	if error != nil {
-		g.JSON(http.StatusInternalServerError, "Photo could not be exported!")
+		g.JSON(http.StatusInternalServerError, StatusMessage{
+			Code:    500,
+			Message: "Photo could not be exported!",
+		})
 	}
 
 	g.JSON(http.StatusOK, exported)
@@ -136,10 +161,14 @@ func Get(g *gin.Context) {
 // Download godoc
 // @Summary Download RAW file endpoint
 // @Schemes
+// @Tags photos
 // @Description Returns the RAW file for the provided ID
 // @Accept json
 // @Produce json
-// @Success 200 {[]byte} the RAW file
+// @Param id path int true "ID of the RAW photo to download"
+// @Success 200 {array} byte
+// @Failure 404 {object} controller.StatusMessage
+// @Failure 500 {object} controller.StatusMessage
 // @Router /photos/:id/download [get]
 func Download(g *gin.Context) {
 	id := g.Param("id")

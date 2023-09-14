@@ -14,12 +14,12 @@ import (
 // @Description Registers the user
 // @Accept json
 // @Produce json
-// @Success 200 {Health}
+// @Success 200
 // @Router /register [post]
 func Register(g *gin.Context) {
-	g.JSON(http.StatusOK, Health{
-		status:  "ok",
-		version: "0.1",
+	g.JSON(http.StatusNotImplemented, StatusMessage{
+		Code:    501,
+		Message: "Functionality has not been implemented yet!",
 	})
 }
 
@@ -29,12 +29,12 @@ func Register(g *gin.Context) {
 // @Description Logs in the user, sets the necessary cookies
 // @Accept json
 // @Produce json
-// @Success 200 {Health}
+// @Success 200
 // @Router /login [post]
 func Login(g *gin.Context) {
-	g.JSON(http.StatusOK, Health{
-		status:  "ok",
-		version: "0.1",
+	g.JSON(http.StatusNotImplemented, StatusMessage{
+		Code:    501,
+		Message: "Functionality has not been implemented yet!",
 	})
 }
 
@@ -44,26 +44,26 @@ func Login(g *gin.Context) {
 // @Description Returns the status and version of the application
 // @Accept json
 // @Produce json
-// @Success 200 {Health} Helloworld
-// @Router /rest [post]
+// @Success 200
+// @Router /reset [post]
 func Reset(g *gin.Context) {
-	g.JSON(http.StatusOK, Health{
-		status:  "ok",
-		version: "0.1",
+	g.JSON(http.StatusNotImplemented, StatusMessage{
+		Code:    501,
+		Message: "Functionality has not been implemented yet!",
 	})
 }
 
-// HealthcheckExample godoc
-// @Summary Health check endpoint
+// Logout godoc
+// @Summary Logout endpoint
 // @Schemes
-// @Description Returns the status and version of the application
+// @Description Logs out of the application
 // @Accept json
 // @Produce json
-// @Success 200 {Health} Helloworld
-// @Router /healthscheck [get]
+// @Success 200
+// @Router /logout [get]
 func Logout(g *gin.Context) {
-	g.JSON(http.StatusOK, Health{
-		status:  "ok",
-		version: "0.1",
+	g.JSON(http.StatusNotImplemented, StatusMessage{
+		Code:    501,
+		Message: "Functionality has not been implemented yet!",
 	})
 }

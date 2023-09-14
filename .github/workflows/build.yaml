@@ -19,8 +19,7 @@ jobs:
           go install github.com/swaggo/swag/cmd/swag@latest
 
       - name: Init swagger
-        working-directory: ./cmd
-        run: swag init
+        run: swag init -d "./cmd,./web,./web/controller"
 
       - name: Build
         working-directory: ./cmd

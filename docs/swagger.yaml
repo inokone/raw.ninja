@@ -1,34 +1,222 @@
+definitions:
+  controller.Health:
+    properties:
+      status:
+        type: string
+      version:
+        type: string
+    type: object
+  controller.StatusMessage:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  descriptor.Response:
+    properties:
+      filename:
+        type: string
+      format:
+        type: string
+      height:
+        type: integer
+      id:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      thumbnail:
+        type: string
+      uploaded:
+        type: string
+      width:
+        type: integer
+    type: object
+  photo.Response:
+    properties:
+      descriptor:
+        $ref: '#/definitions/descriptor.Response'
+      id:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
-  /example/helloworld:
+  /healthcheck:
     get:
       consumes:
       - application/json
-      description: do hello world
+      description: Returns the status and version of the application
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: string
-      summary: hello world example
-      tags:
-      - example
-  /example/ping:
+            $ref: '#/definitions/controller.Health'
+      summary: Health check endpoint of the Photostorage app
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in the user, sets the necessary cookies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: User login endpoint
+  /logout:
     get:
       consumes:
       - application/json
-      description: do ping-pong
+      description: Logs out of the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Logout endpoint
+  /photos:
+    get:
+      consumes:
+      - application/json
+      description: Returns all photo descriptors for the current user
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: string
-      summary: ping example
+            items:
+              $ref: '#/definitions/photo.Response'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.StatusMessage'
+      summary: List user's photo descriptors endpoint
       tags:
-      - example
+      - photos
+  /photos/:id:
+    get:
+      consumes:
+      - application/json
+      description: Returns the photo descriptor with the provided ID
+      parameters:
+      - description: ID of the photo information to collect
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/photo.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.StatusMessage'
+      summary: Get photo endpoint
+      tags:
+      - photos
+  /photos/:id/download:
+    get:
+      consumes:
+      - application/json
+      description: Returns the RAW file for the provided ID
+      parameters:
+      - description: ID of the RAW photo to download
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.StatusMessage'
+      summary: Download RAW file endpoint
+      tags:
+      - photos
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Registers the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: User registration endpoint
+  /reset:
+    post:
+      consumes:
+      - application/json
+      description: Returns the status and version of the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Reset password endpoint
+  /upload:
+    post:
+      consumes:
+      - application/json
+      description: Upload a RAW file with descriptor
+      parameters:
+      - description: Photo to store
+        in: formData
+        name: photo
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.StatusMessage'
+        "415":
+          description: Unsupported Media Type
+          schema:
+            $ref: '#/definitions/controller.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.StatusMessage'
+      summary: Photo upload endpoint
+      tags:
+      - photos
 swagger: "2.0"

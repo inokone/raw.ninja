@@ -35,12 +35,12 @@ type Descriptor struct {
 	Tags      []string    `gorm:"type:text[]"`
 }
 
-func (p Descriptor) AsGet() (*Get, error) {
+func (p Descriptor) AsResp() (*Response, error) {
 	thumbnail, error := img.ExportJpeg(p.Thumbnail)
 	if error != nil {
 		return nil, error
 	}
-	return &Get{
+	return &Response{
 		ID:        p.ID.String(),
 		FileName:  p.FileName,
 		Uploaded:  p.Uploaded,
@@ -52,7 +52,7 @@ func (p Descriptor) AsGet() (*Get, error) {
 	}, nil
 }
 
-type Get struct {
+type Response struct {
 	ID        string    `json:"id"`
 	FileName  string    `json:"filename"`
 	Uploaded  time.Time `json:"uploaded"`

@@ -7,8 +7,13 @@ import (
 )
 
 type Health struct {
-	status  string
-	version string
+	Status  string `json:"status"`
+	Version string `json:"version"`
+}
+
+type StatusMessage struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 // @BasePath /api/v1
@@ -19,11 +24,11 @@ type Health struct {
 // @Description Returns the status and version of the application
 // @Accept json
 // @Produce json
-// @Success 200 {Health}
-// @Router /healthscheck [get]
+// @Success 200 {object} controller.Health
+// @Router /healthcheck [get]
 func Healthcheck(g *gin.Context) {
 	g.JSON(http.StatusOK, Health{
-		status:  "ok",
-		version: "0.1",
+		Status:  "Ok",
+		Version: "0.1",
 	})
 }
