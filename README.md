@@ -19,7 +19,7 @@ go install github.com/swaggo/swag/cmd/swag@latest // OpenAPI spec generation for
 
 ## Build
 ```
-swag init -d "./cmd,./photo,./descriptor,./web,./web/controller" // re-generate the OpenAPI spec files
+swag init -d "./cmd,./common,./photo,./descriptor,./web" // re-generate the OpenAPI spec files
 go build . // build Go based application
 ```
 If `swag` is not working you might have to add `~/go/bin` to  your PATH.
