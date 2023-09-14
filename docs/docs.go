@@ -29,42 +29,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.Health"
+                            "$ref": "#/definitions/common.Health"
                         }
-                    }
-                }
-            }
-        },
-        "/login": {
-            "post": {
-                "description": "Logs in the user, sets the necessary cookies",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "User login endpoint",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/logout": {
-            "get": {
-                "description": "Logs out of the application",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Logout endpoint",
-                "responses": {
-                    "200": {
-                        "description": "OK"
                     }
                 }
             }
@@ -95,13 +61,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/controller.StatusMessage"
+                            "$ref": "#/definitions/common.StatusMessage"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.StatusMessage"
+                            "$ref": "#/definitions/common.StatusMessage"
                         }
                     }
                 }
@@ -139,13 +105,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/controller.StatusMessage"
+                            "$ref": "#/definitions/common.StatusMessage"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.StatusMessage"
+                            "$ref": "#/definitions/common.StatusMessage"
                         }
                     }
                 }
@@ -186,48 +152,14 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/controller.StatusMessage"
+                            "$ref": "#/definitions/common.StatusMessage"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.StatusMessage"
+                            "$ref": "#/definitions/common.StatusMessage"
                         }
-                    }
-                }
-            }
-        },
-        "/register": {
-            "post": {
-                "description": "Registers the user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "User registration endpoint",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/reset": {
-            "post": {
-                "description": "Returns the status and version of the application",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Reset password endpoint",
-                "responses": {
-                    "200": {
-                        "description": "OK"
                     }
                 }
             }
@@ -258,25 +190,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/controller.StatusMessage"
+                            "$ref": "#/definitions/common.StatusMessage"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controller.StatusMessage"
+                            "$ref": "#/definitions/common.StatusMessage"
                         }
                     },
                     "415": {
                         "description": "Unsupported Media Type",
                         "schema": {
-                            "$ref": "#/definitions/controller.StatusMessage"
+                            "$ref": "#/definitions/common.StatusMessage"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.StatusMessage"
+                            "$ref": "#/definitions/common.StatusMessage"
                         }
                     }
                 }
@@ -284,7 +216,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controller.Health": {
+        "common.Health": {
             "type": "object",
             "properties": {
                 "status": {
@@ -295,7 +227,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.StatusMessage": {
+        "common.StatusMessage": {
             "type": "object",
             "properties": {
                 "code": {

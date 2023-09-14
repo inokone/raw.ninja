@@ -1,4 +1,4 @@
-package controller
+package common
 
 import (
 	"net/http"
@@ -24,7 +24,7 @@ type StatusMessage struct {
 // @Description Returns the status and version of the application
 // @Accept json
 // @Produce json
-// @Success 200 {object} controller.Health
+// @Success 200 {object} common.Health
 // @Router /healthcheck [get]
 func Healthcheck(g *gin.Context) {
 	g.JSON(http.StatusOK, Health{

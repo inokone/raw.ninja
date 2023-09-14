@@ -1,4 +1,4 @@
-package controller
+package photo
 
 import (
 	"bytes"
@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/inokone/photostorage/auth"
+	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/descriptor"
 	"github.com/inokone/photostorage/image"
-	"github.com/inokone/photostorage/photo"
-	"github.com/inokone/photostorage/user"
 )
 
 // @BasePath /api/v1/photo
@@ -24,21 +24,21 @@ import (
 // @Accept json
 // @Produce json
 // @Param photo formData file true "Photo to store"
-// @Success 201 {object} controller.StatusMessage
-// @Failure 400 {object} controller.StatusMessage
-// @Failure 415 {object} controller.StatusMessage
-// @Failure 500 {object} controller.StatusMessage
+// @Success 201 {object} common.StatusMessage
+// @Failure 400 {object} common.StatusMessage
+// @Failure 415 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
 // @Router /upload [post]
 func Upload(g *gin.Context) {
 	file, err := g.FormFile("file")
 
 	if err != nil {
-		g.JSON(http.StatusBadRequest, StatusMessage{Code: 400, Message: "Could not extract uploaded file from request!"})
+		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Could not extract uploaded file from request!"})
 	}
 	var raw string
 	err = g.SaveUploadedFile(file, raw)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, StatusMessage{Code: 400, Message: "Uploaded file is damaged!"})
+		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Uploaded file is damaged!"})
 	}
 	target, err := createPhoto(
 		*currentUser(g),
@@ -47,20 +47,20 @@ func Upload(g *gin.Context) {
 		raw,
 	)
 	if err != nil {
-		g.JSON(http.StatusUnsupportedMediaType, StatusMessage{Code: 415, Message: "Uploaded file format is not supported!"})
+		g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file format is not supported!"})
 	}
 	store := store()
 	store.Store(*target)
 	if err != nil {
-		g.JSON(http.StatusInternalServerError, StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
+		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
 	}
-	g.JSON(http.StatusCreated, StatusMessage{
+	g.JSON(http.StatusCreated, common.StatusMessage{
 		Code:    201,
 		Message: fmt.Sprintf("File upload successful for %s.", file.Filename),
 	})
 }
 
-func createPhoto(user user.User, filename, extension, raw string) (*photo.Photo, error) {
+func createPhoto(user auth.User, filename, extension, raw string) (*Photo, error) {
 	i, err := image.Factory(extension)
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func createPhoto(user user.User, filename, extension, raw string) (*photo.Photo,
 	if err != nil {
 		return nil, err
 	}
-	return &photo.Photo{
+	return &Photo{
 		Desc: descriptor.Descriptor{
 			FileName:  filename,
 			Format:    descriptor.Formats[extension],
@@ -93,8 +93,8 @@ func createPhoto(user user.User, filename, extension, raw string) (*photo.Photo,
 // @Accept json
 // @Produce json
 // @Success 200 {array} photo.Response
-// @Failure 404 {object} controller.StatusMessage
-// @Failure 500 {object} controller.StatusMessage
+// @Failure 404 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
 // @Router /photos [get]
 func List(g *gin.Context) {
 	store := store()
@@ -103,10 +103,10 @@ func List(g *gin.Context) {
 	result, error := store.List(user.ID.String())
 
 	if error != nil {
-		g.JSON(http.StatusNotFound, StatusMessage{Code: 404, Message: "Photos do not exist!"})
+		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 	}
 
-	images := make([]photo.Response, len(result))
+	images := make([]Response, len(result))
 	for i, photo := range result {
 		p, error := photo.AsResp()
 		if error != nil {
@@ -115,7 +115,7 @@ func List(g *gin.Context) {
 		images[i] = *p
 	}
 	if error != nil {
-		g.JSON(http.StatusInternalServerError, StatusMessage{Code: 500, Message: "Photos could not be exported!"})
+		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Photos could not be exported!"})
 	}
 
 	g.JSON(http.StatusOK, images)
@@ -130,8 +130,8 @@ func List(g *gin.Context) {
 // @Produce json
 // @Param id path int true "ID of the photo information to collect"
 // @Success 200 {object} photo.Response
-// @Failure 404 {object} controller.StatusMessage
-// @Failure 500 {object} controller.StatusMessage
+// @Failure 404 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id [get]
 func Get(g *gin.Context) {
 	id := g.Param("id")
@@ -140,7 +140,7 @@ func Get(g *gin.Context) {
 	result, error := store.Get(id)
 
 	if error != nil {
-		g.JSON(http.StatusNotFound, StatusMessage{
+		g.JSON(http.StatusNotFound, common.StatusMessage{
 			Code:    404,
 			Message: "Photos does not exist!",
 		})
@@ -149,7 +149,7 @@ func Get(g *gin.Context) {
 	exported, error := result.AsResp()
 
 	if error != nil {
-		g.JSON(http.StatusInternalServerError, StatusMessage{
+		g.JSON(http.StatusInternalServerError, common.StatusMessage{
 			Code:    500,
 			Message: "Photo could not be exported!",
 		})
@@ -167,8 +167,8 @@ func Get(g *gin.Context) {
 // @Produce json
 // @Param id path int true "ID of the RAW photo to download"
 // @Success 200 {array} byte
-// @Failure 404 {object} controller.StatusMessage
-// @Failure 500 {object} controller.StatusMessage
+// @Failure 404 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id/download [get]
 func Download(g *gin.Context) {
 	id := g.Param("id")
@@ -194,10 +194,10 @@ func Download(g *gin.Context) {
 	})
 }
 
-func store() *photo.Store {
+func store() *Store {
 	return nil
 }
 
-func currentUser(g *gin.Context) *user.User {
+func currentUser(g *gin.Context) *auth.User {
 	return nil
 }

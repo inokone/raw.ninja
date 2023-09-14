@@ -1,9 +1,11 @@
-package controller
+package auth
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/inokone/photostorage/common"
 )
 
 // @BasePath /api/v1/auth
@@ -17,7 +19,7 @@ import (
 // @Success 200
 // @Router /register [post]
 func Register(g *gin.Context) {
-	g.JSON(http.StatusNotImplemented, StatusMessage{
+	g.JSON(http.StatusNotImplemented, common.StatusMessage{
 		Code:    501,
 		Message: "Functionality has not been implemented yet!",
 	})
@@ -32,7 +34,7 @@ func Register(g *gin.Context) {
 // @Success 200
 // @Router /login [post]
 func Login(g *gin.Context) {
-	g.JSON(http.StatusNotImplemented, StatusMessage{
+	g.JSON(http.StatusNotImplemented, common.StatusMessage{
 		Code:    501,
 		Message: "Functionality has not been implemented yet!",
 	})
@@ -47,7 +49,7 @@ func Login(g *gin.Context) {
 // @Success 200
 // @Router /reset [post]
 func Reset(g *gin.Context) {
-	g.JSON(http.StatusNotImplemented, StatusMessage{
+	g.JSON(http.StatusNotImplemented, common.StatusMessage{
 		Code:    501,
 		Message: "Functionality has not been implemented yet!",
 	})
@@ -62,7 +64,7 @@ func Reset(g *gin.Context) {
 // @Success 200
 // @Router /logout [get]
 func Logout(g *gin.Context) {
-	g.JSON(http.StatusNotImplemented, StatusMessage{
+	g.JSON(http.StatusNotImplemented, common.StatusMessage{
 		Code:    501,
 		Message: "Functionality has not been implemented yet!",
 	})

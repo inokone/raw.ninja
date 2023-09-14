@@ -1,12 +1,12 @@
 definitions:
-  controller.Health:
+  common.Health:
     properties:
       status:
         type: string
       version:
         type: string
     type: object
-  controller.StatusMessage:
+  common.StatusMessage:
     properties:
       code:
         type: integer
@@ -55,30 +55,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.Health'
+            $ref: '#/definitions/common.Health'
       summary: Health check endpoint of the Photostorage app
-  /login:
-    post:
-      consumes:
-      - application/json
-      description: Logs in the user, sets the necessary cookies
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: User login endpoint
-  /logout:
-    get:
-      consumes:
-      - application/json
-      description: Logs out of the application
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Logout endpoint
   /photos:
     get:
       consumes:
@@ -96,11 +74,11 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/controller.StatusMessage'
+            $ref: '#/definitions/common.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controller.StatusMessage'
+            $ref: '#/definitions/common.StatusMessage'
       summary: List user's photo descriptors endpoint
       tags:
       - photos
@@ -125,11 +103,11 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/controller.StatusMessage'
+            $ref: '#/definitions/common.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controller.StatusMessage'
+            $ref: '#/definitions/common.StatusMessage'
       summary: Get photo endpoint
       tags:
       - photos
@@ -156,36 +134,14 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/controller.StatusMessage'
+            $ref: '#/definitions/common.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controller.StatusMessage'
+            $ref: '#/definitions/common.StatusMessage'
       summary: Download RAW file endpoint
       tags:
       - photos
-  /register:
-    post:
-      consumes:
-      - application/json
-      description: Registers the user
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: User registration endpoint
-  /reset:
-    post:
-      consumes:
-      - application/json
-      description: Returns the status and version of the application
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Reset password endpoint
   /upload:
     post:
       consumes:
@@ -203,19 +159,19 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/controller.StatusMessage'
+            $ref: '#/definitions/common.StatusMessage'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/controller.StatusMessage'
+            $ref: '#/definitions/common.StatusMessage'
         "415":
           description: Unsupported Media Type
           schema:
-            $ref: '#/definitions/controller.StatusMessage'
+            $ref: '#/definitions/common.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controller.StatusMessage'
+            $ref: '#/definitions/common.StatusMessage'
       summary: Photo upload endpoint
       tags:
       - photos

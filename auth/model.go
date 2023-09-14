@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"github.com/google/uuid"
@@ -30,7 +30,7 @@ func (u *User) VerifyPassword(password string) bool {
 	return err != nil
 }
 
-type Login struct {
+type Credentials struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -42,7 +42,7 @@ type AuthenticatedUser struct {
 	UserType     string    `json:"user_type" validate:"required,eq=ADMIN|eq=USER"`
 }
 
-type Register struct {
+type Registration struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Phone    string `json:"phone"`
