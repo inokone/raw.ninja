@@ -11,10 +11,12 @@ import (
 )
 
 type Photo struct {
-	ID        uuid.UUID             `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	Raw       []byte                `gorm:"-"`
-	User      auth.User             `gorm:"foreignKey:ID"`
-	Desc      descriptor.Descriptor `gorm:"foreignKey:ID"`
+	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	Raw       []byte    `gorm:"-"`
+	UserID    string
+	User      auth.User `gorm:"foreignKey:UserID"`
+	DescID    string
+	Desc      descriptor.Descriptor `gorm:"foreignKey:DescID"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
