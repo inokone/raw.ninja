@@ -1,8 +1,10 @@
 # photostorage
-Cheap photo storage for professional purposes. A personal project to learn Go language. 
+
+Cheap photo storage for professional purposes. A personal project to learn Go language.
 The target is a web application capable of handling reltively large image files (>50Mb), generating thumbnails.
 
 ## Functional requirements (planned)
+
 - Authentication/Authorization including OpenId Connect
 - Uploading and storing RAW image files of various types
 - Browse accessible files
@@ -12,14 +14,16 @@ The target is a web application capable of handling reltively large image files 
 - Marking favorite images (exempt from lifecycle rules)
 
 ## Set up for development
-```
+
+``` sh
 go install github.com/cosmtrek/air@latest          // hot-reload for Gin server
 go install github.com/swaggo/swag/cmd/swag@latest  // OpenAPI spec generation for REST endpoints
 
 ```
 
 ## Build
-```
+
+``` sh
 swag init -d "./cmd,./common,./photo,./descriptor,./web"  // re-generate the OpenAPI spec files
 cd cmd
 go build .                                                // build Go based application
@@ -28,10 +32,12 @@ go test .                                                 // run unit tests
 cd ..
 gocritic check ./...                                      // static code analysis
 ```
+
 On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin` to your PATH.
 
 ## Run
-```
+
+``` sh
 docker-compose up -d    // initialize Postgres database
 
 cd cmd
@@ -44,13 +50,16 @@ docker-compose down     // stop runninf Postgres database
 ```
 
 ## CI
+
 The project has Github actions set up for every push.
 Steps included
+
 - OpenAPI re-generation
 - Build
 - Run unit tests
 - Static code analysis
 
 ## API doc
+
 When the application is running, the OpenAPI documentation is available with [Swagger](http://localhost:8080/swagger/doc.json).
 
