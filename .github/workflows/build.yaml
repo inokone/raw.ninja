@@ -17,6 +17,7 @@ jobs:
       - name: Install dependencies
         run: |
           go install github.com/swaggo/swag/cmd/swag@latest
+          go install github.com/go-critic/go-critic/cmd/gocritic@latest
 
       - name: Init swagger
         run: swag init -d "./cmd,./common,./photo,./descriptor,./web"
@@ -28,3 +29,6 @@ jobs:
       - name: Test
         working-directory: ./cmd
         run: go test -v .
+
+      - name: Static Code Analysis
+        run: gocritic check ./...
