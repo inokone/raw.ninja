@@ -16,21 +16,21 @@ The target is a web application capable of handling reltively large image files 
 ## Set up for development
 
 ``` sh
-go install github.com/cosmtrek/air@latest          // hot-reload for Gin server
-go install github.com/swaggo/swag/cmd/swag@latest  // OpenAPI spec generation for REST endpoints
+go install github.com/cosmtrek/air@latest          # hot-reload for Gin server
+go install github.com/swaggo/swag/cmd/swag@latest  # OpenAPI spec generation for REST endpoints
 
 ```
 
 ## Build
 
 ``` sh
-swag init -d "./cmd,./common,./photo,./descriptor,./web"  // re-generate the OpenAPI spec files
+swag init -d "./cmd,./common,./photo,./descriptor,./web"  # re-generate the OpenAPI spec files
 cd cmd
-go build .                                                // build Go based application
+go build .                                                # build Go based application
 
-go test .                                                 // run unit tests
+go test .                                                 # run unit tests
 cd ..
-gocritic check ./...                                      // static code analysis
+gocritic check ./...                                      # static code analysis
 ```
 
 On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin` to your PATH.
@@ -38,15 +38,15 @@ On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin`
 ## Run
 
 ``` sh
-docker-compose up -d    // initialize Postgres database
+docker-compose up -d  # initialize Postgres database
 
 cd cmd
-go run --migrate        // migrate the database
+go run --migrate      # migrate the database
 
-go run .                // start the web-application, or
-air                     // start the web application with hot-reload
+go run .              # start the web-application, or
+air                   # start the web application with hot-reload for development
 
-docker-compose down     // stop runninf Postgres database 
+docker-compose down   # stop running Postgres database 
 ```
 
 ## CI
@@ -62,4 +62,3 @@ Steps included
 ## API doc
 
 When the application is running, the OpenAPI documentation is available with [Swagger](http://localhost:8080/swagger/doc.json).
-
