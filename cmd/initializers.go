@@ -28,8 +28,7 @@ func InitDb(c common.RDBConfig) error {
 }
 
 func InitStore(c common.ImageStoreConfig) error {
-	switch c.Type {
-	case "file":
+	if c.Type == "file" {
 		var s image.Store
 		s, error := image.NewLocalStore(c.Path)
 		if error != nil {
@@ -38,5 +37,5 @@ func InitStore(c common.ImageStoreConfig) error {
 		IS = &s
 		return nil
 	}
-	return nil
+	return gorm.ErrNotImplemented
 }
