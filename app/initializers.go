@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/inokone/photostorage/image"
 )
 
-func InitDb(c common.RDBConfig) error {
+func initDb(c common.RDBConfig) error {
 	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", c.Host, c.Username, c.Password, c.Database, c.Port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -27,7 +27,7 @@ func InitDb(c common.RDBConfig) error {
 	return nil
 }
 
-func InitStore(c common.ImageStoreConfig) error {
+func initStore(c common.ImageStoreConfig) error {
 	if c.Type == "file" {
 		var s image.Store
 		s, error := image.NewLocalStore(c.Path)

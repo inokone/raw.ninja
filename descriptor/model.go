@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	img "github.com/inokone/photostorage/image"
+	"gorm.io/gorm"
 )
 
 type Format int64
@@ -33,6 +34,9 @@ type Descriptor struct {
 	Height    int
 	Thumbnail image.Image `gorm:"-"`
 	Tags      []string    `gorm:"type:text[]"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt
 }
 
 func (p Descriptor) AsResp() (*Response, error) {

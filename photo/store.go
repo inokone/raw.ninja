@@ -12,11 +12,6 @@ type Store struct {
 	is image.Store
 }
 
-func (s *Store) New(db *gorm.DB, is image.Store) {
-	s.db = db
-	s.is = is
-}
-
 func (s *Store) Store(photo Photo) error {
 	s.db.Save(&photo)
 	err := s.is.Store(photo.ID.String(), photo.Raw, photo.Desc.Thumbnail)

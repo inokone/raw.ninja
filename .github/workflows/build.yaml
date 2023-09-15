@@ -20,14 +20,12 @@ jobs:
           go install github.com/go-critic/go-critic/cmd/gocritic@latest
 
       - name: Init swagger
-        run: swag init -d "./cmd,./common,./photo,./descriptor,./web"
+        run: swag i -d "./,./app,./common,./photo,./descriptor,./web"
 
       - name: Build
-        working-directory: ./cmd
-        run: go build -v .
+        run: go build -v main.go
 
       - name: Test
-        working-directory: ./cmd
         run: go test -v .
 
       - name: Static Code Analysis

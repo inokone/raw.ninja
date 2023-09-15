@@ -16,21 +16,20 @@ The target is a web application capable of handling reltively large image files 
 ## Set up for development
 
 ``` sh
-go install github.com/cosmtrek/air@latest          # hot-reload for Gin server
-go install github.com/swaggo/swag/cmd/swag@latest  # OpenAPI spec generation for REST endpoints
-
+go install github.com/cosmtrek/air@latest                      # Hot-reload for Gin server
+go install github.com/swaggo/swag/cmd/swag@latest              # OpenAPI spec generator
+go install github.com/go-critic/go-critic/cmd/gocritic@latest  # Static code anlanysis for Go
 ```
 
 ## Build
 
 ``` sh
-swag init -d "./cmd,./common,./photo,./descriptor,./web"  # re-generate the OpenAPI spec files
-cd cmd
-go build .                                                # build Go based application
+swag i -d "./,./app,./common,./photo,./descriptor,./web"  # Gernerate OpenAPI spec files
+go build main.go                                          # Build app
 
-go test .                                                 # run unit tests
+go test .                                                 # Run unit tests
 cd ..
-gocritic check ./...                                      # static code analysis
+gocritic check ./...                                      # Run static code analysis
 ```
 
 On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin` to your PATH.
@@ -38,15 +37,13 @@ On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin`
 ## Run
 
 ``` sh
-docker-compose up -d  # initialize Postgres database
+docker-compose up -d     # Initialize Postgres database
 
-cd cmd
-go run --migrate      # migrate the database
+go run main.go--migrate  # Migrate the database and launch app, or
+go run main.go           # Start the web-application, or
+air                      # Start the web application with hot-reload for development
 
-go run .              # start the web-application, or
-air                   # start the web application with hot-reload for development
-
-docker-compose down   # stop running Postgres database 
+docker-compose down      # Stop running Postgres database 
 ```
 
 ## CI

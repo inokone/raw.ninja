@@ -35,6 +35,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/login": {
+            "post": {
+                "description": "Logs in the user, sets the necessary cookies",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "User login endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "description": "Logs out of the application",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Logout endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/photos": {
             "get": {
                 "description": "Returns all photo descriptors for the current user",
@@ -160,6 +194,40 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/common.StatusMessage"
                         }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "description": "Registers the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "User registration endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/reset": {
+            "post": {
+                "description": "Returns the status and version of the application",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Reset password endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 }
             }
