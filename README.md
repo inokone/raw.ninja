@@ -13,16 +13,22 @@ The target is a web application capable of handling reltively large image files 
 
 ## Set up for development
 ```
-go install github.com/cosmtrek/air@latest // hot-reload for Gin server
-go install github.com/swaggo/swag/cmd/swag@latest // OpenAPI spec generation for REST endpoints
+go install github.com/cosmtrek/air@latest          // hot-reload for Gin server
+go install github.com/swaggo/swag/cmd/swag@latest  // OpenAPI spec generation for REST endpoints
+
 ```
 
 ## Build
 ```
-swag init -d "./cmd,./common,./photo,./descriptor,./web" // re-generate the OpenAPI spec files
-go build . // build Go based application
+swag init -d "./cmd,./common,./photo,./descriptor,./web"  // re-generate the OpenAPI spec files
+cd cmd
+go build .                                                // build Go based application
+
+go test .                                                 // run unit tests
+cd ..
+gocritic check ./...                                      // static code analysis
 ```
-If `swag` is not working you might have to add `~/go/bin` to  your PATH.
+On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin` to your PATH.
 
 ## Run
 ```
@@ -41,9 +47,9 @@ docker-compose down     // stop runninf Postgres database
 The project has Github actions set up for every push.
 Steps included
 - OpenAPI re-generation
-- Build 
+- Build
 - Run unit tests
-- Static code analysis (planned)
+- Static code analysis
 
 ## API doc
 When the application is running, the OpenAPI documentation is available with [Swagger](http://localhost:8080/swagger/doc.json).
