@@ -5,10 +5,15 @@ import (
 	"log"
 	"os"
 
+	"gorm.io/gorm"
+
 	"github.com/inokone/photostorage/common"
+	"github.com/inokone/photostorage/image"
 )
 
 var config *common.AppConfig
+var DB *gorm.DB
+var IS *image.Store
 
 func init() {
 	conf, err := common.LoadConfig()
@@ -26,9 +31,15 @@ func main() {
 	)
 	flag.Parse()
 
-	err := common.InitDb(config.Database)
+	err := InitDb(config.Database)
 	if err != nil {
 		log.Fatal("Could not set up connection to database. Application spinning down.")
+		os.Exit(1)
+	}
+
+	err = InitStore(config.Store)
+	if err != nil {
+		log.Fatal("Could not set up image store. Application spinning down.")
 		os.Exit(1)
 	}
 

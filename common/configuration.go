@@ -17,17 +17,24 @@ type RDBConfig struct {
 	ConnMaxLifetime time.Duration `mapstructure:"DB_CONN_LIFETIME"`
 }
 
+type ImageStoreConfig struct {
+	Type string `mapstructure:"IMG_STORE_TYPE"`
+	Path string `mapstructure:"IMG_STORE_PATH"`
+}
+
 type AppConfig struct {
 	Database RDBConfig
+	Store    ImageStoreConfig
 }
 
 func LoadConfig() (*AppConfig, error) {
-	var config RDBConfig
+	var db RDBConfig
+	var is ImageStoreConfig
+	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc/photostorage/")
 	viper.AddConfigPath("$HOME/.photostorage")
-	viper.AddConfigPath(".")
 	viper.SetConfigType("env")
-	viper.SetConfigName("local")
+	viper.SetConfigName("app")
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()
@@ -35,10 +42,14 @@ func LoadConfig() (*AppConfig, error) {
 		return nil, err
 	}
 
-	err = viper.Unmarshal(&config)
+	err = viper.Unmarshal(&db)
 	if err != nil {
 		return nil, err
 	}
-	result := AppConfig{Database: config}
+	err = viper.Unmarshal(&is)
+	if err != nil {
+		return nil, err
+	}
+	result := AppConfig{Database: db, Store: is}
 	return &result, nil
 }

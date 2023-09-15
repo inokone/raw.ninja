@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/inokone/photostorage/docs"
 	swaggerfiles "github.com/swaggo/files"
@@ -18,7 +20,7 @@ func App(port int) {
 
 	// Set up routes
 	v1 := r.Group("/api/v1")
-	routes.Init(v1)
+	routes.Init(v1, DB, *IS)
 
-	r.Run(":" + string(port))
+	r.Run(fmt.Sprintf(":%d", port))
 }

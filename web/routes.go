@@ -4,10 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/inokone/photostorage/auth"
 	"github.com/inokone/photostorage/common"
+	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
+	"gorm.io/gorm"
 )
 
-func Init(v1 *gin.RouterGroup) {
+func Init(v1 *gin.RouterGroup, db *gorm.DB, is image.Store) {
+	p := photo.NewController(db, is)
+
 	v1.GET("healthcheck", common.Healthcheck)
 
 	g := v1.Group("/auth")
@@ -21,9 +25,9 @@ func Init(v1 *gin.RouterGroup) {
 
 	g = v1.Group("/photos")
 	{
-		g.POST("/", photo.Upload)
-		g.GET("/", photo.List)
-		g.GET("/:id", photo.Get)
-		g.GET("/:id/download", photo.Download)
+		g.POST("/", p.Upload)
+		g.GET("/", p.List)
+		g.GET("/:id", p.Get)
+		g.GET("/:id/download", p.Download)
 	}
 }

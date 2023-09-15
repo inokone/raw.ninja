@@ -21,7 +21,7 @@ type RawProcessor interface {
 // Type for converting Canon raw images to Go image.Image
 type Cr2Processor struct{}
 
-func (p Cr2Processor) Process(raw io.Reader) (image.Image, error) {
+func (p *Cr2Processor) Process(raw io.Reader) (image.Image, error) {
 	result, err := cr2.Decode(raw)
 	if err != nil {
 		log.Printf("Image processing failed with cause: %v", err)
@@ -31,7 +31,7 @@ func (p Cr2Processor) Process(raw io.Reader) (image.Image, error) {
 
 func Factory(extension string) (RawProcessor, error) {
 	if extension == "cr2" {
-		return Cr2Processor{}, nil
+		return new(Cr2Processor), nil
 	}
 	return nil, image.ErrFormat
 }

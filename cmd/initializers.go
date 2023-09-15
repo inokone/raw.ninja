@@ -1,15 +1,16 @@
-package common
+package main
 
 import (
 	"fmt"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	"github.com/inokone/photostorage/common"
+	"github.com/inokone/photostorage/image"
 )
 
-var DB *gorm.DB
-
-func InitDb(c RDBConfig) error {
+func InitDb(c common.RDBConfig) error {
 	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", c.Host, c.Username, c.Password, c.Database, c.Port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -23,5 +24,19 @@ func InitDb(c RDBConfig) error {
 	sqlDB.SetMaxOpenConns(c.MaxOpenConns)
 	sqlDB.SetConnMaxLifetime(c.ConnMaxLifetime)
 	DB = db
+	return nil
+}
+
+func InitStore(c common.ImageStoreConfig) error {
+	switch c.Type {
+	case "file":
+		var s image.Store
+		s, error := image.NewLocalStore(c.Path)
+		if error != nil {
+			return error
+		}
+		IS = &s
+		return nil
+	}
 	return nil
 }

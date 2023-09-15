@@ -24,20 +24,21 @@ const (
 )
 
 type LocalStore struct {
-	path string
+	Path string
 }
 
-func (s LocalStore) New(path string) {
-	s.path = filepath.Join(path, photoFolder)
-	err := os.MkdirAll(s.path, os.ModePerm)
+func NewLocalStore(path string) (*LocalStore, error) {
+	fs := new(LocalStore)
+	fs.Path = filepath.Join(path, photoFolder)
+	err := os.MkdirAll(fs.Path, os.ModePerm)
 	if err != nil {
-		log.Fatalf("Can not create application storage path [%v]", s.path)
-		panic("Photo storage invalid. See logs for more details.")
+		return nil, err
 	}
+	return fs, nil
 }
 
-func (s LocalStore) Store(id string, raw []byte, thumbnail image.Image) error {
-	path := filepath.Join(s.path, photoFolder, id)
+func (s *LocalStore) Store(id string, raw []byte, thumbnail image.Image) error {
+	path := filepath.Join(s.Path, photoFolder, id)
 	err := os.MkdirAll(path, os.ModePerm)
 	if err != nil {
 		log.Fatalf("Can not create path [%v] for image [%v]", path, id)
@@ -65,19 +66,19 @@ func write(path string, content []byte) error {
 	return os.WriteFile(path, content, 0755)
 }
 
-func (s LocalStore) Delete(id string) error {
-	path := filepath.Join(s.path, photoFolder, id)
+func (s *LocalStore) Delete(id string) error {
+	path := filepath.Join(s.Path, photoFolder, id)
 	err := os.RemoveAll(path)
 	return err
 }
 
-func (s LocalStore) Image(id string) ([]byte, error) {
-	path := filepath.Join(s.path, photoFolder, id, rawName)
+func (s *LocalStore) Image(id string) ([]byte, error) {
+	path := filepath.Join(s.Path, photoFolder, id, rawName)
 	return os.ReadFile(path)
 }
 
-func (s LocalStore) Thumbnail(id string) (image.Image, error) {
-	path := filepath.Join(s.path, photoFolder, id, thumbnailName)
+func (s *LocalStore) Thumbnail(id string) (image.Image, error) {
+	path := filepath.Join(s.Path, photoFolder, id, thumbnailName)
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err

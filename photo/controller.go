@@ -12,7 +12,23 @@ import (
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/descriptor"
 	"github.com/inokone/photostorage/image"
+	"gorm.io/gorm"
 )
+
+type Controller struct {
+	store Store
+}
+
+func NewController(db *gorm.DB, is image.Store) Controller {
+	store := Store{
+		db: db,
+		is: is,
+	}
+
+	return Controller{
+		store: store,
+	}
+}
 
 // @BasePath /api/v1/photo
 
@@ -29,7 +45,7 @@ import (
 // @Failure 415 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
 // @Router /upload [post]
-func Upload(g *gin.Context) {
+func (c Controller) Upload(g *gin.Context) {
 	file, err := g.FormFile("file")
 
 	if err != nil {
@@ -49,8 +65,7 @@ func Upload(g *gin.Context) {
 	if err != nil {
 		g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file format is not supported!"})
 	}
-	store := store()
-	store.Store(*target)
+	c.store.Store(*target)
 	if err != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
 	}
@@ -96,11 +111,10 @@ func createPhoto(user auth.User, filename, extension, raw string) (*Photo, error
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos [get]
-func List(g *gin.Context) {
-	store := store()
+func (c Controller) List(g *gin.Context) {
 	user := currentUser(g)
 
-	result, error := store.List(user.ID.String())
+	result, error := c.store.List(user.ID.String())
 
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
@@ -133,11 +147,10 @@ func List(g *gin.Context) {
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id [get]
-func Get(g *gin.Context) {
+func (c Controller) Get(g *gin.Context) {
 	id := g.Param("id")
-	store := store()
 
-	result, error := store.Get(id)
+	result, error := c.store.Get(id)
 
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{
@@ -170,16 +183,15 @@ func Get(g *gin.Context) {
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id/download [get]
-func Download(g *gin.Context) {
+func (c Controller) Download(g *gin.Context) {
 	id := g.Param("id")
-	store := store()
 
-	raw, error := store.Raw(id)
+	raw, error := c.store.Raw(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, "Raw file does not exist!")
 	}
 
-	img, error := store.Get(id)
+	img, error := c.store.Get(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, "Raw file does not exist!")
 	}
@@ -192,10 +204,6 @@ func Download(g *gin.Context) {
 	g.JSON(http.StatusOK, gin.H{
 		"msg": "File download successful.",
 	})
-}
-
-func store() *Store {
-	return nil
 }
 
 func currentUser(g *gin.Context) *auth.User {
