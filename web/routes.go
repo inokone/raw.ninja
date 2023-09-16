@@ -9,9 +9,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func Init(v1 *gin.RouterGroup, db *gorm.DB, is image.Store) {
+func Init(v1 *gin.RouterGroup, db *gorm.DB, is image.Store, conf common.AppConfig) {
 	p := photo.NewController(db, is)
-	a := auth.NewController(db)
+	a := auth.NewController(db, &conf.Auth)
+	m := auth.NewJWTHandler(db, conf.Auth.JWTSecret)
 
 	v1.GET("healthcheck", common.Healthcheck)
 
@@ -21,9 +22,10 @@ func Init(v1 *gin.RouterGroup, db *gorm.DB, is image.Store) {
 		g.GET("/logout", a.Logout)
 		g.POST("/signup", a.Signup)
 		g.POST("/reset", a.Reset)
+		g.GET("/validate", m.ValidateJWTToken, a.Validate)
 	}
 
-	g = v1.Group("/photos")
+	g = v1.Group("/photos", m.ValidateJWTToken)
 	{
 		g.POST("/", p.Upload)
 		g.GET("/", p.List)

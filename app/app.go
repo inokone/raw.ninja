@@ -50,7 +50,7 @@ func App(port int) {
 
 	// Set up routes
 	v1 := r.Group("/api/v1")
-	routes.Init(v1, DB, *IS)
+	routes.Init(v1, DB, *IS, *config)
 
 	r.Run(fmt.Sprintf(":%d", port))
 }

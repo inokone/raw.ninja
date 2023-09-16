@@ -6,8 +6,6 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-
-	"encoding/base64"
 )
 
 type User struct {
@@ -28,13 +26,14 @@ func NewUser(email string, password string, phone string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	u.PassHash = base64.RawStdEncoding.EncodeToString(hash)
+	u.PassHash = string(hash)
 	return u, nil
 }
 
 func (u *User) VerifyPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.PassHash), []byte(password))
-	return err != nil
+	print(err)
+	return err == nil
 }
 
 type Credentials struct {

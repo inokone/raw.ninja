@@ -2,6 +2,7 @@ package photo
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -46,28 +47,38 @@ func NewController(db *gorm.DB, is image.Store) Controller {
 // @Failure 500 {object} common.StatusMessage
 // @Router /upload [post]
 func (c Controller) Upload(g *gin.Context) {
+	user, error := currentUser(g)
+	if error != nil {
+		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		return
+	}
+
 	file, err := g.FormFile("file")
 
 	if err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Could not extract uploaded file from request!"})
+		return
 	}
 	var raw string
 	err = g.SaveUploadedFile(file, raw)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Uploaded file is damaged!"})
+		return
 	}
 	target, err := createPhoto(
-		*currentUser(g),
+		*user,
 		filepath.Ext(file.Filename),
 		filepath.Base(file.Filename),
 		raw,
 	)
 	if err != nil {
 		g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file format is not supported!"})
+		return
 	}
 	c.store.Store(*target)
 	if err != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
+		return
 	}
 	g.JSON(http.StatusCreated, common.StatusMessage{
 		Code:    201,
@@ -112,12 +123,17 @@ func createPhoto(user auth.User, filename, extension, raw string) (*Photo, error
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos [get]
 func (c Controller) List(g *gin.Context) {
-	user := currentUser(g)
+	user, error := currentUser(g)
+	if error != nil {
+		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		return
+	}
 
 	result, error := c.store.List(user.ID.String())
 
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
+		return
 	}
 
 	images := make([]Response, len(result))
@@ -157,6 +173,7 @@ func (c Controller) Get(g *gin.Context) {
 			Code:    404,
 			Message: "Photos does not exist!",
 		})
+		return
 	}
 
 	exported, error := result.AsResp()
@@ -166,6 +183,7 @@ func (c Controller) Get(g *gin.Context) {
 			Code:    500,
 			Message: "Photo could not be exported!",
 		})
+		return
 	}
 
 	g.JSON(http.StatusOK, exported)
@@ -188,12 +206,20 @@ func (c Controller) Download(g *gin.Context) {
 
 	raw, error := c.store.Raw(id)
 	if error != nil {
-		g.JSON(http.StatusNotFound, "Raw file does not exist!")
+		g.JSON(http.StatusNotFound, common.StatusMessage{
+			Code:    404,
+			Message: "Raw file does not exist!",
+		})
+		return
 	}
 
 	img, error := c.store.Get(id)
 	if error != nil {
-		g.JSON(http.StatusNotFound, "Raw file does not exist!")
+		g.JSON(http.StatusNotFound, common.StatusMessage{
+			Code:    404,
+			Message: "Raw file does not exist!",
+		})
+		return
 	}
 
 	fileName := img.Desc.FileName
@@ -201,11 +227,16 @@ func (c Controller) Download(g *gin.Context) {
 	g.Header("Content-Type", "application/text/plain")
 	g.Header("Accept-Length", fmt.Sprintf("%d", len(raw)))
 	g.Writer.Write(raw)
-	g.JSON(http.StatusOK, gin.H{
-		"msg": "File download successful.",
+	g.JSON(http.StatusOK, common.StatusMessage{
+		Code:    200,
+		Message: "Download successful!",
 	})
 }
 
-func currentUser(g *gin.Context) *auth.User {
-	return nil
+func currentUser(g *gin.Context) (*auth.User, error) {
+	user, ok := g.Get("user")
+	if !ok {
+		return nil, errors.New("User could not be extracted from session!")
+	}
+	return user.(*auth.User), nil
 }

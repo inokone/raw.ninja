@@ -22,14 +22,20 @@ type ImageStoreConfig struct {
 	Path string `mapstructure:"IMG_STORE_PATH"`
 }
 
+type AuthConfig struct {
+	JWTSecret string `mapstructure:"JWT_SIGN_SECRET"`
+}
+
 type AppConfig struct {
 	Database RDBConfig
 	Store    ImageStoreConfig
+	Auth     AuthConfig
 }
 
 func LoadConfig() (*AppConfig, error) {
 	var db RDBConfig
 	var is ImageStoreConfig
+	var au AuthConfig
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc/photostorage/")
 	viper.AddConfigPath("$HOME/.photostorage")
@@ -50,6 +56,10 @@ func LoadConfig() (*AppConfig, error) {
 	if err != nil {
 		return nil, err
 	}
-	result := AppConfig{Database: db, Store: is}
+	err = viper.Unmarshal(&au)
+	if err != nil {
+		return nil, err
+	}
+	result := AppConfig{Database: db, Store: is, Auth: au}
 	return &result, nil
 }

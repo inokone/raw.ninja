@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -13,9 +14,15 @@ func (s Store) Store(user User) error {
 	return result.Error
 }
 
-func (s Store) User(email string) (User, error) {
+func (s Store) ByEmail(email string) (User, error) {
 	var user User
 	result := s.db.Where(&User{Email: email}).First(&user)
+	return user, result.Error
+}
+
+func (s Store) ByID(id uuid.UUID) (User, error) {
+	var user User
+	result := s.db.Where(&User{ID: id}).First(&user)
 	return user, result.Error
 }
 
