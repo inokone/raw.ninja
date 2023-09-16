@@ -28,7 +28,6 @@ swag i -d "./,./app,./common,./photo,./descriptor,./web"  # Gernerate OpenAPI sp
 go build main.go                                          # Build app
 
 go test .                                                 # Run unit tests
-cd ..
 gocritic check ./...                                      # Run static code analysis
 ```
 
@@ -37,13 +36,13 @@ On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin`
 ## Run
 
 ``` sh
-docker-compose up -d     # Initialize Postgres database
+docker-compose up -d      # Initialize Postgres database
 
-go run main.go--migrate  # Migrate the database and launch app, or
-go run main.go           # Start the web-application, or
-air                      # Start the web application with hot-reload for development
+go run main.go --migrate  # Migrate the database and launch app, or
+go run main.go            # Start the web-application, or
+air                       # Start the web application with hot-reload for development
 
-docker-compose down      # Stop running Postgres database 
+docker-compose down       # Stop running Postgres database 
 ```
 
 ## CI

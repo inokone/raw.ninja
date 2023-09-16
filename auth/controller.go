@@ -2,10 +2,8 @@ package auth
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	jwt "github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 
 	"github.com/inokone/photostorage/common"
@@ -18,12 +16,14 @@ const (
 type Controller struct {
 	store  Store
 	config common.AuthConfig
+	jwt    JWTHandler
 }
 
 func NewController(db *gorm.DB, config *common.AuthConfig) Controller {
 	return Controller{
 		store:  Store{db: db},
 		config: *config,
+		jwt:    NewJWTHandler(db, *config),
 	}
 }
 
@@ -110,21 +110,7 @@ func (c Controller) Login(g *gin.Context) {
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": user.ID,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
-	})
-	tokenString, err := token.SignedString([]byte(c.config.JWTSecret))
-
-	g.SetSameSite(http.SameSiteLaxMode)
-	g.SetCookie(jwtTokenKey, tokenString, 3600*24*30, "", "", false, true) // Max live time is 30 days
-	if err != nil {
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{
-			Code:    500,
-			Message: "Could not sign JWT token, please contact administrator!",
-		})
-		return
-	}
+	c.jwt.Create(g, user.ID.String())
 
 	g.JSON(http.StatusOK, common.StatusMessage{
 		Code:    200,

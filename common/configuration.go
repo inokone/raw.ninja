@@ -24,6 +24,8 @@ type ImageStoreConfig struct {
 
 type AuthConfig struct {
 	JWTSecret string `mapstructure:"JWT_SIGN_SECRET"`
+	JWTExp    int    `mapstructure:"JWT_EXPIRATION_HOURS"`
+	JWTSecure bool   `mapstructure:"JWT_COOKIE_SECURE"`
 }
 
 type AppConfig struct {
@@ -41,6 +43,8 @@ func LoadConfig() (*AppConfig, error) {
 	viper.AddConfigPath("$HOME/.photostorage")
 	viper.SetConfigType("env")
 	viper.SetConfigName("app")
+	viper.SetDefault("JWT_COOKIE_SECURE", true)
+	viper.SetDefault("JWT_EXPIRATION_HOURS", 24)
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()

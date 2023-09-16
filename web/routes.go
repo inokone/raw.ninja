@@ -11,8 +11,8 @@ import (
 
 func Init(v1 *gin.RouterGroup, db *gorm.DB, is image.Store, conf common.AppConfig) {
 	p := photo.NewController(db, is)
+	m := auth.NewJWTHandler(db, conf.Auth)
 	a := auth.NewController(db, &conf.Auth)
-	m := auth.NewJWTHandler(db, conf.Auth.JWTSecret)
 
 	v1.GET("healthcheck", common.Healthcheck)
 
@@ -22,10 +22,10 @@ func Init(v1 *gin.RouterGroup, db *gorm.DB, is image.Store, conf common.AppConfi
 		g.GET("/logout", a.Logout)
 		g.POST("/signup", a.Signup)
 		g.POST("/reset", a.Reset)
-		g.GET("/validate", m.ValidateJWTToken, a.Validate)
+		g.GET("/validate", m.Validate, a.Validate)
 	}
 
-	g = v1.Group("/photos", m.ValidateJWTToken)
+	g = v1.Group("/photos", m.Validate)
 	{
 		g.POST("/", p.Upload)
 		g.GET("/", p.List)
