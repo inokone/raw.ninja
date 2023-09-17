@@ -51,19 +51,14 @@ func LoadConfig() (*AppConfig, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	err = viper.Unmarshal(&db)
-	if err != nil {
+	if err = viper.Unmarshal(&db); err != nil {
 		return nil, err
 	}
-	err = viper.Unmarshal(&is)
-	if err != nil {
+	if err = viper.Unmarshal(&is); err != nil {
 		return nil, err
 	}
-	err = viper.Unmarshal(&au)
-	if err != nil {
+	if err = viper.Unmarshal(&au); err != nil {
 		return nil, err
 	}
-	result := AppConfig{Database: db, Store: is, Auth: au}
-	return &result, nil
+	return &AppConfig{Database: db, Store: is, Auth: au}, nil
 }

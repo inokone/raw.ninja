@@ -60,8 +60,7 @@ func (c Controller) Upload(g *gin.Context) {
 	}
 
 	var raw string
-	err = g.SaveUploadedFile(file, raw)
-	if err != nil {
+	if err = g.SaveUploadedFile(file, raw); err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Uploaded file is damaged!"})
 		return
 	}
@@ -77,8 +76,7 @@ func (c Controller) Upload(g *gin.Context) {
 		return
 	}
 
-	c.store.Store(*target)
-	if err != nil {
+	if err = c.store.Store(*target); err != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
 		return
 	}
@@ -133,7 +131,6 @@ func (c Controller) List(g *gin.Context) {
 	}
 
 	result, error := c.store.List(user.ID.String())
-
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 		return
@@ -170,7 +167,6 @@ func (c Controller) Get(g *gin.Context) {
 	id := g.Param("id")
 
 	result, error := c.store.Get(id)
-
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{
 			Code:    404,
@@ -180,7 +176,6 @@ func (c Controller) Get(g *gin.Context) {
 	}
 
 	exported, error := result.AsResp()
-
 	if error != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{
 			Code:    500,

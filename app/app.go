@@ -30,19 +30,18 @@ func init() {
 }
 
 func App(port int) {
-	err := initDb(config.Database)
-	if err != nil {
+	var err error
+	if err = initDb(config.Database); err != nil {
 		log.Fatal("Could not set up connection to database. Application spinning down.")
 		os.Exit(1)
 	}
-
-	err = initStore(config.Store)
-	if err != nil {
+	if err = initStore(config.Store); err != nil {
 		log.Fatal("Could not set up image store. Application spinning down.")
 		os.Exit(1)
 	}
 
 	r := gin.Default()
+	r.MaxMultipartMemory = 8 << 20
 
 	// Set up Swagger
 	docs.SwaggerInfo.BasePath = "/api/v1"

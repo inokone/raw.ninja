@@ -30,8 +30,7 @@ type LocalStore struct {
 func NewLocalStore(path string) (*LocalStore, error) {
 	fs := new(LocalStore)
 	fs.Path = filepath.Join(path, photoFolder)
-	err := os.MkdirAll(fs.Path, os.ModePerm)
-	if err != nil {
+	if err := os.MkdirAll(fs.Path, os.ModePerm); err != nil {
 		return nil, err
 	}
 	return fs, nil
@@ -39,13 +38,12 @@ func NewLocalStore(path string) (*LocalStore, error) {
 
 func (s *LocalStore) Store(id string, raw []byte, thumbnail image.Image) error {
 	path := filepath.Join(s.Path, photoFolder, id)
-	err := os.MkdirAll(path, os.ModePerm)
-	if err != nil {
+	var err error
+	if err = os.MkdirAll(path, os.ModePerm); err != nil {
 		log.Fatalf("Can not create path [%v] for image [%v]", path, id)
 		return err
 	}
-	err = write(filepath.Join(path, rawName), raw)
-	if err != nil {
+	if err = write(filepath.Join(path, rawName), raw); err != nil {
 		log.Fatalf("Can not write raw to path [%v] for image [%v]", path, id)
 		return err
 	}
@@ -54,8 +52,7 @@ func (s *LocalStore) Store(id string, raw []byte, thumbnail image.Image) error {
 		log.Fatalf("Can not export thumbnail to JPG for image [%v]", id)
 		return err
 	}
-	err = write(filepath.Join(path, thumbnailName), b)
-	if err != nil {
+	if err = write(filepath.Join(path, thumbnailName), b); err != nil {
 		log.Fatalf("Can not write thumbnail to path [%v] for image [%v]", path, id)
 		return err
 	}
@@ -68,8 +65,7 @@ func write(path string, content []byte) error {
 
 func (s *LocalStore) Delete(id string) error {
 	path := filepath.Join(s.Path, photoFolder, id)
-	err := os.RemoveAll(path)
-	return err
+	return os.RemoveAll(path)
 }
 
 func (s *LocalStore) Image(id string) ([]byte, error) {

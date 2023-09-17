@@ -57,8 +57,7 @@ func (c Controller) Signup(g *gin.Context) {
 		})
 		return
 	}
-	err = c.store.Store(*user)
-	if err != nil {
+	if err = c.store.Store(*user); err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{
 			Code:    400,
 			Message: "User with this email already exist.",

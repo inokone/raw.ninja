@@ -14,8 +14,7 @@ type Store struct {
 
 func (s *Store) Store(photo Photo) error {
 	s.db.Save(&photo)
-	err := s.is.Store(photo.ID.String(), photo.Raw, photo.Desc.Thumbnail)
-	return err
+	return s.is.Store(photo.ID.String(), photo.Raw, photo.Desc.Thumbnail)
 }
 
 func (s *Store) Get(id string) (Photo, error) {
