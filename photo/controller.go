@@ -54,17 +54,18 @@ func (c Controller) Upload(g *gin.Context) {
 	}
 
 	file, err := g.FormFile("file")
-
 	if err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Could not extract uploaded file from request!"})
 		return
 	}
+
 	var raw string
 	err = g.SaveUploadedFile(file, raw)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Uploaded file is damaged!"})
 		return
 	}
+
 	target, err := createPhoto(
 		*user,
 		filepath.Ext(file.Filename),
@@ -75,11 +76,13 @@ func (c Controller) Upload(g *gin.Context) {
 		g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file format is not supported!"})
 		return
 	}
+
 	c.store.Store(*target)
 	if err != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
 		return
 	}
+
 	g.JSON(http.StatusCreated, common.StatusMessage{
 		Code:    201,
 		Message: fmt.Sprintf("File upload successful for %s.", file.Filename),
@@ -236,7 +239,8 @@ func (c Controller) Download(g *gin.Context) {
 func currentUser(g *gin.Context) (*auth.User, error) {
 	user, ok := g.Get("user")
 	if !ok {
-		return nil, errors.New("User could not be extracted from session!")
+		return nil, errors.New("user could not be extracted from session")
 	}
-	return user.(*auth.User), nil
+	userObj := user.(auth.User)
+	return &userObj, nil
 }

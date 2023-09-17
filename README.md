@@ -27,7 +27,7 @@ go install github.com/go-critic/go-critic/cmd/gocritic@latest  # Static code anl
 swag i -d "./,./app,./common,./photo,./descriptor,./web"  # Gernerate OpenAPI spec files
 go build main.go                                          # Build app
 
-go test .                                                 # Run unit tests
+go test -v ./...                                          # Run unit tests
 gocritic check ./...                                      # Run static code analysis
 ```
 

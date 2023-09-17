@@ -1,0 +1,7 @@
+- Fix upload webservice, test rest of the services
+- Write unit tests
+- Set up proper logging
+- Think about integration tests
+- Add AWS and GCP image storage implementation (S3, G CDN)
+- Create microservices architecture
+- Kubernetes IaC for microservices
