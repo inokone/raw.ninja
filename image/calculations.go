@@ -2,27 +2,47 @@ package image
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"image/jpeg"
 	"math"
+	"os"
 
-	"io"
 	"log"
 
 	"golang.org/x/image/draw"
 
-	"github.com/nf/cr2"
+	raw "github.com/MRHT-SRProject/LibRawGo/librawgo"
 )
 
 type RawProcessor interface {
-	Process(raw io.Reader) (image.Image, error)
+	Process(raw []byte) (image.Image, error)
+}
+
+func importRaw(path string) (image.Image, error) {
+	lr := raw.Libraw_init(0)
+	if int(raw.LIBRAW_SUCCESS) != raw.Libraw_open_file(lr, path) {
+		return nil, fmt.Errorf("Libraw import error at path [%v]", path)
+	}
+	return LibrawImage{
+		img: lr.GetImage(),
+	}, nil
 }
 
 // Type for converting Canon raw images to Go image.Image
 type Cr2Processor struct{}
 
-func (p *Cr2Processor) Process(raw io.Reader) (image.Image, error) {
-	result, err := cr2.Decode(raw)
+func (p *Cr2Processor) Process(raw []byte) (image.Image, error) {
+	file, err := os.CreateTemp("", "raw_import_")
+	if err != nil {
+		return nil, err
+	}
+	defer os.Remove(file.Name())
+	_, err = file.Write(raw)
+	if err != nil {
+		return nil, err
+	}
+	result, err := importRaw(file.Name())
 	if err != nil {
 		log.Printf("Image processing failed with cause: %v", err)
 	}

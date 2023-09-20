@@ -4,10 +4,11 @@ go 1.21.0
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/google/uuid v1.3.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
+	github.com/google/cameraraw v0.0.0-20161109161634-8fd0e22b9d30
+	github.com/google/uuid v1.3.1
 	github.com/lib/pq v1.10.9
-	github.com/nf/cr2 v0.0.0-20180623103828-4699471a17ed
+	github.com/MRHT-SRProject/LibRawGo v1.20.0
 	github.com/spf13/viper v1.16.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
@@ -20,6 +21,7 @@ require (
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/MRHT-SRProject/LibRawGo v1.20.0 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect

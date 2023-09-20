@@ -1,9 +1,9 @@
 package photo
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"path/filepath"
 	"time"
@@ -59,20 +59,25 @@ func (c Controller) Upload(g *gin.Context) {
 		return
 	}
 
-	var raw string
-	if err = g.SaveUploadedFile(file, raw); err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Uploaded file is damaged!"})
+	mp, err := file.Open()
+	if err != nil {
+		g.Error(err)
 		return
 	}
-
+	defer mp.Close()
+	raw, err := io.ReadAll(mp)
+	if err != nil {
+		g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file is corrupt!"})
+		return
+	}
 	target, err := createPhoto(
 		*user,
-		filepath.Ext(file.Filename),
 		filepath.Base(file.Filename),
+		filepath.Ext(file.Filename)[1:],
 		raw,
 	)
 	if err != nil {
-		g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file format is not supported!"})
+		g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: fmt.Sprintf("Uploaded file format is not supported! Cause: %v", err)})
 		return
 	}
 
@@ -87,12 +92,12 @@ func (c Controller) Upload(g *gin.Context) {
 	})
 }
 
-func createPhoto(user auth.User, filename, extension, raw string) (*Photo, error) {
+func createPhoto(user auth.User, filename, extension string, raw []byte) (*Photo, error) {
 	i, err := image.Factory(extension)
 	if err != nil {
 		return nil, err
 	}
-	imported, err := i.Process(bytes.NewReader([]byte(raw)))
+	imported, err := i.Process(raw)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +113,7 @@ func createPhoto(user auth.User, filename, extension, raw string) (*Photo, error
 			Thumbnail: thumbnail,
 		},
 		User: user,
-		Raw:  []byte(raw),
+		Raw:  raw,
 	}, nil
 }
 
