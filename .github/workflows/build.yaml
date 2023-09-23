@@ -18,6 +18,7 @@ jobs:
         run: |
           go install github.com/swaggo/swag/cmd/swag@latest
           go install github.com/go-critic/go-critic/cmd/gocritic@latest
+          sudo apt-get install libraw-dev
 
       - name: Init swagger
         run: swag i -d "./,./app,./common,./photo,./descriptor,./web"

@@ -1,6 +1,8 @@
-- Fix upload webservice, test rest of the services
 - Write unit tests
 - Set up proper logging
+- Optimize pointer usages for large object passing (Photo, Image, Descriptor)
+- React based frontend
+- Check state-of-art for serving images
 - Think about integration tests
 - Add AWS and GCP image storage implementation (S3, G CDN)
 - Create microservices architecture

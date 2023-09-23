@@ -16,6 +16,9 @@ The target is a web application capable of handling reltively large image files 
 ## Set up for development
 
 ``` sh
+brew install libraw                                            # RAW processing library on OSX, or
+sudo apt-get install libraw-dev                                # on Ubuntu
+
 go install github.com/cosmtrek/air@latest                      # Hot-reload for Gin server
 go install github.com/swaggo/swag/cmd/swag@latest              # OpenAPI spec generator
 go install github.com/go-critic/go-critic/cmd/gocritic@latest  # Static code anlanysis for Go
