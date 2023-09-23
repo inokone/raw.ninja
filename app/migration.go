@@ -7,6 +7,7 @@ import (
 
 	"github.com/inokone/photostorage/auth"
 	"github.com/inokone/photostorage/descriptor"
+	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
 )
 
@@ -18,7 +19,7 @@ func Migrate() {
 	}
 
 	DB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
-	if err = DB.AutoMigrate(&photo.Photo{}, &auth.User{}, &descriptor.Descriptor{}); err != nil {
+	if err = DB.AutoMigrate(&photo.Photo{}, &auth.User{}, &descriptor.Descriptor{}, &image.Metadata{}); err != nil {
 		log.Fatal("Database migration failed. Application spinning down.")
 		os.Exit(1)
 	}

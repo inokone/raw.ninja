@@ -1,7 +1,7 @@
 package descriptor
 
 import (
-	"image"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -9,60 +9,44 @@ import (
 	"gorm.io/gorm"
 )
 
-type Format int64
+type Format string
 
-const (
-	GP2 Format = iota
-	ARW
-)
-
-func (d Format) String() string {
-	return [...]string{"GP2", "ARW"}[d]
-}
-
-var Formats = map[string]Format{
-	"gp2": GP2,
-	"arw": ARW,
+func ParseFormat(s string) Format {
+	return Format(strings.ToLower(strings.TrimSpace(s)))
 }
 
 type Descriptor struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	FileName  string    `gorm:"type:varchar(255);not null"`
-	Uploaded  time.Time
-	Format    Format
-	Width     int
-	Height    int
-	Thumbnail image.Image `gorm:"-"`
-	Tags      []string    `gorm:"type:text[]"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
+	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	FileName   string    `gorm:"type:varchar(255);not null"`
+	Uploaded   time.Time
+	Format     Format
+	Thumbnail  []byte       `gorm:"-"`
+	Tags       []string     `gorm:"type:text[]"`
+	Metadata   img.Metadata `gorm:"foreignKey:MetadataID"`
+	MetadataID string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  gorm.DeletedAt
 }
 
-func (p Descriptor) AsResp() (*Response, error) {
-	thumbnail, error := img.ExportJpeg(p.Thumbnail)
-	if error != nil {
-		return nil, error
-	}
-	return &Response{
+func (p Descriptor) AsResp() Response {
+	return Response{
 		ID:        p.ID.String(),
 		FileName:  p.FileName,
 		Uploaded:  p.Uploaded,
-		Format:    p.Format.String(),
-		Width:     p.Width,
-		Height:    p.Height,
-		Thumbnail: string(thumbnail),
+		Format:    string(p.Format),
+		Thumbnail: string(p.Thumbnail),
+		Metadata:  p.Metadata.AsResp(),
 		Tags:      p.Tags,
-	}, nil
+	}
 }
 
 type Response struct {
-	ID        string    `json:"id"`
-	FileName  string    `json:"filename"`
-	Uploaded  time.Time `json:"uploaded"`
-	Format    string    `json:"format"`
-	Width     int       `json:"width"`
-	Height    int       `json:"height"`
-	Thumbnail string    `json:"thumbnail"`
-	Tags      []string  `json:"tags"`
+	ID        string       `json:"id"`
+	FileName  string       `json:"filename"`
+	Uploaded  time.Time    `json:"uploaded"`
+	Format    string       `json:"format"`
+	Thumbnail string       `json:"thumbnail"`
+	Metadata  img.Response `json:"metadata"`
+	Tags      []string     `json:"tags"`
 }

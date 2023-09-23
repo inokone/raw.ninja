@@ -5,10 +5,8 @@ go 1.21.0
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
-	github.com/google/cameraraw v0.0.0-20161109161634-8fd0e22b9d30
 	github.com/google/uuid v1.3.1
 	github.com/lib/pq v1.10.9
-	github.com/MRHT-SRProject/LibRawGo v1.20.0
 	github.com/spf13/viper v1.16.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
@@ -17,11 +15,11 @@ require (
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/gorm v1.25.4
+	github.com/inokone/golibraw v1.0.1
 )
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/MRHT-SRProject/LibRawGo v1.20.0 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
@@ -47,6 +45,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
+	github.com/lmittmann/ppm v1.0.2 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect

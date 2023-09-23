@@ -22,15 +22,12 @@ type Photo struct {
 	DeletedAt gorm.DeletedAt
 }
 
-func (p Photo) AsResp() (*Response, error) {
-	desc, error := p.Desc.AsResp()
-	if error != nil {
-		return nil, error
-	}
-	return &Response{
+func (p Photo) AsResp() Response {
+	desc := p.Desc.AsResp()
+	return Response{
 		ID:   p.ID.String(),
-		Desc: *desc,
-	}, nil
+		Desc: desc,
+	}
 }
 
 type Response struct {

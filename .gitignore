@@ -16,6 +16,11 @@ app.env
 
 # Temp files and dirs
 tmp
+photos
+
+# Built binaries
+main
+photostorage
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out

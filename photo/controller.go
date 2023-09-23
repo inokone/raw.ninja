@@ -93,24 +93,22 @@ func (c Controller) Upload(g *gin.Context) {
 }
 
 func createPhoto(user auth.User, filename, extension string, raw []byte) (*Photo, error) {
-	i, err := image.Factory(extension)
+	i := image.NewImporter()
+	thumbnail, err := i.Thumbnail(raw)
 	if err != nil {
 		return nil, err
 	}
-	imported, err := i.Process(raw)
-	if err != nil {
-		return nil, err
-	}
-	thumbnail, err := image.Thumbnail(imported)
+	metadata, err := i.Describe(raw)
 	if err != nil {
 		return nil, err
 	}
 	return &Photo{
 		Desc: descriptor.Descriptor{
 			FileName:  filename,
-			Format:    descriptor.Formats[extension],
+			Format:    descriptor.ParseFormat(extension),
 			Uploaded:  time.Now(),
 			Thumbnail: thumbnail,
+			Metadata:  *metadata,
 		},
 		User: user,
 		Raw:  raw,
@@ -143,11 +141,7 @@ func (c Controller) List(g *gin.Context) {
 
 	images := make([]Response, len(result))
 	for i, photo := range result {
-		p, error := photo.AsResp()
-		if error != nil {
-			break
-		}
-		images[i] = *p
+		images[i] = photo.AsResp()
 	}
 	if error != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Photos could not be exported!"})
@@ -180,16 +174,7 @@ func (c Controller) Get(g *gin.Context) {
 		return
 	}
 
-	exported, error := result.AsResp()
-	if error != nil {
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{
-			Code:    500,
-			Message: "Photo could not be exported!",
-		})
-		return
-	}
-
-	g.JSON(http.StatusOK, exported)
+	g.JSON(http.StatusOK, result.AsResp())
 }
 
 // Download godoc

@@ -1,16 +1,15 @@
 package image
 
 import (
-	"image"
 	"log"
 	"os"
 	"path/filepath"
 )
 
 type Store interface {
-	Store(id string, raw []byte, thumbnail image.Image) error
+	Store(id string, raw []byte, thumbnail []byte) error
 
-	Thumbnail(id string) (image.Image, error)
+	Thumbnail(id string) ([]byte, error)
 
 	Image(id string) ([]byte, error)
 
@@ -36,7 +35,7 @@ func NewLocalStore(path string) (*LocalStore, error) {
 	return fs, nil
 }
 
-func (s *LocalStore) Store(id string, raw []byte, thumbnail image.Image) error {
+func (s *LocalStore) Store(id string, raw []byte, thumbnail []byte) error {
 	path := filepath.Join(s.Path, photoFolder, id)
 	var err error
 	if err = os.MkdirAll(path, os.ModePerm); err != nil {
@@ -47,12 +46,7 @@ func (s *LocalStore) Store(id string, raw []byte, thumbnail image.Image) error {
 		log.Fatalf("Can not write raw to path [%v] for image [%v]", path, id)
 		return err
 	}
-	b, err := ExportJpeg(thumbnail)
-	if err != nil {
-		log.Fatalf("Can not export thumbnail to JPG for image [%v]", id)
-		return err
-	}
-	if err = write(filepath.Join(path, thumbnailName), b); err != nil {
+	if err = write(filepath.Join(path, thumbnailName), thumbnail); err != nil {
 		log.Fatalf("Can not write thumbnail to path [%v] for image [%v]", path, id)
 		return err
 	}
@@ -73,13 +67,13 @@ func (s *LocalStore) Image(id string) ([]byte, error) {
 	return os.ReadFile(path)
 }
 
-func (s *LocalStore) Thumbnail(id string) (image.Image, error) {
+func (s *LocalStore) Thumbnail(id string) ([]byte, error) {
 	path := filepath.Join(s.Path, photoFolder, id, thumbnailName)
-	raw, err := os.ReadFile(path)
+	thumbnail, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ImportJpeg(raw)
+	return thumbnail, nil
 }
 
 // TODO: implement AWS S3 storage and try GCP storage
