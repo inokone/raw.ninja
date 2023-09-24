@@ -2,7 +2,6 @@ package auth
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -10,6 +9,7 @@ import (
 	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/inokone/photostorage/common"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
 
@@ -28,7 +28,7 @@ func NewJWTHandler(db *gorm.DB, conf common.AuthConfig) JWTHandler {
 }
 
 func (h JWTHandler) Validate(g *gin.Context) {
-	log.Print("Validating JWT token...")
+	log.Debug().Msg("Validating JWT token...")
 	tokenString, err := g.Cookie(jwtTokenKey)
 	if err != nil {
 		g.AbortWithStatus(http.StatusUnauthorized)
@@ -81,14 +81,15 @@ func (h JWTHandler) Create(g *gin.Context, userID string) {
 		"exp": time.Now().Add(time.Hour * time.Duration(h.conf.JWTExp)).Unix(),
 	})
 	tokenString, err := token.SignedString([]byte(h.conf.JWTSecret))
-
-	g.SetSameSite(http.SameSiteLaxMode)
-	g.SetCookie(jwtTokenKey, tokenString, 3600*24*30, "", "", h.conf.JWTSecure, true) // Max live time is 30 days
 	if err != nil {
+		log.Warn().Err(err).Str("User", userID).Msg("JWT token could not be signed!")
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{
 			Code:    500,
-			Message: "Could not sign JWT token, please contact administrator!",
+			Message: "Failed to sign JWT token, please contact administrator!",
 		})
 		return
 	}
+
+	g.SetSameSite(http.SameSiteLaxMode)
+	g.SetCookie(jwtTokenKey, tokenString, 3600*24*30, "", "", h.conf.JWTSecure, true) // Max live time is 30 days
 }

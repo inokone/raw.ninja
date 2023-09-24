@@ -1,9 +1,9 @@
 package app
 
 import (
-	"fmt"
-	"log"
 	"os"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/inokone/photostorage/auth"
 	"github.com/inokone/photostorage/descriptor"
@@ -14,15 +14,15 @@ import (
 func Migrate() {
 	var err error
 	if err = initDb(config.Database); err != nil {
-		log.Fatal("Could not set up connection to database. Application spinning down.")
+		log.Error().Err(err).Msg("Failed to set up connection to database. Application spinning down.")
 		os.Exit(1)
 	}
 
 	DB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
 	if err = DB.AutoMigrate(&photo.Photo{}, &auth.User{}, &descriptor.Descriptor{}, &image.Metadata{}); err != nil {
-		log.Fatal("Database migration failed. Application spinning down.")
+		log.Error().Err(err).Msg("Database migration failed. Application spinning down.")
 		os.Exit(1)
 	}
 
-	fmt.Println("Database migration finished")
+	log.Info().Msg("Database migration finished")
 }

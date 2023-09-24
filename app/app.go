@@ -2,8 +2,8 @@ package app
 
 import (
 	"fmt"
-	"log"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/inokone/photostorage/common"
@@ -11,10 +11,14 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	routes "github.com/inokone/photostorage/web"
+	web "github.com/inokone/photostorage/web"
 	"gorm.io/gorm"
 
 	"github.com/inokone/photostorage/image"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
 )
 
 var config *common.AppConfig
@@ -24,23 +28,45 @@ var IS *image.Store
 func init() {
 	conf, err := common.LoadConfig()
 	if err != nil {
-		log.Fatal("Could not load application configuration", err)
+		log.Error().Err(err).Msg("Failed to load application configuration.")
+		os.Exit(1)
 	}
 	config = conf
+	initLog()
+	log.Info().Msg("Photostorage app starting up...")
+}
+
+func initLog() {
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+	zerolog.TimeFieldFormat = time.RFC3339
+	level, err := zerolog.ParseLevel(config.Log.LogLevel)
+	if err != nil {
+		log.Warn().Err(err).Msg("Failed to parse log level, default is debug.")
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	} else {
+		zerolog.SetGlobalLevel(level)
+	}
+	if config.Log.PrettyLog {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	}
 }
 
 func App(port int) {
 	var err error
 	if err = initDb(config.Database); err != nil {
-		log.Fatal("Could not set up connection to database. Application spinning down.")
+		log.Error().Msg("Failed to set up connection to database. Application spinning down.")
 		os.Exit(1)
 	}
 	if err = initStore(config.Store); err != nil {
-		log.Fatal("Could not set up image store. Application spinning down.")
+		log.Error().Msg("Failed to set up image store. Application spinning down.")
 		os.Exit(1)
 	}
 
-	r := gin.Default()
+	r := gin.New()
+
+	// Setup middleware
+	r.Use(gin.Recovery())
+	r.Use(web.LoggingMiddleware)
 	r.MaxMultipartMemory = 8 << 20
 
 	// Set up Swagger
@@ -49,7 +75,7 @@ func App(port int) {
 
 	// Set up routes
 	v1 := r.Group("/api/v1")
-	routes.Init(v1, DB, *IS, *config)
+	web.Init(v1, DB, *IS, *config)
 
 	r.Run(fmt.Sprintf(":%d", port))
 }

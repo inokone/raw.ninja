@@ -1,9 +1,10 @@
 package image
 
 import (
-	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Store interface {
@@ -39,15 +40,15 @@ func (s *LocalStore) Store(id string, raw []byte, thumbnail []byte) error {
 	path := filepath.Join(s.Path, photoFolder, id)
 	var err error
 	if err = os.MkdirAll(path, os.ModePerm); err != nil {
-		log.Fatalf("Can not create path [%v] for image [%v]", path, id)
+		log.Error().Err(err).Str("path", path).Str("id", id).Msg("Failed to create path for image store.")
 		return err
 	}
 	if err = write(filepath.Join(path, rawName), raw); err != nil {
-		log.Fatalf("Can not write raw to path [%v] for image [%v]", path, id)
+		log.Error().Err(err).Str("path", path).Str("id", id).Msg("Failed to write raw")
 		return err
 	}
 	if err = write(filepath.Join(path, thumbnailName), thumbnail); err != nil {
-		log.Fatalf("Can not write thumbnail to path [%v] for image [%v]", path, id)
+		log.Error().Err(err).Str("path", path).Str("id", id).Msg("Failed to write thumbnail")
 		return err
 	}
 	return nil

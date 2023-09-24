@@ -28,16 +28,23 @@ type AuthConfig struct {
 	JWTSecure bool   `mapstructure:"JWT_COOKIE_SECURE"`
 }
 
+type LogConfig struct {
+	LogLevel  string `mapstructure:"LOG_LEVEL"`
+	PrettyLog bool   `mapstructure:"PRETTY_LOG"`
+}
+
 type AppConfig struct {
 	Database RDBConfig
 	Store    ImageStoreConfig
 	Auth     AuthConfig
+	Log      LogConfig
 }
 
 func LoadConfig() (*AppConfig, error) {
 	var db RDBConfig
 	var is ImageStoreConfig
 	var au AuthConfig
+	var lg LogConfig
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc/photostorage/")
 	viper.AddConfigPath("$HOME/.photostorage")
@@ -60,5 +67,8 @@ func LoadConfig() (*AppConfig, error) {
 	if err = viper.Unmarshal(&au); err != nil {
 		return nil, err
 	}
-	return &AppConfig{Database: db, Store: is, Auth: au}, nil
+	if err = viper.Unmarshal(&lg); err != nil {
+		return nil, err
+	}
+	return &AppConfig{Database: db, Store: is, Auth: au, Log: lg}, nil
 }

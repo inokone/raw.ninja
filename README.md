@@ -48,6 +48,8 @@ air                       # Start the web application with hot-reload for develo
 docker-compose down       # Stop running Postgres database 
 ```
 
+For production deployment please use `GIN_MODE=release` env variable.
+
 ## CI
 
 The project has Github actions set up for every push.

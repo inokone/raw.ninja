@@ -1,5 +1,6 @@
-- Write unit tests
 - Set up proper logging
+- Write unit tests
+- Set up proper doc comments
 - Optimize pointer usages for large object passing (Photo, Image, Descriptor)
 - React based frontend
 - Check state-of-art for serving images
