@@ -17,17 +17,17 @@ import (
 )
 
 type Controller struct {
-	store Store
+	rep Repository
 }
 
-func NewController(db *gorm.DB, is image.Store) Controller {
-	store := Store{
+func NewController(db *gorm.DB, ir image.Repository) Controller {
+	rep := Repository{
 		db: db,
-		is: is,
+		ir: ir,
 	}
 
 	return Controller{
-		store: store,
+		rep: rep,
 	}
 }
 
@@ -81,7 +81,7 @@ func (c Controller) Upload(g *gin.Context) {
 		return
 	}
 
-	if err = c.store.Store(*target); err != nil {
+	if err = c.rep.Create(*target); err != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
 		return
 	}
@@ -133,7 +133,7 @@ func (c Controller) List(g *gin.Context) {
 		return
 	}
 
-	result, error := c.store.List(user.ID.String())
+	result, error := c.rep.All(user.ID.String())
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 		return
@@ -165,7 +165,7 @@ func (c Controller) List(g *gin.Context) {
 func (c Controller) Get(g *gin.Context) {
 	id := g.Param("id")
 
-	result, error := c.store.Get(id)
+	result, error := c.rep.Get(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{
 			Code:    404,
@@ -192,7 +192,7 @@ func (c Controller) Get(g *gin.Context) {
 func (c Controller) Download(g *gin.Context) {
 	id := g.Param("id")
 
-	raw, error := c.store.Raw(id)
+	raw, error := c.rep.Raw(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{
 			Code:    404,
@@ -201,7 +201,7 @@ func (c Controller) Download(g *gin.Context) {
 		return
 	}
 
-	img, error := c.store.Get(id)
+	img, error := c.rep.Get(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{
 			Code:    404,

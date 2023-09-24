@@ -7,20 +7,20 @@ import (
 	"github.com/inokone/photostorage/image"
 )
 
-type Store struct {
+type Repository struct {
 	db *gorm.DB
-	is image.Store
+	ir image.Repository
 }
 
-func (s *Store) Store(photo Photo) error {
+func (s *Repository) Create(photo Photo) error {
 	s.db.Save(&photo)
-	return s.is.Store(photo.ID.String(), photo.Raw, photo.Desc.Thumbnail)
+	return s.ir.Create(photo.ID.String(), photo.Raw, photo.Desc.Thumbnail)
 }
 
-func (s *Store) Get(id string) (Photo, error) {
+func (s *Repository) Get(id string) (Photo, error) {
 	var photo Photo
 	result := s.db.Preload("Desc.Metadata").First(&photo, "id = ?", id)
-	thumb, err := s.is.Thumbnail(id)
+	thumb, err := s.ir.Thumbnail(id)
 	if err != nil {
 		return Photo{}, err
 	}
@@ -28,11 +28,11 @@ func (s *Store) Get(id string) (Photo, error) {
 	return photo, result.Error
 }
 
-func (s *Store) List(userID string) ([]Photo, error) {
+func (s *Repository) All(userID string) ([]Photo, error) {
 	var photos []Photo
 	result := s.db.Preload("Desc.Metadata").Where("user_id = ?", userID).Find(&photos)
 	for i := 0; i < len(photos); i++ {
-		thumb, err := s.is.Thumbnail(photos[i].ID.String())
+		thumb, err := s.ir.Thumbnail(photos[i].ID.String())
 		if err != nil {
 			return nil, err
 		}
@@ -41,6 +41,6 @@ func (s *Store) List(userID string) ([]Photo, error) {
 	return photos, result.Error
 }
 
-func (s *Store) Raw(id string) ([]byte, error) {
-	return s.is.Image(id)
+func (s *Repository) Raw(id string) ([]byte, error) {
+	return s.ir.Image(id)
 }

@@ -23,7 +23,7 @@ import (
 
 var config *common.AppConfig
 var DB *gorm.DB
-var IS *image.Store
+var IS *image.Repository
 
 func init() {
 	conf, err := common.LoadConfig()

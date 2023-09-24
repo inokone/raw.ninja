@@ -29,12 +29,12 @@ func initDb(c common.RDBConfig) error {
 
 func initStore(c common.ImageStoreConfig) error {
 	if c.Type == "file" {
-		var s image.Store
-		s, error := image.NewLocalStore(c.Path)
+		var r image.Repository
+		r, error := image.NewLocalStore(c.Path)
 		if error != nil {
 			return error
 		}
-		IS = &s
+		IS = &r
 		return nil
 	}
 	return gorm.ErrNotImplemented

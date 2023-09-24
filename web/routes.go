@@ -9,8 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func Init(v1 *gin.RouterGroup, db *gorm.DB, is image.Store, conf common.AppConfig) {
-	p := photo.NewController(db, is)
+func Init(v1 *gin.RouterGroup, db *gorm.DB, ir image.Repository, conf common.AppConfig) {
+	p := photo.NewController(db, ir)
 	m := auth.NewJWTHandler(db, conf.Auth)
 	a := auth.NewController(db, &conf.Auth)
 

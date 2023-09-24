@@ -14,14 +14,14 @@ const (
 )
 
 type Controller struct {
-	store  Store
+	store  Repository
 	config common.AuthConfig
 	jwt    JWTHandler
 }
 
 func NewController(db *gorm.DB, config *common.AuthConfig) Controller {
 	return Controller{
-		store:  Store{db: db},
+		store:  Repository{db: db},
 		config: *config,
 		jwt:    NewJWTHandler(db, *config),
 	}
@@ -57,7 +57,7 @@ func (c Controller) Signup(g *gin.Context) {
 		})
 		return
 	}
-	if err = c.store.Store(*user); err != nil {
+	if err = c.store.Create(*user); err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{
 			Code:    400,
 			Message: "User with this email already exist.",

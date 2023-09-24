@@ -7,8 +7,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type Store interface {
-	Store(id string, raw []byte, thumbnail []byte) error
+type Repository interface {
+	Create(id string, raw []byte, thumbnail []byte) error
 
 	Thumbnail(id string) ([]byte, error)
 
@@ -23,12 +23,12 @@ const (
 	thumbnailName = "thumbnail.jpg"
 )
 
-type LocalStore struct {
+type LocalRepository struct {
 	Path string
 }
 
-func NewLocalStore(path string) (*LocalStore, error) {
-	fs := new(LocalStore)
+func NewLocalStore(path string) (*LocalRepository, error) {
+	fs := new(LocalRepository)
 	fs.Path = filepath.Join(path, photoFolder)
 	if err := os.MkdirAll(fs.Path, os.ModePerm); err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func NewLocalStore(path string) (*LocalStore, error) {
 	return fs, nil
 }
 
-func (s *LocalStore) Store(id string, raw []byte, thumbnail []byte) error {
+func (s *LocalRepository) Create(id string, raw []byte, thumbnail []byte) error {
 	path := filepath.Join(s.Path, photoFolder, id)
 	var err error
 	if err = os.MkdirAll(path, os.ModePerm); err != nil {
@@ -58,17 +58,17 @@ func write(path string, content []byte) error {
 	return os.WriteFile(path, content, 0755)
 }
 
-func (s *LocalStore) Delete(id string) error {
+func (s *LocalRepository) Delete(id string) error {
 	path := filepath.Join(s.Path, photoFolder, id)
 	return os.RemoveAll(path)
 }
 
-func (s *LocalStore) Image(id string) ([]byte, error) {
+func (s *LocalRepository) Image(id string) ([]byte, error) {
 	path := filepath.Join(s.Path, photoFolder, id, rawName)
 	return os.ReadFile(path)
 }
 
-func (s *LocalStore) Thumbnail(id string) ([]byte, error) {
+func (s *LocalRepository) Thumbnail(id string) ([]byte, error) {
 	path := filepath.Join(s.Path, photoFolder, id, thumbnailName)
 	thumbnail, err := os.ReadFile(path)
 	if err != nil {

@@ -15,13 +15,13 @@ import (
 
 type JWTHandler struct {
 	conf  common.AuthConfig
-	users Store
+	users Repository
 }
 
 func NewJWTHandler(db *gorm.DB, conf common.AuthConfig) JWTHandler {
 	return JWTHandler{
 		conf: conf,
-		users: Store{
+		users: Repository{
 			db: db,
 		},
 	}
