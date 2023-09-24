@@ -37,7 +37,7 @@ const docTemplate = `{
         },
         "/login": {
             "post": {
-                "description": "Logs in the user, sets the necessary cookies",
+                "description": "Logs in the user, sets up the JWT authorization",
                 "consumes": [
                     "application/json"
                 ],
@@ -47,14 +47,29 @@ const docTemplate = `{
                 "summary": "User login endpoint",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
                     }
                 }
             }
         },
         "/logout": {
             "get": {
-                "description": "Logs out of the application",
+                "description": "Logs out of the application, deletes the JWT token uased for authorization",
                 "consumes": [
                     "application/json"
                 ],
@@ -64,7 +79,10 @@ const docTemplate = `{
                 "summary": "Logout endpoint",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
                     }
                 }
             }
@@ -198,23 +216,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/register": {
-            "post": {
-                "description": "Registers the user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "User registration endpoint",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
         "/reset": {
             "post": {
                 "description": "Returns the status and version of the application",
@@ -226,8 +227,43 @@ const docTemplate = `{
                 ],
                 "summary": "Reset password endpoint",
                 "responses": {
-                    "200": {
-                        "description": "OK"
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/signup": {
+            "post": {
+                "description": "Registers the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "User registration endpoint",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
                     }
                 }
             }
@@ -315,11 +351,11 @@ const docTemplate = `{
                 "format": {
                     "type": "string"
                 },
-                "height": {
-                    "type": "integer"
-                },
                 "id": {
                     "type": "string"
+                },
+                "metadata": {
+                    "$ref": "#/definitions/image.Response"
                 },
                 "tags": {
                     "type": "array",
@@ -331,6 +367,47 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "uploaded": {
+                    "type": "string"
+                }
+            }
+        },
+        "image.Response": {
+            "type": "object",
+            "properties": {
+                "aperture": {
+                    "type": "number"
+                },
+                "cameraMake": {
+                    "type": "string"
+                },
+                "cameraModel": {
+                    "type": "string"
+                },
+                "cameraSW": {
+                    "type": "string"
+                },
+                "colors": {
+                    "type": "integer"
+                },
+                "dataSize": {
+                    "type": "integer"
+                },
+                "height": {
+                    "type": "integer"
+                },
+                "iso": {
+                    "type": "integer"
+                },
+                "lensMake": {
+                    "type": "string"
+                },
+                "lensModel": {
+                    "type": "string"
+                },
+                "shutter": {
+                    "type": "number"
+                },
+                "timestamp": {
                     "type": "string"
                 },
                 "width": {

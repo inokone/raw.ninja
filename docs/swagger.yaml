@@ -19,10 +19,10 @@ definitions:
         type: string
       format:
         type: string
-      height:
-        type: integer
       id:
         type: string
+      metadata:
+        $ref: '#/definitions/image.Response'
       tags:
         items:
           type: string
@@ -30,6 +30,33 @@ definitions:
       thumbnail:
         type: string
       uploaded:
+        type: string
+    type: object
+  image.Response:
+    properties:
+      aperture:
+        type: number
+      cameraMake:
+        type: string
+      cameraModel:
+        type: string
+      cameraSW:
+        type: string
+      colors:
+        type: integer
+      dataSize:
+        type: integer
+      height:
+        type: integer
+      iso:
+        type: integer
+      lensMake:
+        type: string
+      lensModel:
+        type: string
+      shutter:
+        type: number
+      timestamp:
         type: string
       width:
         type: integer
@@ -61,23 +88,35 @@ paths:
     post:
       consumes:
       - application/json
-      description: Logs in the user, sets the necessary cookies
+      description: Logs in the user, sets up the JWT authorization
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
       summary: User login endpoint
   /logout:
     get:
       consumes:
       - application/json
-      description: Logs out of the application
+      description: Logs out of the application, deletes the JWT token uased for authorization
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
       summary: Logout endpoint
   /photos:
     get:
@@ -164,17 +203,6 @@ paths:
       summary: Download RAW file endpoint
       tags:
       - photos
-  /register:
-    post:
-      consumes:
-      - application/json
-      description: Registers the user
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: User registration endpoint
   /reset:
     post:
       consumes:
@@ -183,9 +211,32 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
       summary: Reset password endpoint
+  /signup:
+    post:
+      consumes:
+      - application/json
+      description: Registers the user
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User registration endpoint
   /upload:
     post:
       consumes:

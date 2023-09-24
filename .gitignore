@@ -13,6 +13,7 @@
 
 # Local onfiguration file
 app.env
+.DS_store
 
 # Temp files and dirs
 tmp
