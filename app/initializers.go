@@ -30,9 +30,9 @@ func initDb(c common.RDBConfig) error {
 func initStore(c common.ImageStoreConfig) error {
 	if c.Type == "file" {
 		var r image.Repository
-		r, error := image.NewLocalStore(c.Path)
-		if error != nil {
-			return error
+		r, err := image.NewLocalStore(c.Path)
+		if err != nil {
+			return err
 		}
 		IS = &r
 		return nil

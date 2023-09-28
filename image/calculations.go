@@ -18,13 +18,18 @@ const (
 
 func Thumbnail(original image.Image) (image.Image, error) {
 	start := time.Now()
-	ratio := math.Min(thumbWidth/float64(original.Bounds().Size().X), thumbHeight/float64(original.Bounds().Size().Y))
-	width := int(ratio * float64(original.Bounds().Size().X))
-	height := int(ratio * float64(original.Bounds().Size().Y))
-	result := image.NewRGBA(image.Rect(0, 0, width, height))
+	result := canvas(original.Bounds().Size().X, original.Bounds().Size().Y)
 	draw.NearestNeighbor.Scale(result, result.Rect, original, original.Bounds(), draw.Over, nil)
 	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Generated thumbnail.")
 	return result, nil
+}
+
+func canvas(width int, height int) *image.RGBA {
+	ratio := math.Min(thumbWidth/float64(width), thumbHeight/float64(height))
+	newWidth := int(ratio * float64(width))
+	newHeight := int(ratio * float64(height))
+	result := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
+	return result
 }
 
 func ExportJpeg(image image.Image) ([]byte, error) {
