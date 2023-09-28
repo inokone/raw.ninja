@@ -1,9 +1,16 @@
-- Write unit tests
+- React based frontend - set API expectations (htmlx, react, svelte, nextjs)
+- Move out GORM, user plain SQL instead
+    - rewrite to plain SQL
+    - create migration mechanism
+- Write unit tests - refactor with dependency injection (no framework)
+- Refactor 
 - Set up proper doc comments
 - Optimize pointer usages for large object passing (Photo, Image, Descriptor)
-- React based frontend
 - Check state-of-art for serving images
 - Think about integration tests
 - Add AWS and GCP image storage implementation (S3, G CDN)
 - Create microservices architecture
 - Kubernetes IaC for microservices
+
+- Free database: Elephantsql or Planetscale
+- Free edge location: Vercel

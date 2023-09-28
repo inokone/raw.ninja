@@ -15,7 +15,13 @@ The target is a web application capable of handling reltively large image files 
 
 ## Set up for development
 
+### Backend
+Created using Golang in the base folder of the repository of the repository.
+
+#### Prerequisites
+
 ``` sh
+brew install go                                                # Install Go
 brew install libraw                                            # RAW processing library on OSX, or
 sudo apt-get install libraw-dev                                # on Ubuntu
 
@@ -24,9 +30,10 @@ go install github.com/swaggo/swag/cmd/swag@latest              # OpenAPI spec ge
 go install github.com/go-critic/go-critic/cmd/gocritic@latest  # Static code anlanysis for Go
 ```
 
-## Build
+#### Build
 
 ``` sh
+go mod download                                           # Download Go dependencies
 swag i -d "./,./app,./common,./photo,./descriptor,./web"  # Gernerate OpenAPI spec files
 go build main.go                                          # Build app
 
@@ -36,7 +43,7 @@ gocritic check ./...                                      # Run static code anal
 
 On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin` to your PATH.
 
-## Run
+#### Run
 
 ``` sh
 docker-compose up -d      # Initialize Postgres database
@@ -50,16 +57,38 @@ docker-compose down       # Stop running Postgres database
 
 For production deployment please use `GIN_MODE=release` env variable.
 
+#### API doc
+
+When the application is running, the OpenAPI documentation is available with [Swagger](http://localhost:8080/swagger/doc.json).
+
+### Frontend
+
+Created using React.js with `npx create-react-app` in the [frontend](/web/frontend/photostorage) folder.
+
+#### Prerequisites
+``` sh
+brew install node                          # Install Node.js
+npm install react@latest react-dom@latest  # Fix react version 
+```
+
+#### Build
+Standard build mechanism with Node for frontend
+
+``` sh
+npm install    # Download frontend dependencies 
+npm run build  # Build frontend for production
+npm start      # Run the app in dev mode
+```
+
 ## CI
 
 The project has Github actions set up for every push.
 Steps included
 
-- OpenAPI re-generation
-- Build
-- Run unit tests
-- Static code analysis
-
-## API doc
-
-When the application is running, the OpenAPI documentation is available with [Swagger](http://localhost:8080/swagger/doc.json).
+- Backend
+  - OpenAPI re-generation
+  - Build
+  - Run unit tests
+  - Static code analysis
+- Frontend
+  - 

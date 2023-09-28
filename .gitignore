@@ -8,8 +8,9 @@
 *.so
 *.dylib
 
-# Test binary, built with `go test -c`
+# Test binary and coverage
 *.test
+web/frontend/photostorage/coverage
 
 # Local onfiguration file
 app.env
@@ -20,14 +21,24 @@ tmp
 photos
 
 # Built binaries
-main
-photostorage
+./main
+./photostorage
+web/frontend/photostorage/build
+web/frontend/photostorage/.pnp
+web/frontend/photostorage.pnp.js
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+web/frontend/photostorage/node_modules
+
+# Log files
+web/frontend/photostorage/npm-debug.log*
+web/frontend/photostorage/yarn-debug.log*
+web/frontend/photostorage/yarn-error.log*
+
 
 # Go workspace file
 go.work
+
