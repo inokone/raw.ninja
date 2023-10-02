@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,11 +12,19 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import SearchIcon from '@mui/icons-material/Search';
+import InputBase from '@mui/material/InputBase';
 import { SvgIcon } from '@mui/material';
 
-const pages = ['Upload', 'Photos'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = {
+  'Upload': 'upload', 
+  'Photos': 'gallery'
+};
+const settings = {
+  'Profile': 'profile',
+  'Account': 'account',
+  'Logout': 'logout'
+};
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -24,16 +33,29 @@ function ResponsiveAppBar() {
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
 
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+    console.log("open user" + event.currentTarget)
+  };
+
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+    console.log("close user")
+  };
+
+  const handleMenuClick = (page) => {
+    setAnchorElNav(null);
+    window.location = '/' + page;
+  };
+
+  const handleUserClick = (page) => {
+    setAnchorElUser(null);
+    window.location = '/' + page;
   };
 
   const SvgComponent = (props) => (
@@ -49,7 +71,50 @@ function ResponsiveAppBar() {
       <path d="M14.898 8.269c.006.016.49.859 1.075 1.872.855 1.482 1.066 1.859 1.071 1.92.043.552.058 2.52.025 3.38-.104 2.67-.434 4.776-1.004 6.378-.223.625-.516 1.234-.782 1.628a.478.478 0 0 0-.068.117 12.032 12.032 0 0 0 7.234-5.647c.34-.597.696-1.387.932-2.073l.087-.252-.06-.152a6.916 6.916 0 0 0-.45-.868c-.562-.9-1.558-1.936-2.86-2.977-1.25-.998-2.832-2.04-4.558-2.996-.621-.344-.655-.36-.642-.33zM.318 9.235a12.169 12.169 0 0 0-.094 5.09c.388 1.993 1.31 3.9 2.632 5.445l.255.299c.086.099.435.136 1.105.121.846-.02 1.653-.168 2.767-.514 1.861-.574 4.217-1.701 6.564-3.14l.257-.158-2.16-.009-2.164-.01-.3-.157C4.8 13.902 1.618 11.34.5 9.208a2.82 2.82 0 0 0-.118-.212c-.004 0-.032.107-.064.239z" />
       <path d="m15.605 14.49-1.078 1.866-.26.167a39.447 39.447 0 0 1-3.978 2.221C7.709 19.982 5.563 20.6 3.94 20.57a3.044 3.044 0 0 0-.34.002c.003.017.474.443.68.618 2.788 2.343 6.438 3.283 10.044 2.588l.304-.058.11-.144c.796-1.03 1.364-2.685 1.683-4.908.137-.964.22-1.889.274-3.105.02-.502.025-2.641.002-2.825l-.013-.116-1.079 1.868z" />
     </svg>
-  )
+  );
+
+  const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(3),
+      width: 'auto',
+    },
+  }));
+  
+  const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }));
+  
+  const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+      padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+      transition: theme.transitions.create('width'),
+      width: '100%',
+      [theme.breakpoints.up('sm')]: {
+        width: '12ch',
+        '&:focus': {
+          width: '20ch',
+        },
+      },
+    },
+  }));  
 
   return (
     <AppBar position="static">
@@ -60,7 +125,7 @@ function ResponsiveAppBar() {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -71,7 +136,7 @@ function ResponsiveAppBar() {
               textDecoration: 'none',
             }}
           >
-            Photostore
+            PhotoStore
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -102,8 +167,8 @@ function ResponsiveAppBar() {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+              {Object.entries(pages).map(([page, path], i) => (
+                <MenuItem key={page} onClick={() => handleMenuClick(path)}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
@@ -129,24 +194,34 @@ function ResponsiveAppBar() {
             Photostore
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
+            {Object.entries(pages).map(([page, path], i) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={() => handleMenuClick(path)}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 {page}
               </Button>
             ))}
           </Box>
+          <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+              sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}
+            />
+          </Search>
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+            <Tooltip title="Open profile">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: '45px', fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -161,8 +236,8 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+              {Object.entries(settings).map(([setting, path], i) => (   
+                <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
@@ -170,7 +245,7 @@ function ResponsiveAppBar() {
           </Box>
         </Toolbar>
       </Container>
-    </AppBar>
+    </AppBar> 
   );
 }
 export default ResponsiveAppBar;

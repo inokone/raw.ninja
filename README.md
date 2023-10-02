@@ -70,6 +70,7 @@ Created using React.js with `npx create-react-app` in the [frontend](/web/fronte
 brew install node                          # Install Node.js
 npm install react@latest react-dom@latest  # Fix react version 
 ```
+Install "React Developer Tools" browser extension.
 
 #### Build
 Standard build mechanism with Node for frontend
