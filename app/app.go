@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/docs"
@@ -66,6 +67,12 @@ func App(port int) {
 
 	// Setup middleware
 	r.Use(gin.Recovery())
+	cc := cors.DefaultConfig()
+	cc.AllowAllOrigins = false
+	cc.AllowOrigins = []string{"http://127.0.0.1:3000", "http://localhost:3000"}
+	cc.AllowCredentials = true
+	r.Use(cors.New(cc))
+
 	r.Use(web.LoggingMiddleware)
 	r.MaxMultipartMemory = 8 << 20
 

@@ -117,11 +117,19 @@ func (c Controller) Login(g *gin.Context) {
 	})
 }
 
-func (c Controller) Validate(g *gin.Context) {
-	g.JSON(http.StatusOK, common.StatusMessage{
-		Code:    200,
-		Message: "I am authorized!",
-	})
+// Profile godoc
+// @Summary Get user profile endpoint
+// @Schemes
+// @Description Gets the current logged in user
+// @Accept json
+// @Produce json
+// @Success 200 {object} user.Profile
+// @Failure 403 {object} common.StatusMessage
+// @Router /profile [get]
+func (c Controller) Profile(g *gin.Context) {
+	userObj, _ := g.Get("user")
+	user := userObj.(User)
+	g.JSON(http.StatusOK, user.AsProfile())
 }
 
 // Reset godoc - not implemented yet

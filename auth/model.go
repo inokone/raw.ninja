@@ -36,16 +36,23 @@ func (u *User) VerifyPassword(password string) bool {
 	return err == nil
 }
 
+func (u *User) AsProfile() Profile {
+	return Profile{
+		ID:    u.ID.String(),
+		Email: u.Email,
+		Phone: u.Phone,
+	}
+}
+
 type Credentials struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type AuthenticatedUser struct {
-	ID           uuid.UUID `json:"id"`
-	Email        string    `json:"email"`
-	RefreshToken string    `json:"refresh_token"`
-	UserType     string    `json:"user_type" validate:"required,eq=ADMIN|eq=USER"`
+type Profile struct {
+	ID    string `json:"id"`
+	Email string `json:"email"`
+	Phone string `json:"phone"`
 }
 
 type Registration struct {

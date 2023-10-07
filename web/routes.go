@@ -22,7 +22,7 @@ func Init(v1 *gin.RouterGroup, db *gorm.DB, ir image.Repository, conf common.App
 		g.GET("/logout", a.Logout)
 		g.POST("/signup", a.Signup)
 		g.POST("/reset", a.Reset)
-		g.GET("/validate", m.Validate, a.Validate)
+		g.GET("/profile", m.Validate, a.Profile)
 	}
 
 	g = v1.Group("/photos", m.Validate)

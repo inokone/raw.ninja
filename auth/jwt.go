@@ -90,6 +90,6 @@ func (h JWTHandler) Create(g *gin.Context, userID string) {
 		return
 	}
 
-	g.SetSameSite(http.SameSiteLaxMode)
+	// g.SetSameSite(http.SameSiteLaxMode)
 	g.SetCookie(jwtTokenKey, tokenString, 3600*24*30, "", "", h.conf.JWTSecure, true) // Max live time is 30 days
 }

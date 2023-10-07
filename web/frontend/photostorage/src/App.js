@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import './App.css';
 import ResponsiveAppBar from './AppBar';
@@ -9,8 +9,11 @@ import Upload from './components/Upload/Upload';
 import Gallery from './components/Gallery/Gallery';
 import UserProfile from './components/Auth/UserProfile';
 import PhotoDisplay from './components/Gallery/PhotoDisplay';
+import RegisterForm from './components/Auth/Register';
+import Login from './components/Auth/Login';
 
 function App() {
+  const [token, setToken] = useState();
   return (
     <div className="App">
       <ResponsiveAppBar />
@@ -19,6 +22,8 @@ function App() {
         <BrowserRouter>
           <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login setToken={setToken} />} />
+          <Route path="/register" element={<RegisterForm />} />          
           <Route path="/upload" element={<Upload />} />
           <Route path="/photos" element={<Gallery />} />
           <Route path="/photos/:photosId" element={<PhotoDisplay />} />
