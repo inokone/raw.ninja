@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import { TextField, Button, Alert } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom"
+
 const { REACT_APP_API_PREFIX } = process.env;
  
 const Login = () => {
@@ -11,31 +12,6 @@ const Login = () => {
     const [passwordError, setPasswordError] = useState(false)
     const [error,setError]=useState()
     const [success,setSuccess]=useState(false)
-
-    const setLoggedinUser = (response) => {
-        console.log(response)
-        navigate("/")
-    }
-
-    const getLoggedinUser = (response) => {
-        fetch(REACT_APP_API_PREFIX + '/api/v1/auth/profile', {
-            method: "GET",
-            mode: "cors",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-
-                response.json().then(content => setError(content["message"]))
-            } else {
-                response.json().then(content => setLoggedinUser(content))
-            }
-        })
-        .catch(error => setError(error));
-    }
  
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -47,6 +23,7 @@ const Login = () => {
             fetch(REACT_APP_API_PREFIX + '/api/v1/auth/login', {
                 method: "POST",
                 mode: "cors",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -57,12 +34,16 @@ const Login = () => {
             })
             .then(response => {
                 if (!response.ok) {
-                    response.json().then(content => setError(content["message"]))
+                    if (response.status !== 200) {
+                        setError(response.status + ": " + response.statusText);
+                    } else {
+                        response.json().then(content => setError(content["message"]))
+                    }
                 } else {
                     response.json().then(content => {
                         setError(null)
                         setSuccess(true)
-                        getLoggedinUser(content)
+                        navigate("/")
                     })
                 }
             })

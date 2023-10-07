@@ -6,33 +6,40 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/Dashboard/Dashboard';
 import Preferences from './components/Preferences/Preferences';
 import Upload from './components/Upload/Upload';
-import Gallery from './components/Gallery/Gallery';
+import PhotoList from './components/Photos/PhotoList';
 import UserProfile from './components/Auth/UserProfile';
-import PhotoDisplay from './components/Gallery/PhotoDisplay';
+import PhotoDisplay from './components/Photos/PhotoDisplay';
 import RegisterForm from './components/Auth/Register';
 import Login from './components/Auth/Login';
+import Logout from './components/Auth/Logout';
+import ProtectedRoute from './components/Routing/ProtectedRoute';
 
 function App() {
-  const [token, setToken] = useState();
+  const [user, setUser] = useState(null);
+
   return (
     <div className="App">
-      <ResponsiveAppBar />
-      <header className="App-header">
-      <div className="wrapper">
-        <BrowserRouter>
-          <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/login" element={<Login setToken={setToken} />} />
-          <Route path="/register" element={<RegisterForm />} />          
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/photos" element={<Gallery />} />
-          <Route path="/photos/:photosId" element={<PhotoDisplay />} />
-          <Route path="/users/:userId" element={<UserProfile />} />
-          <Route path="/preferences" element={<Preferences />} />
-          </Routes>
-        </BrowserRouter>
-     </div>
-      </header>
+      <BrowserRouter>
+        <ResponsiveAppBar user={user}/>
+        <header className="App-header">
+          <div className="wrapper">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/logout" element={<Logout setUser={setUser}/>} />
+              <Route path="/register" element={<RegisterForm />} />   
+              <Route element={<ProtectedRoute user={user} setUser={setUser}/>}>
+                <Route path="/" element={<Dashboard user={user}/>} />
+                <Route path="/upload" element={<Upload user={user}/>} />
+                <Route path="/photos" element={<PhotoList user={user}/>} />
+                <Route path="/photos/:photosId" element={<PhotoDisplay user={user}/>} />
+                <Route path="/users/:userId" element={<UserProfile user={user}/>} />
+                <Route path="/profile" element={<Preferences user={user}/>} />
+              </Route> 
+              <Route path="*" element={<p>There's nothing here: 404!</p>} />     
+            </Routes>
+          </div>
+        </header>
+      </BrowserRouter>   
     </div>
   );
 }

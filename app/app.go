@@ -68,8 +68,8 @@ func App(port int) {
 	// Setup middleware
 	r.Use(gin.Recovery())
 	cc := cors.DefaultConfig()
-	cc.AllowAllOrigins = false
 	cc.AllowOrigins = []string{"http://127.0.0.1:3000", "http://localhost:3000"}
+	cc.AllowHeaders = []string{"Authorization", "Origin", "Content-Length", "Content-Type"}
 	cc.AllowCredentials = true
 	r.Use(cors.New(cc))
 

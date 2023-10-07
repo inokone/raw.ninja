@@ -15,10 +15,11 @@ import MenuItem from '@mui/material/MenuItem';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { SvgIcon } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 const pages = {
   'Upload': 'upload', 
-  'Photos': 'gallery'
+  'Photos': 'photos'
 };
 const settings = {
   'Profile': 'profile',
@@ -27,6 +28,7 @@ const settings = {
 };
 
 function ResponsiveAppBar() {
+  const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -50,12 +52,12 @@ function ResponsiveAppBar() {
 
   const handleMenuClick = (page) => {
     setAnchorElNav(null);
-    window.location = '/' + page;
+    navigate('/' + page);
   };
 
   const handleUserClick = (page) => {
     setAnchorElUser(null);
-    window.location = '/' + page;
+    navigate('/' + page);
   };
 
   const SvgComponent = (props) => (
