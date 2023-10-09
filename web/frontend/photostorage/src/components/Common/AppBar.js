@@ -113,7 +113,6 @@ const ResponsiveAppBar = (props) => {
     color: 'inherit',
     '& .MuiInputBase-input': {
       padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
       paddingLeft: `calc(1em + ${theme.spacing(4)})`,
       transition: theme.transitions.create('width'),
       width: '100%',
@@ -139,11 +138,11 @@ const ResponsiveAppBar = (props) => {
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
-              fontFamily: ['"Montserrat"', 'Open Sans'].join(','),
               fontWeight: 700,
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
+              fontFamily: ['"Montserrat"', 'Open Sans'].join(',')
             }}
           >
             PhotoStore
@@ -174,12 +173,12 @@ const ResponsiveAppBar = (props) => {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: 'block', md: 'none' },
+                display: { xs: 'block', md: 'none' }
               }}
             >
               {Object.entries(pages).map(([page, path], i) => (
                 <MenuItem key={page} onClick={() => handleMenuClick(path)}>
-                  <Typography textAlign="center">{page}</Typography>
+                  <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -194,11 +193,11 @@ const ResponsiveAppBar = (props) => {
               mr: 2,
               display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
-              fontFamily: ['"Montserrat"', 'Open Sans'].join(','),
               fontWeight: 700,
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
+              fontFamily: ['"Montserrat"', 'Open Sans'].join(',')
             }}
           >
             Photostore
@@ -222,18 +221,18 @@ const ResponsiveAppBar = (props) => {
               </SearchIconWrapper>
               <StyledInputBase
                 placeholder="Search…"
-                inputProps={{ 'aria-label': 'search' }}
                 sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}
+                inputProps={{ 'aria-label': 'search' }}
               />
             </Search>
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title={"Open profile"}>
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0}}>
                   <Avatar alt={getInitials()} src="/static/images/avatar/2.jpg" />
                 </IconButton>
               </Tooltip>
               <Menu
-                sx={{ mt: '45px', fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}
+                sx={{ mt: '45px' }}
                 id="menu-appbar"
                 anchorEl={anchorElUser}
                 anchorOrigin={{
@@ -250,7 +249,7 @@ const ResponsiveAppBar = (props) => {
               >
                 {Object.entries(settings).map(([setting, path], i) => (   
                   <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>
-                    <Typography textAlign="center">{setting}</Typography>
+                    <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>{setting}</Typography>
                   </MenuItem>
                 ))}
               </Menu>

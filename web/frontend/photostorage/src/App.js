@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 
 import './App.css';
-import ResponsiveAppBar from './AppBar';
+import ResponsiveAppBar from './components/Common/AppBar';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/Dashboard/Dashboard';
 import Preferences from './components/Preferences/Preferences';
@@ -12,7 +12,8 @@ import PhotoDisplay from './components/Photos/PhotoDisplay';
 import RegisterForm from './components/Auth/Register';
 import Login from './components/Auth/Login';
 import Logout from './components/Auth/Logout';
-import ProtectedRoute from './components/Routing/ProtectedRoute';
+import ProtectedRoute from './components/Common/ProtectedRoute';
+import NotFoundPage from './components/Common/NotFoundPage';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -35,7 +36,7 @@ function App() {
                 <Route path="/users/:userId" element={<UserProfile user={user}/>} />
                 <Route path="/profile" element={<Preferences user={user}/>} />
               </Route> 
-              <Route path="*" element={<p>There's nothing here: 404!</p>} />     
+              <Route path="*" element={<NotFoundPage/>} />     
             </Routes>
           </div>
         </header>
