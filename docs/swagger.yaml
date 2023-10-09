@@ -1,4 +1,13 @@
 definitions:
+  auth.Profile:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+    type: object
   common.Health:
     properties:
       status:
@@ -203,6 +212,23 @@ paths:
       summary: Download RAW file endpoint
       tags:
       - photos
+  /profile:
+    get:
+      consumes:
+      - application/json
+      description: Gets the current logged in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.Profile'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Get user profile endpoint
   /reset:
     post:
       consumes:

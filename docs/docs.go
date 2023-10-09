@@ -216,6 +216,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/profile": {
+            "get": {
+                "description": "Gets the current logged in user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get user profile endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/auth.Profile"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/reset": {
             "post": {
                 "description": "Returns the status and version of the application",
@@ -320,6 +346,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "auth.Profile": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
         "common.Health": {
             "type": "object",
             "properties": {

@@ -123,7 +123,7 @@ func (c Controller) Login(g *gin.Context) {
 // @Description Gets the current logged in user
 // @Accept json
 // @Produce json
-// @Success 200 {object} user.Profile
+// @Success 200 {object} Profile
 // @Failure 403 {object} common.StatusMessage
 // @Router /profile [get]
 func (c Controller) Profile(g *gin.Context) {

@@ -16,6 +16,7 @@ The target is a web application capable of handling reltively large image files 
 ## Set up for development
 
 ### Backend
+
 Created using Golang in the base folder of the repository of the repository.
 
 #### Prerequisites
@@ -33,12 +34,12 @@ go install github.com/go-critic/go-critic/cmd/gocritic@latest  # Static code anl
 #### Build
 
 ``` sh
-go mod download                                           # Download Go dependencies
-swag i -d "./,./app,./common,./photo,./descriptor,./web"  # Gernerate OpenAPI spec files
-go build main.go                                          # Build app
+go mod download                                                  # Download Go dependencies
+swag i -d "./,./app,./auth,./common,./photo,./descriptor,./web"  # Generate OpenAPI spec files
+go build main.go                                                 # Build app
 
-go test -v ./...                                          # Run unit tests
-gocritic check ./...                                      # Run static code analysis
+go test -v ./...                                                 # Run unit tests
+gocritic check ./...                                             # Run static code analysis
 ```
 
 On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin` to your PATH.
@@ -66,13 +67,16 @@ When the application is running, the OpenAPI documentation is available with [Sw
 Created using React.js with `npx create-react-app` in the [frontend](/web/frontend/photostorage) folder.
 
 #### Prerequisites
+
 ``` sh
 brew install node                          # Install Node.js
 npm install react@latest react-dom@latest  # Fix react version 
 ```
+
 Install "React Developer Tools" browser extension.
 
 #### Build
+
 Standard build mechanism with Node for frontend
 
 ``` sh
@@ -92,4 +96,3 @@ Steps included
   - Run unit tests
   - Static code analysis
 - Frontend
-  - 
