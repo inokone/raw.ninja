@@ -31,6 +31,11 @@ func NewController(db *gorm.DB, ir image.Repository) Controller {
 	}
 }
 
+type UploadSuccess struct {
+	PhotoID string `json:"photoId"`
+	UserID  string `json:"userId"`
+}
+
 // @BasePath /api/v1/photo
 
 // Upload godoc
@@ -41,7 +46,7 @@ func NewController(db *gorm.DB, ir image.Repository) Controller {
 // @Accept json
 // @Produce json
 // @Param photo formData file true "Photo to store"
-// @Success 201 {object} common.StatusMessage
+// @Success 201 {object} UploadSuccess
 // @Failure 400 {object} common.StatusMessage
 // @Failure 415 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
@@ -81,14 +86,15 @@ func (c Controller) Upload(g *gin.Context) {
 		return
 	}
 
-	if err = c.rep.Create(*target); err != nil {
+	id, err := c.rep.Create(*target)
+	if err != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
 		return
 	}
 
-	g.JSON(http.StatusCreated, common.StatusMessage{
-		Code:    201,
-		Message: fmt.Sprintf("File upload successful for %s.", file.Filename),
+	g.JSON(http.StatusCreated, UploadSuccess{
+		PhotoID: id.String(),
+		UserID:  user.ID.String(),
 	})
 }
 

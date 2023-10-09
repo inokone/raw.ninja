@@ -31,7 +31,6 @@ const ProtectedRoute = ({
       }
     } else {
       response.json().then(content => {
-        console.log("Collected user, setting state: " + content)
         setUser(content)
       })
     }

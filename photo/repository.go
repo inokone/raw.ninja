@@ -1,6 +1,7 @@
 package photo
 
 import (
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"gorm.io/gorm"
 
@@ -12,9 +13,10 @@ type Repository struct {
 	ir image.Repository
 }
 
-func (s *Repository) Create(photo Photo) error {
+func (s *Repository) Create(photo Photo) (uuid.UUID, error) {
 	s.db.Save(&photo)
-	return s.ir.Create(photo.ID.String(), photo.Raw, photo.Desc.Thumbnail)
+	err := s.ir.Create(photo.ID.String(), photo.Raw, photo.Desc.Thumbnail)
+	return photo.ID, err
 }
 
 func (s *Repository) Get(id string) (Photo, error) {

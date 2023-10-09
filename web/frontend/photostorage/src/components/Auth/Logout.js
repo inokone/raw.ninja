@@ -9,7 +9,6 @@ const Logout = ({setUser}) => {
   const navigate = useNavigate();
 
   const logout = () => {
-    console.log("Logging out...")
     fetch(REACT_APP_API_PREFIX + '/api/v1/auth/logout', {
             method: "GET",
             mode: "cors",
@@ -26,7 +25,6 @@ const Logout = ({setUser}) => {
                     response.json().then(content => console.log(content))
                 }
             } else {
-                console.log("Logged out!")
                 setUser(null);
                 navigate("/", { replace: true });
             }

@@ -39,12 +39,10 @@ const ResponsiveAppBar = (props) => {
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
-    console.log("open user " + props.user['email'])
   };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-    console.log("close user" + props.user['email'])
   };
 
   const isAuthenticated = () => {
@@ -84,7 +82,7 @@ const ResponsiveAppBar = (props) => {
     <AppBar position="static">
       <Container maxWidth="xxl">
         <Toolbar disableGutters variant="dense">
-          <SvgIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} component={SvgComponent}></SvgIcon>
+          <SvgIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} component={SvgComponent} />
           <Typography
             variant="h5"
             noWrap
@@ -131,17 +129,17 @@ const ResponsiveAppBar = (props) => {
                 display: { xs: 'block', md: 'none' }
               }}
             >
-              <MenuItem key="upload" onClick={() => handleMenuClick('upload')} SvgIcon>
+              <MenuItem key="upload" onClick={() => handleMenuClick('upload')}>
                 <CloudUploadIcon sx={{ mr:1 }}/>
                 <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>Upload</Typography>
               </MenuItem>
-              <MenuItem key="photos" onClick={() => handleMenuClick('photos')} SvgIcon>
+              <MenuItem key="photos" onClick={() => handleMenuClick('photos')}>
                 <ViewModuleIcon sx={{ mr:1 }}/>
                 <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>Photos</Typography>
               </MenuItem>
             </Menu>
           </Box>
-          <SvgIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} component={SvgComponent}></SvgIcon>
+          <SvgIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} component={SvgComponent} />
           <Typography
             variant="h5"
             noWrap
