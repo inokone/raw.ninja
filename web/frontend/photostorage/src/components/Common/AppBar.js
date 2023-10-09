@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,15 +11,13 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import SearchIcon from '@mui/icons-material/Search';
-import InputBase from '@mui/material/InputBase';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import OpeningSearchField from './OpeningSearchField';
 import { SvgIcon } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import stringToColor from 'string-to-color';
 
-const pages = {
-  'Upload': 'upload', 
-  'Photos': 'photos'
-};
 const settings = {
   'Profile': 'profile',
   'Account': 'account',
@@ -83,60 +80,18 @@ const ResponsiveAppBar = (props) => {
     </svg>
   );
 
-  const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(3),
-      width: 'auto',
-    },
-  }));
-  
-  const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }));
-  
-  const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-      padding: theme.spacing(1, 1, 1, 0),
-      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-      transition: theme.transitions.create('width'),
-      width: '100%',
-      [theme.breakpoints.up('sm')]: {
-        width: '12ch',
-        '&:focus': {
-          width: '20ch',
-        },
-      },
-    },
-  }));  
-
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
+      <Container maxWidth="xxl">
+        <Toolbar disableGutters variant="dense">
           <SvgIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} component={SvgComponent}></SvgIcon>
           <Typography
-            variant="h6"
+            variant="h5"
             noWrap
-            component="a"
-            href="/"
+            onClick={() => navigate('/')}
             sx={{
               mr: 2,
+              cursor: "pointer",
               display: { xs: 'none', md: 'flex' },
               fontWeight: 700,
               letterSpacing: '.3rem',
@@ -147,7 +102,7 @@ const ResponsiveAppBar = (props) => {
           >
             PhotoStore
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -176,23 +131,25 @@ const ResponsiveAppBar = (props) => {
                 display: { xs: 'block', md: 'none' }
               }}
             >
-              {Object.entries(pages).map(([page, path], i) => (
-                <MenuItem key={page} onClick={() => handleMenuClick(path)}>
-                  <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>{page}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem key="upload" onClick={() => handleMenuClick('upload')} SvgIcon>
+                <CloudUploadIcon sx={{ mr:1 }}/>
+                <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>Upload</Typography>
+              </MenuItem>
+              <MenuItem key="photos" onClick={() => handleMenuClick('photos')} SvgIcon>
+                <ViewModuleIcon sx={{ mr:1 }}/>
+                <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>Photos</Typography>
+              </MenuItem>
             </Menu>
           </Box>
           <SvgIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} component={SvgComponent}></SvgIcon>
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href="/"
-            sx={{
+            onClick={() => navigate('/')}
+              sx={{
               mr: 2,
+              cursor: "pointer",
               display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
               fontWeight: 700,
               letterSpacing: '.3rem',
               color: 'inherit',
@@ -200,61 +157,55 @@ const ResponsiveAppBar = (props) => {
               fontFamily: ['"Montserrat"', 'Open Sans'].join(',')
             }}
           >
-            Photostore
+            PhotoStore
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {Object.entries(pages).map(([page, path], i) => (
-              <Button
-                key={page}
-                onClick={() => handleMenuClick(path)}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
+          <Box sx={{ flexGrow: 1 }}/>    
+          {isAuthenticated() ?
+          <OpeningSearchField search="" /> : null}
+          <Box sx={{ display: { xs: 'none', md: 'flex'} }}>
+            <Button
+              key="upload"
+              onClick={() => handleMenuClick("upload")}
+              sx={{ color: 'white', m: 0 }}>
+              <CloudUploadIcon />
+            </Button>
+            <Button
+              key="photos"
+              onClick={() => handleMenuClick("photos")}
+              sx={{ color: 'white', m: 0 }}>
+              <ViewModuleIcon />
+            </Button>
           </Box>
           {isAuthenticated() ?
-          <>
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}
-                inputProps={{ 'aria-label': 'search' }}
-              />
-            </Search>
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title={"Open profile"}>
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0}}>
-                  <Avatar alt={getInitials()} src="/static/images/avatar/2.jpg" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {Object.entries(settings).map(([setting, path], i) => (   
-                  <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>
-                    <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-          </>
+          <Box sx={{ md: 0, ml: 1 }}>
+            <Tooltip title={"Open profile"}>
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0}}>
+                <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(props.user["email"]) }} />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {Object.entries(settings).map(([setting, path], i) => (   
+                <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>
+                  <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>{setting}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
           : null}
         </Toolbar>
       </Container>
