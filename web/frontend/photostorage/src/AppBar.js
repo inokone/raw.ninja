@@ -27,7 +27,7 @@ const settings = {
   'Logout': 'logout'
 };
 
-function ResponsiveAppBar() {
+const ResponsiveAppBar = (props) => {
   const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -42,14 +42,22 @@ function ResponsiveAppBar() {
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
-    console.log("open user" + event.currentTarget)
+    console.log("open user " + props.user['email'])
   };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-    console.log("close user")
+    console.log("close user" + props.user['email'])
   };
 
+  const isAuthenticated = () => {
+    return props.user !== null
+  }
+
+  const getInitials = () => {
+    return props.user["email"]
+  }
+ 
   const handleMenuClick = (page) => {
     setAnchorElNav(null);
     navigate('/' + page);
@@ -206,45 +214,49 @@ function ResponsiveAppBar() {
               </Button>
             ))}
           </Box>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-              sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}
-            />
-          </Search>
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open profile">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px', fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {Object.entries(settings).map(([setting, path], i) => (   
-                <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          {isAuthenticated() ?
+          <>
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ 'aria-label': 'search' }}
+                sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}
+              />
+            </Search>
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title={"Open profile"}>
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>
+                  <Avatar alt={getInitials()} src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px', fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {Object.entries(settings).map(([setting, path], i) => (   
+                  <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          </>
+          : null}
         </Toolbar>
       </Container>
     </AppBar> 
