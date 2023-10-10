@@ -25,9 +25,6 @@ const Upload = (user) => {
                 method: "POST",
                 mode: "cors",
                 credentials: "include",
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
                 body: data
             })
     .then(response => {
