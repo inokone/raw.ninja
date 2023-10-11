@@ -22,8 +22,8 @@ type Photo struct {
 	DeletedAt gorm.DeletedAt
 }
 
-func (p Photo) AsResp() Response {
-	desc := p.Desc.AsResp()
+func (p Photo) AsResp(baseUrl string) Response {
+	desc := p.Desc.AsResp(baseUrl)
 	return Response{
 		ID:   p.ID.String(),
 		Desc: desc,

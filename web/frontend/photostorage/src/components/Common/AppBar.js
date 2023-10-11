@@ -50,7 +50,7 @@ const ResponsiveAppBar = (props) => {
   }
 
   const getInitials = () => {
-    return props.user["email"]
+    return props.user.email
   }
  
   const handleMenuClick = (page) => {
@@ -178,7 +178,7 @@ const ResponsiveAppBar = (props) => {
           <Box sx={{ md: 0, ml: 1 }}>
             <Tooltip title={"Open profile"}>
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0}}>
-                <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(props.user["email"]) }} />
+                <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(props.user.email) }} />
               </IconButton>
             </Tooltip>
             <Menu

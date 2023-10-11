@@ -22,11 +22,6 @@ func (s *Repository) Create(photo Photo) (uuid.UUID, error) {
 func (s *Repository) Get(id string) (Photo, error) {
 	var photo Photo
 	result := s.db.Preload("Desc.Metadata").First(&photo, "id = ?", id)
-	thumb, err := s.ir.Thumbnail(id)
-	if err != nil {
-		return Photo{}, err
-	}
-	photo.Desc.Thumbnail = thumb
 	return photo, result.Error
 }
 
@@ -45,4 +40,8 @@ func (s *Repository) All(userID string) ([]Photo, error) {
 
 func (s *Repository) Raw(id string) ([]byte, error) {
 	return s.ir.Image(id)
+}
+
+func (s *Repository) Thumbnail(id string) ([]byte, error) {
+	return s.ir.Thumbnail(id)
 }

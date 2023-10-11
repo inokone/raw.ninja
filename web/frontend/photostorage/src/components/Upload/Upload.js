@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom"
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const Upload = (user) => {
+const Upload = () => {
   const navigate = useNavigate()
   const [stage, setStage] = React.useState(0)
   const [error, setError] = React.useState()
@@ -34,11 +34,11 @@ const Upload = (user) => {
               setError(response.status + ": " + response.statusText);
             } else {
               setStage(3)
-              response.json().then(content => setError(content["message"]))
+              response.json().then(content => setError(content.message))
             }
         } else {
             response.json().then(content => {
-              let photoId = content["photoId"]
+              let photoId = content.photoId
               setStage(2)
               setError(null)
               navigate("/photos/" + photoId)
@@ -54,10 +54,9 @@ const Upload = (user) => {
   return (
     <>
     {stage === 0 ?
-      <DropzoneArea 
+      <DropzoneArea
         onChange={handleChange}
         acceptedFiles={[".dng, .arw, .cr2, .crw, .nef, .orf, .jpg, .jpeg, .png"]} 
-        sx={{width: "0.8"}} 
         maxFileSize={100000000}
       />: null }
     {stage === 1 ? <CircularProgress /> : null }

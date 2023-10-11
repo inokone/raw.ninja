@@ -37,19 +37,19 @@ type Metadata struct {
 }
 
 type Response struct {
-	Width       int `json:"width"`
-	Height      int `json:"height"`
-	DataSize    int64
-	ISO         int
-	Aperture    float64
-	Shutter     float64
-	Timestamp   time.Time
-	CameraMake  string
-	CameraModel string
-	CameraSW    string
-	Colors      uint
-	LensMake    string
-	LensModel   string
+	Width       int       `json:"width"`
+	Height      int       `json:"height"`
+	DataSize    int64     `json:"data_size"`
+	ISO         int       `json:"ISO"`
+	Aperture    float64   `json:"aperture"`
+	Shutter     float64   `json:"shutter"`
+	Timestamp   time.Time `json:"timestamp"`
+	CameraMake  string    `json:"camera_make"`
+	CameraModel string    `json:"camera_model"`
+	CameraSW    string    `json:"camera_sw"`
+	Colors      uint      `json:"colors"`
+	LensMake    string    `json:"lens_make"`
+	LensModel   string    `json:"lens_model"`
 }
 
 func (m Metadata) AsResp() Response {

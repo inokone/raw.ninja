@@ -29,13 +29,13 @@ type Descriptor struct {
 	DeletedAt  gorm.DeletedAt
 }
 
-func (p Descriptor) AsResp() Response {
+func (p Descriptor) AsResp(baseUrl string) Response {
 	return Response{
 		ID:        p.ID.String(),
 		FileName:  p.FileName,
 		Uploaded:  p.Uploaded,
 		Format:    string(p.Format),
-		Thumbnail: string(p.Thumbnail),
+		Thumbnail: baseUrl + "/thumbnail",
 		Metadata:  p.Metadata.AsResp(),
 		Tags:      p.Tags,
 	}

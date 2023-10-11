@@ -147,7 +147,7 @@ func (c Controller) List(g *gin.Context) {
 
 	images := make([]Response, len(result))
 	for i, photo := range result {
-		images[i] = photo.AsResp()
+		images[i] = photo.AsResp("http://" + g.Request.Host + g.Request.URL.Path + photo.ID.String())
 	}
 	if error != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Photos could not be exported!"})
@@ -180,7 +180,7 @@ func (c Controller) Get(g *gin.Context) {
 		return
 	}
 
-	g.JSON(http.StatusOK, result.AsResp())
+	g.JSON(http.StatusOK, result.AsResp("http://"+g.Request.Host+g.Request.URL.Path))
 }
 
 // Download godoc
@@ -217,14 +217,48 @@ func (c Controller) Download(g *gin.Context) {
 	}
 
 	fileName := img.Desc.FileName
+	g.Header("Content-Description", "File Transfer")
 	g.Header("Content-Disposition", "attachment; filename="+fileName)
-	g.Header("Content-Type", "application/text/plain")
-	g.Header("Accept-Length", fmt.Sprintf("%d", len(raw)))
-	g.Writer.Write(raw)
-	g.JSON(http.StatusOK, common.StatusMessage{
-		Code:    200,
-		Message: "Download successful!",
-	})
+	g.Data(http.StatusOK, "application/octet-stream", raw)
+}
+
+// Thumbnail godoc
+// @Summary Thumbnail image endpoint
+// @Schemes
+// @Tags photos
+// @Description Returns the thumbnail for the provided ID
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the thumbnail to download"
+// @Success 200 {array} byte
+// @Failure 404 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
+// @Router /photos/:id/thumbnail [get]
+func (c Controller) Thumbnail(g *gin.Context) {
+	id := g.Param("id")
+
+	thumbnail, error := c.rep.Thumbnail(id)
+	if error != nil {
+		g.JSON(http.StatusNotFound, common.StatusMessage{
+			Code:    404,
+			Message: "Image file does not exist!",
+		})
+		return
+	}
+
+	img, error := c.rep.Get(id)
+	if error != nil {
+		g.JSON(http.StatusNotFound, common.StatusMessage{
+			Code:    404,
+			Message: "Image file does not exist!",
+		})
+		return
+	}
+
+	fileName := img.Desc.FileName
+	g.Header("Content-Description", "File Transfer")
+	g.Header("Content-Disposition", "attachment; filename="+fileName)
+	g.Data(http.StatusOK, "application/octet-stream", thumbnail)
 }
 
 func currentUser(g *gin.Context) (*auth.User, error) {

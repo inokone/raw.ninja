@@ -37,7 +37,7 @@ const Login = () => {
                     if (response.status !== 200) {
                         setError(response.status + ": " + response.statusText);
                     } else {
-                        response.json().then(content => setError(content["message"]))
+                        response.json().then(content => setError(content.message))
                     }
                 } else {
                     response.json().then(content => {

@@ -29,7 +29,7 @@ const RegisterForm = () => {
         .then(response => {
             if (!response.ok) {
                 response.json().then(content => {
-                    setError(content["message"])
+                    setError(content.message)
                 })
             } else {
                 setError(null)

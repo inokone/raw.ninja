@@ -31,5 +31,6 @@ func Init(v1 *gin.RouterGroup, db *gorm.DB, ir image.Repository, conf common.App
 		g.GET("/", p.List)
 		g.GET("/:id", p.Get)
 		g.GET("/:id/download", p.Download)
+		g.GET("/:id/thumbnail", p.Thumbnail)
 	}
 }
