@@ -18,7 +18,7 @@ app.env
 
 # Temp files and dirs
 tmp
-photos
+./photos/*
 
 # Built binaries
 ./main
