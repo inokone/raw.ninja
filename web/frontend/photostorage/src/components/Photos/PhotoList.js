@@ -1,127 +1,121 @@
 import * as React from 'react';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
-import ImageListItemBar from '@mui/material/ImageListItemBar';
-import IconButton from '@mui/material/IconButton';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { CircularProgress, Alert, Card, CardMedia, CardContent, CardActions, CardActionArea, Typography, IconButton, Grid } from "@mui/material";
+import DownloadIcon from '@mui/icons-material/Download';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { useNavigate } from "react-router-dom"
 
-function srcset(image, width, height, rows = 1, cols = 1) {
-  return {
-    src: `${image}?w=${width * cols}&h=${height * rows}&fit=crop&auto=format`,
-    srcSet: `${image}?w=${width * cols}&h=${
-      height * rows
-    }&fit=crop&auto=format&dpr=2 2x`,
-  };
-}
 
-export default function PhotoList() {
-  return (
-    <ImageList
-      sx={{
-        width: "96vw",
-        height: "85vh",
-        transform: 'translateZ(0)',
-      }}
-      rowHeight={200}
-      gap={1}
-    >
-      {itemData.map((item) => {
-        const cols = item.featured ? 2 : 1;
-        const rows = item.featured ? 2 : 1;
+const { REACT_APP_API_PREFIX } = process.env;
 
-        return (
-          <ImageListItem key={item.img} cols={cols} rows={rows}>
-            <img
-              {...srcset(item.img, 250, 200, rows, cols)}
-              alt={item.title}
-              loading="lazy"
-            />
-            <ImageListItemBar
-              sx={{
-                background:
-                  'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
-                  'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
-              }}
-              title={item.title}
-              position="top"
-              actionIcon={
-                <IconButton
-                  sx={{ color: 'white' }}
-                  aria-label={`star ${item.title}`}
-                >
-                  <StarBorderIcon />
-                </IconButton>
-              }
-              actionPosition="left"
-            />
-          </ImageListItem>
+const PhotoCard = (props) => {
+  const navigate = useNavigate()
+
+  const handleDownloadClick = (id, filename) => {
+    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + id + '/download', {
+        method: "GET",
+        mode: "cors",
+        credentials: "include"
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.setAttribute(
+          'download',
+          filename,
         );
-      })}
-    </ImageList>
+        document.body.appendChild(a);
+        a.click();    
+        a.remove();     
+    });
+  }
+
+  const handleClick = (id) => {
+    navigate("/photos/" + id)
+  }
+
+  return (
+    <Card sx={{ maxWidth: 200 }}>
+      <CardActionArea>
+        <CardMedia
+          component="img"
+          height="200"
+          width="200"
+          image={props.source}
+          loading="lazy"
+          alt={props.filename}
+          onClick={() => handleClick(props.id)} 
+        />
+        <CardContent>
+          <Typography variant="h6" component="div">
+            {props.filename}
+          </Typography>
+        </CardContent>
+        <CardActions disableSpacing>
+          <IconButton aria-label="Add to favorites">
+            <FavoriteIcon />
+          </IconButton>
+          <IconButton aria-label="Download RAW image">
+            <DownloadIcon onClick={() => handleDownloadClick(props.id, props.filename)}/>
+          </IconButton>
+      </CardActions>
+      </CardActionArea>
+    </Card>
   );
 }
 
-const itemData = [
-  {
-    img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-    title: 'Breakfast',
-    author: '@bkristastucchio',
-    featured: true,
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
-    title: 'Burger',
-    author: '@rollelflex_graphy726',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1522770179533-24471fcdba45',
-    title: 'Camera',
-    author: '@helloimnik',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c',
-    title: 'Coffee',
-    author: '@nolanissac',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
-    title: 'Hats',
-    author: '@hjrc33',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-    title: 'Honey',
-    author: '@arwinneil',
-    featured: true,
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1516802273409-68526ee1bdd6',
-    title: 'Basketball',
-    author: '@tjdragotta',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1518756131217-31eb79b20e8f',
-    title: 'Fern',
-    author: '@katie_wasserman',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1597645587822-e99fa5d45d25',
-    title: 'Mushrooms',
-    author: '@silverdalex',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1567306301408-9b74779a11af',
-    title: 'Tomato basil',
-    author: '@shelleypauls',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
-    title: 'Sea star',
-    author: '@peterlaster',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1589118949245-7d38baf380d6',
-    title: 'Bike',
-    author: '@southside_customs',
-  },
-];
+export default function PhotoList() {
+  const [error, setError] = React.useState(null)
+  const [loading, setLoading] = React.useState(true)
+  const [images, setImages] = React.useState(null) 
+
+  const loadImages = () => {
+    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/', {
+                method: "GET",
+                mode: "cors",
+                credentials: "include"
+            })
+    .then(response => {
+        if (!response.ok) {
+            if (response.status !== 200) {
+              setError(response.status + ": " + response.statusText);
+            } else {
+              response.json().then(content => setError(content.message))
+            }
+            setLoading(false)
+        } else {
+            response.json().then(content => {
+              setLoading(false)
+              setImages(content)
+            })
+        }
+    })
+    .catch(error => {
+      setError(error)
+      setLoading(false)
+    });
+  }
+
+  if (!error && images === null) {
+    loadImages()
+  }
+
+  return (
+    <>
+      {error !== null ? <Alert sx={{mb: 4}} severity="error">{error}</Alert>:null}
+      {loading ? <CircularProgress /> : 
+      <Grid container spacing={2}>
+        {images.map((image) => {
+          return (
+            <Grid item xs={6} md={4}>
+              <PhotoCard id={image.id} source={image.descriptor.thumbnail} filename={image.descriptor.filename}/>
+            </Grid>
+          );
+        })}
+      </Grid>}
+    </>
+  );
+
+
+}

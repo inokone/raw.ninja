@@ -90,15 +90,15 @@ const MetadataDisplay = (props) => {
         <TableBody>
             <TableRow>
             <TableCell className={classes.tableDataCell}>Manufacturer</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.camera_make}</TableCell>
+            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.camera_make}</TableCell>
             </TableRow>
             <TableRow>
             <TableCell className={classes.tableDataCell}>Model</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.camera_model}</TableCell>
+            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.camera_model}</TableCell>
             </TableRow>
             <TableRow>
             <TableCell className={classes.tableDataCell}>Software Version</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.camera_sw}</TableCell>
+            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.camera_sw}</TableCell>
             </TableRow>
         </TableBody>
         </Table>
@@ -107,11 +107,11 @@ const MetadataDisplay = (props) => {
         <TableBody>
             <TableRow>
             <TableCell className={classes.tableDataCell}>Manufacturer</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.lens_make}</TableCell>
+            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.lens_make}</TableCell>
             </TableRow>
             <TableRow>
             <TableCell className={classes.tableDataCell}>Model</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.lens_model}</TableCell>
+            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.lens_model}</TableCell>
             </TableRow>
         </TableBody>
         </Table>

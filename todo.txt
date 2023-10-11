@@ -1,4 +1,7 @@
-- React based frontend - set API expectations (htmlx, react, svelte, nextjs)
+- Refactor React metadata view to use cards instead of tables (https://mui.com/material-ui/react-card/)
+- Add tooltips and info icons everywhere
+- Add rating option for raw images
+
 - Add CSRF - https://www.stackhawk.com/blog/react-csrf-protection-guide-examples-and-how-to-enable-it/
 - Move out GORM, user plain SQL instead
     - rewrite to plain SQL
