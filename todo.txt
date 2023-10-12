@@ -5,13 +5,23 @@ Functionality:
     - Display file list - thumbnails
     - Display image with details and download option
   -Next steps:
+    - Add simple search
+    - Add favorite option for images
+    - Add dashboard with latest uploads
     - Add tooltips and info icons everywhere
     - Add rating option for raw images
-    - Add favorite option for images
     - Add tags for images
+    - Add filtering, ordering and pagination for images
+    - Enable batch uploading files
     - Add grouping for images
     - Add history/audit
     - Add OpenID for Google/Facebook
+    - Add personal lifecycle rules
+      - archive files after Y days
+      - delete files after X days
+      - keep favorites for indefinite
+      - needs user preferences & CRONs
+    - Implement advanced search (fulltext search with ES)
 
 Frontend:
 - Refactor React metadata view to use cards instead of tables (https://mui.com/material-ui/react-card/)

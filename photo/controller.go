@@ -22,8 +22,8 @@ type Controller struct {
 
 func NewController(db *gorm.DB, ir image.Repository) Controller {
 	rep := Repository{
-		db: db,
-		ir: ir,
+		DB: db,
+		Ir: ir,
 	}
 
 	return Controller{
