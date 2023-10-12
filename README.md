@@ -31,6 +31,8 @@ go install github.com/swaggo/swag/cmd/swag@latest              # OpenAPI spec ge
 go install github.com/go-critic/go-critic/cmd/gocritic@latest  # Static code anlanysis for Go
 ```
 
+Note: on M1/M2 OSX you need to manually install Libraw based on the [official doc](https://www.libraw.org/docs/Install-LibRaw-eng.html).
+
 #### Build
 
 ``` sh
