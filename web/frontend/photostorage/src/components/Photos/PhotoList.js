@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CircularProgress, Alert, Card, CardMedia, CardContent, CardActions, CardActionArea, Typography, IconButton, Grid } from "@mui/material";
+import { CircularProgress, Alert, Card, CardMedia, Box, CardActions, CardActionArea, Typography, IconButton, Grid } from "@mui/material";
 import DownloadIcon from '@mui/icons-material/Download';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useNavigate } from "react-router-dom"
@@ -37,30 +37,40 @@ const PhotoCard = (props) => {
 
   return (
     <Card sx={{ maxWidth: 200 }}>
-      <CardActionArea>
+      <Box sx={{ position: 'relative' }}>
         <CardMedia
           component="img"
-          height="200"
-          width="200"
+          height="200px"
           image={props.source}
           loading="lazy"
           alt={props.filename}
           onClick={() => handleClick(props.id)} 
         />
-        <CardContent>
-          <Typography variant="h6" component="div">
-            {props.filename}
-          </Typography>
-        </CardContent>
-        <CardActions disableSpacing>
-          <IconButton aria-label="Add to favorites">
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton aria-label="Download RAW image">
-            <DownloadIcon onClick={() => handleDownloadClick(props.id, props.filename)}/>
-          </IconButton>
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            bgcolor: 'rgba(0, 0, 0, 0.54)',
+            color: 'white',
+            padding: '10px',
+          }}
+        >
+          <Typography variant="body1">{props.filename}</Typography>
+          <Typography variant="body2">{new Date(props.date).toLocaleDateString()}</Typography>
+        </Box>
+      </Box>
+      <CardActionArea>
+      <CardActions disableSpacing>
+        <IconButton aria-label="Add to favorites">
+          <FavoriteIcon />
+        </IconButton>
+        <IconButton aria-label="Download RAW image" onClick={() => handleDownloadClick(props.id, props.filename)}>
+          <DownloadIcon />
+        </IconButton>
       </CardActions>
-      </CardActionArea>
+    </CardActionArea>
     </Card>
   );
 }
@@ -105,17 +115,15 @@ export default function PhotoList() {
     <>
       {error !== null ? <Alert sx={{mb: 4}} severity="error">{error}</Alert>:null}
       {loading ? <CircularProgress /> : 
-      <Grid container spacing={2}>
-        {images.map((image) => {
-          return (
-            <Grid item xs={6} md={4}>
-              <PhotoCard id={image.id} source={image.descriptor.thumbnail} filename={image.descriptor.filename}/>
-            </Grid>
-          );
-        })}
-      </Grid>}
+        <Grid container spacing={1} sx={{ flexGrow: 1 }}>
+          {images.map((image) => {
+            return (
+              <Grid item key={image.id} xs={6} sm={4} md={3} lg={2}>
+                <PhotoCard id={image.id} source={image.descriptor.thumbnail} filename={image.descriptor.filename} date={image.descriptor.uploaded}/>
+              </Grid>
+            );
+          })}
+        </Grid>}
     </>
   );
-
-
 }

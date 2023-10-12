@@ -57,7 +57,7 @@ const Upload = () => {
       <DropzoneArea
         onChange={handleChange}
         acceptedFiles={[".dng, .arw, .cr2, .crw, .nef, .orf, .jpg, .jpeg, .png"]} 
-        maxFileSize={100000000} sx={{maxWidth: "80%", height: "100%"}}
+        maxFileSize={100000000} sx={{ flexGrow: 1 }}
       />: null }
     {stage === 1 ? <CircularProgress /> : null }
     {stage === 2 ? <Alert sx={{mb: 4}} severity="success">Upload successful!</Alert>:null}

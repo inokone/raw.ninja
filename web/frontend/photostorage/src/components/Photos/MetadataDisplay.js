@@ -24,7 +24,6 @@ const MetadataDisplay = (props) => {
         for (let i = 0; i < validDividers.length; i++) {
           let divider = validDividers[i]
           if(fraction < divider){
-            console.log(divider)
             if (fraction - lastDivider > divider - fraction) {
               return "1/" + divider
             } else {
