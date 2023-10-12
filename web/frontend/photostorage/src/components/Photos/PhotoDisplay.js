@@ -75,14 +75,14 @@ const PhotoDisplay = () => {
     <>
       {error !== null ? <Alert sx={{mb: 4}} severity="error">{error}</Alert>:null}
       {loading ? <CircularProgress /> : 
-      <Grid container spacing={2}>
-        <Grid xs={8}>
+      <Grid container spacing={2} padding={3}>
+        <Grid xs={9}>
           <Image src={source} height="80vh" />
         </Grid>
         <Grid xs={3}>
           <MetadataDisplay metadata={metadata} />
           <Tooltip title="Download RAW file">
-            <Button variant='contained' color='primary' onClick={handleDownloadClick}>Download</Button>
+            <Button variant='contained' color='primary' onClick={handleDownloadClick} mt={2}>Download</Button>
           </Tooltip>
         </Grid>
       </Grid>}

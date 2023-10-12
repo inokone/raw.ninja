@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { TextField, Button, Alert } from "@mui/material";
+import { TextField, Button, Alert, Box, Container,Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom"
 
 const { REACT_APP_API_PREFIX } = process.env;
@@ -53,37 +53,41 @@ const Login = () => {
      
     return ( 
         <React.Fragment>
-        <form autoComplete="off" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff" }}>
-            <TextField 
-                label="Email"
-                onChange={e => setEmail(e.target.value)}
-                required
-                variant="outlined"
-                color="primary"
-                type="email"
-                sx={{mb: 3, backgroundColor: "#fff"}}
-                fullWidth
-                value={email}
-                error={emailError}
-            />
-            <></>
-            <TextField 
-                label="Password"
-                onChange={e => setPassword(e.target.value)}
-                required
-                variant="outlined"
-                color="primary"
-                type="password"
-                value={password}
-                error={passwordError}
-                fullWidth
-                sx={{mb: 3, backgroundColor: "#fff"}}
-            />
-            {success?<Alert sx={{mb: 4}} severity="success">Logged in successfully!</Alert>:null}
-            {error?<Alert sx={{mb: 4}} severity="error">{error}</Alert>:null}
-            <Button sx={{mb: 4}} variant="contained" color="primary" type="submit">Login</Button>
-        </form>
-        <small>Need an account? <Link to="/register">Register here</Link></small>
+            <Container maxWidth="sm">
+                <Box sx={{width: 500, m: 4}}>
+                <form autoComplete="off" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff" }}>
+                    <TextField 
+                        label="Email"
+                        onChange={e => setEmail(e.target.value)}
+                        required
+                        variant="outlined"
+                        color="primary"
+                        type="email"
+                        sx={{mb: 3, backgroundColor: "#fff"}}
+                        fullWidth
+                        value={email}
+                        error={emailError}
+                    />
+                    <></>
+                    <TextField 
+                        label="Password"
+                        onChange={e => setPassword(e.target.value)}
+                        required
+                        variant="outlined"
+                        color="primary"
+                        type="password"
+                        value={password}
+                        error={passwordError}
+                        fullWidth
+                        sx={{mb: 3, backgroundColor: "#fff"}}
+                    />
+                    {success?<Alert sx={{mb: 4}} severity="success">Logged in successfully!</Alert>:null}
+                    {error?<Alert sx={{mb: 4}} severity="error">{error}</Alert>:null}
+                    <Button sx={{mb: 4}} variant="contained" color="primary" type="submit">Login</Button>
+                </form>
+                <Typography>Need an account? <Link to="/register">Register here</Link></Typography>
+                </Box>
+            </Container>
         </React.Fragment>
      );
 }

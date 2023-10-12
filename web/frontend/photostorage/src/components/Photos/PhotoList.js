@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CircularProgress, Alert, Card, CardMedia, Box, CardActions, CardActionArea, Typography, IconButton, Grid } from "@mui/material";
+import { CircularProgress, Alert, Card, CardMedia, Box, CardActions, CardActionArea, Typography, IconButton, Grid, Tooltip } from "@mui/material";
 import DownloadIcon from '@mui/icons-material/Download';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useNavigate } from "react-router-dom"
@@ -36,7 +36,7 @@ const PhotoCard = (props) => {
   }
 
   return (
-    <Card sx={{ maxWidth: 200 }}>
+    <Card sx={{ maxWidth: 250 }}>
       <Box sx={{ position: 'relative' }}>
         <CardMedia
           component="img"
@@ -63,12 +63,16 @@ const PhotoCard = (props) => {
       </Box>
       <CardActionArea>
       <CardActions disableSpacing>
-        <IconButton aria-label="Add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="Download RAW image" onClick={() => handleDownloadClick(props.id, props.filename)}>
-          <DownloadIcon />
-        </IconButton>
+        <Tooltip title="Prevent file from being deleted by life-cycle rules">
+          <IconButton aria-label="Add to favorites">
+            <FavoriteIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Download RAW file">
+          <IconButton aria-label="Download RAW image" onClick={() => handleDownloadClick(props.id, props.filename)}>
+            <DownloadIcon />
+          </IconButton>
+        </Tooltip>
       </CardActions>
     </CardActionArea>
     </Card>
@@ -115,7 +119,7 @@ export default function PhotoList() {
     <>
       {error !== null ? <Alert sx={{mb: 4}} severity="error">{error}</Alert>:null}
       {loading ? <CircularProgress /> : 
-        <Grid container spacing={1} sx={{ flexGrow: 1 }}>
+        <Grid container spacing={1} sx={{ flexGrow: 1,  pl: 2, pt: 3 }} >
           {images.map((image) => {
             return (
               <Grid item key={image.id} xs={6} sm={4} md={3} lg={2}>

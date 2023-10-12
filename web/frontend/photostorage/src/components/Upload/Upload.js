@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DropzoneArea } from "react-mui-dropzone";
-import { CircularProgress, Alert } from "@mui/material";
+import { CircularProgress, Alert, Container, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom"
 
 
@@ -54,11 +54,15 @@ const Upload = () => {
   return (
     <>
     {stage === 0 ?
-      <DropzoneArea
-        onChange={handleChange}
-        acceptedFiles={[".dng, .arw, .cr2, .crw, .nef, .orf, .jpg, .jpeg, .png"]} 
-        maxFileSize={100000000} sx={{ flexGrow: 1 }}
-      />: null }
+      <Container maxWidth="m">
+        <Box m={5}>
+          <DropzoneArea m={5} variant="sm"
+            onChange={handleChange}
+            acceptedFiles={[".dng, .arw, .cr2, .crw, .nef, .orf, .jpg, .jpeg, .png"]} 
+            maxFileSize={100000000} sx={{ flexGrow: 1 }}
+          />
+        </Box>
+      </Container>: null }
     {stage === 1 ? <CircularProgress /> : null }
     {stage === 2 ? <Alert sx={{mb: 4}} severity="success">Upload successful!</Alert>:null}
     {stage === 3 ? <Alert sx={{mb: 4}} severity="error">{error}</Alert>:null}
