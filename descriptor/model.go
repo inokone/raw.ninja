@@ -20,8 +20,9 @@ type Descriptor struct {
 	FileName   string    `gorm:"type:varchar(255);not null"`
 	Uploaded   time.Time
 	Format     Format
-	Thumbnail  []byte       `gorm:"-"`
-	Tags       []string     `gorm:"type:text[]"`
+	Thumbnail  []byte   `gorm:"-"`
+	Tags       []string `gorm:"type:text[]"`
+	Favorite   bool
 	Metadata   img.Metadata `gorm:"foreignKey:MetadataID"`
 	MetadataID string
 	CreatedAt  time.Time
@@ -38,6 +39,7 @@ func (p Descriptor) AsResp(baseUrl string) Response {
 		Thumbnail: baseUrl + "/thumbnail",
 		Metadata:  p.Metadata.AsResp(),
 		Tags:      p.Tags,
+		Favorite:  p.Favorite,
 	}
 }
 
@@ -49,4 +51,5 @@ type Response struct {
 	Thumbnail string       `json:"thumbnail"`
 	Metadata  img.Response `json:"metadata"`
 	Tags      []string     `json:"tags"`
+	Favorite  bool         `json:"favorite"`
 }

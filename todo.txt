@@ -1,10 +1,11 @@
 Functionality:
-  -MVP:
+  - MVP:
     - Auth for single role - user
     - Upload RAW files
     - Display file list - thumbnails
     - Display image with details and download option
-  -Next steps:
+    - Quick search by file names
+  - Next steps:
     - Add favorite option for images
     - Add dashboard with latest uploads
     - Add tooltips and info icons everywhere
@@ -26,6 +27,7 @@ Frontend:
 - Refactor React metadata view to use cards instead of tables (https://mui.com/material-ui/react-card/)
 
 Backend:
+- HATEOAS - links for objects
 - Add CSRF - https://www.stackhawk.com/blog/react-csrf-protection-guide-examples-and-how-to-enable-it/
 - Move out GORM, use plain SQL instead
     - rewrite to plain SQL

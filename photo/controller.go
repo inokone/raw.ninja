@@ -175,12 +175,56 @@ func (c Controller) Get(g *gin.Context) {
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{
 			Code:    404,
-			Message: "Photos does not exist!",
+			Message: "Photo does not exist!",
 		})
 		return
 	}
 
 	g.JSON(http.StatusOK, result.AsResp("http://"+g.Request.Host+g.Request.URL.Path))
+}
+
+// Update godoc
+// @Summary Update photo endpoint for tags and favorite setting
+// @Schemes
+// @Tags photos
+// @Description Updates tags and favorite setting for RAW file
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the photo information to collect"
+// @Success 200 {object} common.StatusMessage
+// @Failure 404 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
+// @Router /photos/:id [put]
+func (c Controller) Update(g *gin.Context) {
+	id := g.Param("id")
+
+	persisted, error := c.rep.Get(id)
+	if error != nil {
+		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photo does not exist!"})
+		return
+	}
+
+	var newVersion Response
+	if err := g.ShouldBind(&newVersion); err != nil {
+		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 200, Message: "Malformed photo data!"})
+		return
+	}
+
+	err := applyChange(persisted, newVersion)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 200, Message: err.Error()})
+		return
+	}
+	c.rep.DB.Save(persisted)
+
+	g.JSON(http.StatusOK, common.StatusMessage{Code: 200, Message: "Photo updated!"})
+}
+
+func applyChange(persisted Photo, newVersion Response) error {
+	// TODO: Here we should check for changes to the photo we deem invalid, return error
+	persisted.Desc.Tags = newVersion.Desc.Tags
+	persisted.Desc.Favorite = newVersion.Desc.Favorite
+	return nil
 }
 
 // Download godoc
