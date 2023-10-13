@@ -1,17 +1,18 @@
 import * as React from 'react';
 import { CircularProgress, Alert, Grid } from "@mui/material";
-import PhotoCard from './PhotoCard';
+import PhotoCard from '../Photos/PhotoCard';
 
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const PhotoList = () => {
+const SearchResult = (props) => {
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(true)
   const [images, setImages] = React.useState(null) 
 
   const loadImages = () => {
-    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/', {
+    let url = REACT_APP_API_PREFIX + '/api/v1/search?query=' + props.query;
+    fetch(url, {
         method: "GET",
         mode: "cors",
         credentials: "include"
@@ -39,10 +40,7 @@ const PhotoList = () => {
 
   React.useEffect(() => {
       loadImages()
-  }, [])
-  // if (!error && images === null) {
-  //   loadImages()
-  // }
+  }, [props.query])
 
   return (
     <>
@@ -61,4 +59,4 @@ const PhotoList = () => {
   );
 }
 
-export default PhotoList;
+export default SearchResult;

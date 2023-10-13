@@ -5,7 +5,6 @@ Functionality:
     - Display file list - thumbnails
     - Display image with details and download option
   -Next steps:
-    - Add simple search
     - Add favorite option for images
     - Add dashboard with latest uploads
     - Add tooltips and info icons everywhere

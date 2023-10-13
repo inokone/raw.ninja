@@ -3,6 +3,7 @@ import React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -42,8 +43,18 @@ color: 'inherit',
 },
 }));  
 
-const OpeningSearchField = (searchText) => {
-    return (<Search>
+const handleQueryChange = (event, setQuery, location, navigate) => {
+  setQuery(event.target.value)
+  if (location.pathname !== '/search') {
+        navigate("/search");
+  }
+}
+
+const OpeningSearchField = (props) => {
+  const navigate = useNavigate();
+  const location = useLocation()
+
+  return (<Search>
             <SearchIconWrapper>
               <SearchIcon onClick={input => input && input.focus()} />
             </SearchIconWrapper>
@@ -51,6 +62,7 @@ const OpeningSearchField = (searchText) => {
               placeholder="Search…"
               sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}
               inputProps={{ 'aria-label': 'search' }}
+              onChange={e => handleQueryChange(e, props.setQuery, location, navigate)}
             />
           </Search>);
 }

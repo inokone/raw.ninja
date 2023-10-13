@@ -58,7 +58,7 @@ func (c Controller) Search(g *gin.Context) {
 
 	images := make([]photo.Response, len(result))
 	for i, photo := range result {
-		images[i] = photo.AsResp("http://" + g.Request.Host + g.Request.URL.Path + photo.ID.String())
+		images[i] = photo.AsResp("http://" + g.Request.Host + "/api/v1/photos/" + photo.ID.String())
 	}
 	if error != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Photos could not be exported!"})

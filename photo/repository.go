@@ -28,26 +28,12 @@ func (s *Repository) Get(id string) (Photo, error) {
 func (s *Repository) All(userID string) ([]Photo, error) {
 	var photos []Photo
 	result := s.DB.Preload("Desc.Metadata").Where("user_id = ?", userID).Find(&photos)
-	for i := 0; i < len(photos); i++ {
-		thumb, err := s.Ir.Thumbnail(photos[i].ID.String())
-		if err != nil {
-			return nil, err
-		}
-		photos[i].Desc.Thumbnail = thumb
-	}
 	return photos, result.Error
 }
 
 func (s *Repository) Search(userID string, searchText string) ([]Photo, error) {
 	var photos []Photo
 	result := s.DB.Preload("Desc.Metadata").Joins("JOIN descriptors ON descriptors.id = photos.desc_id").Where("photos.user_id = ?", userID).Where("descriptors.file_name LIKE ?", "%"+searchText+"%").Find(&photos)
-	for i := 0; i < len(photos); i++ {
-		thumb, err := s.Ir.Thumbnail(photos[i].ID.String())
-		if err != nil {
-			return nil, err
-		}
-		photos[i].Desc.Thumbnail = thumb
-	}
 	return photos, result.Error
 }
 

@@ -14,14 +14,16 @@ import Login from './components/Auth/Login';
 import Logout from './components/Auth/Logout';
 import ProtectedRoute from './components/Common/ProtectedRoute';
 import NotFoundPage from './components/Common/NotFoundPage';
+import SearchResult from './components/Search/SearchResult';
 
-function App() {
+const App = () => {
   const [user, setUser] = useState(null);
+  const [query, setQuery] = useState(null);
 
   return (
     <div className="App">
       <BrowserRouter>
-        <ResponsiveAppBar user={user}/>
+        <ResponsiveAppBar user={user} setQuery={setQuery}/>
         <header className="App-header">
           <div className="wrapper">
             <Routes>
@@ -35,6 +37,7 @@ function App() {
                 <Route path="/photos/:photosId" element={<PhotoDisplay user={user}/>} />
                 <Route path="/users/:userId" element={<UserProfile user={user}/>} />
                 <Route path="/profile" element={<Preferences user={user}/>} />
+                <Route path="/search" element={<SearchResult query={query}/>} />
               </Route> 
               <Route path="*" element={<NotFoundPage/>} />     
             </Routes>

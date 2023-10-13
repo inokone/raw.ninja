@@ -159,7 +159,7 @@ const ResponsiveAppBar = (props) => {
           </Typography>
           <Box sx={{ flexGrow: 1 }}/>    
           {isAuthenticated() ?
-          <OpeningSearchField search="" /> : null}
+          <OpeningSearchField setQuery={props.setQuery} /> : null}
           <Box sx={{ display: { xs: 'none', md: 'flex'} }}>
             <Button
               key="upload"
