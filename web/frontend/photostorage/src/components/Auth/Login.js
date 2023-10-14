@@ -50,7 +50,6 @@ const Login = (props) => {
     }
 
     const updateLoggedinUser = (redirectPath) => {
-        console.log("fetching profile..")
         fetch(REACT_APP_API_PREFIX + '/api/v1/auth/profile', {
             method: "GET",
             mode: "cors",

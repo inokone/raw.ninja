@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import './App.css';
 import ResponsiveAppBar from './components/Common/AppBar';
@@ -15,13 +15,48 @@ import Logout from './components/Auth/Logout';
 import ProtectedRoute from './components/Common/ProtectedRoute';
 import NotFoundPage from './components/Common/NotFoundPage';
 import SearchResult from './components/Search/SearchResult';
+import { CircularProgress } from "@mui/material";
+
+
+const { REACT_APP_API_PREFIX } = process.env;
 
 const App = () => {
   const [user, setUser] = useState(null);
   const [query, setQuery] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(REACT_APP_API_PREFIX + '/api/v1/auth/profile', {
+      method: "GET",
+      mode: "cors",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          response.json().then(content => {
+            setUser(content)
+            setIsLoading(false);
+          })
+        } else {
+          setIsLoading(false);
+        }
+      }).catch(() => {
+        setIsLoading(false);
+      });
+  }, [])
 
   return (
     <div className="App">
+      {isLoading ? (
+        <header className="App-header">
+          <div className="wrapper">
+            <CircularProgress />
+          </div>
+        </header>
+      ) : (
       <BrowserRouter>
         <ResponsiveAppBar user={user} setQuery={setQuery} />
         <header className="App-header">
@@ -43,7 +78,7 @@ const App = () => {
             </Routes>
           </div>
         </header>
-      </BrowserRouter>
+      </BrowserRouter>)}
     </div>
   );
 }

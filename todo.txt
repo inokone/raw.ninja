@@ -7,7 +7,6 @@ Functionality:
     - Quick search by file names
     - Favorite option for images
   - Next steps:
-    - Photo grid component to DRY the search page
     - Frontend regression tests!
     - Add dashboard with latest uploads
     - Add tooltips and info icons everywhere
