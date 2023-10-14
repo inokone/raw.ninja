@@ -67,9 +67,10 @@ const PhotoDisplay = () => {
     });
   }
 
-  if (!error && source === "dummy.png") {
-    loadImage()
-  }
+
+  React.useEffect(() => {
+      loadImage()
+  }, [])
 
   return(
     <>

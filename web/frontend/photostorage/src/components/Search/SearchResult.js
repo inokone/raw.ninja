@@ -42,6 +42,39 @@ const SearchResult = (props) => {
       loadImages()
   }, [props.query])
 
+  const setImage = (image) => {
+     fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id, {
+        method: "PUT",
+        mode: "cors",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(image)
+    })
+    .then(response => {
+        if (!response.ok) {
+            if (response.status !== 200) {
+              setError(response.status + ": " + response.statusText);
+            } else {
+              response.json().then(content => setError(content.message))
+            }
+        } else {
+          let newImages = images.slice()
+          for (let i = 0; i < images.length; i++) {
+            if (images[i].id === image.id) {
+              newImages[i] = image
+              setImages(newImages)
+              return
+            }
+          }
+        }
+    })
+    .catch(error => {
+      setError(error)
+    });
+  }
+
   return (
     <>
       {error !== null ? <Alert sx={{mb: 4}} severity="error">{error}</Alert>:null}
@@ -50,7 +83,7 @@ const SearchResult = (props) => {
           {images.map((image) => {
             return (
               <Grid item key={image.id} xs={6} sm={4} md={3} lg={2}>
-                <PhotoCard id={image.id} source={image.descriptor.thumbnail} filename={image.descriptor.filename} date={image.descriptor.uploaded}/>
+                <PhotoCard image={image} setImage={setImage}/>
               </Grid>
             );
           })}

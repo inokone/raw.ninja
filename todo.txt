@@ -5,8 +5,12 @@ Functionality:
     - Display file list - thumbnails
     - Display image with details and download option
     - Quick search by file names
+    - Favorite option for images
   - Next steps:
-    - Add favorite option for images
+    - Make sure frontend works fully without Backend
+    - Make sure frontend does not download image for 404
+    - Photo grid component to DRY the search page
+    - Frontend regression tests!
     - Add dashboard with latest uploads
     - Add tooltips and info icons everywhere
     - Add rating option for raw images

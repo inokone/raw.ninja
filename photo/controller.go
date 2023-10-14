@@ -169,6 +169,12 @@ func (c Controller) List(g *gin.Context) {
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id [get]
 func (c Controller) Get(g *gin.Context) {
+	user, error := currentUser(g)
+	if error != nil {
+		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		return
+	}
+
 	id := g.Param("id")
 
 	result, error := c.rep.Get(id)
@@ -177,6 +183,12 @@ func (c Controller) Get(g *gin.Context) {
 			Code:    404,
 			Message: "Photo does not exist!",
 		})
+		return
+	}
+
+	// Accessing other user's photos is forbidden
+	if result.UserID != user.ID.String() {
+		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photo does not exist!"})
 		return
 	}
 
@@ -196,32 +208,45 @@ func (c Controller) Get(g *gin.Context) {
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id [put]
 func (c Controller) Update(g *gin.Context) {
-	id := g.Param("id")
+	user, error := currentUser(g)
+	if error != nil {
+		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		return
+	}
 
+	id := g.Param("id")
 	persisted, error := c.rep.Get(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photo does not exist!"})
 		return
 	}
 
+	// Changing other user's photos is forbidden
+	if persisted.UserID != user.ID.String() {
+		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photo does not exist!"})
+		return
+	}
+
 	var newVersion Response
-	if err := g.ShouldBind(&newVersion); err != nil {
+	if err := g.Bind(&newVersion); err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 200, Message: "Malformed photo data!"})
 		return
 	}
 
-	err := applyChange(persisted, newVersion)
+	err := applyChange(&persisted, newVersion)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 200, Message: err.Error()})
 		return
 	}
-	c.rep.DB.Save(persisted)
 
+	c.rep.Update(persisted)
 	g.JSON(http.StatusOK, common.StatusMessage{Code: 200, Message: "Photo updated!"})
 }
 
-func applyChange(persisted Photo, newVersion Response) error {
-	// TODO: Here we should check for changes to the photo we deem invalid, return error
+func applyChange(persisted *Photo, newVersion Response) error {
+	if persisted.ID.String() != newVersion.ID {
+		return errors.New("photo data inconsistent, ID does not match the path")
+	}
 	persisted.Desc.Tags = newVersion.Desc.Tags
 	persisted.Desc.Favorite = newVersion.Desc.Favorite
 	return nil
@@ -240,7 +265,27 @@ func applyChange(persisted Photo, newVersion Response) error {
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id/download [get]
 func (c Controller) Download(g *gin.Context) {
+	user, error := currentUser(g)
+	if error != nil {
+		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		return
+	}
+
 	id := g.Param("id")
+	img, error := c.rep.Get(id)
+	if error != nil {
+		g.JSON(http.StatusNotFound, common.StatusMessage{
+			Code:    404,
+			Message: "Raw file does not exist!",
+		})
+		return
+	}
+
+	if img.UserID != user.ID.String() {
+		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Raw file does not exist!"})
+		return
+	}
+	fileName := img.Desc.FileName
 
 	raw, error := c.rep.Raw(id)
 	if error != nil {
@@ -251,16 +296,6 @@ func (c Controller) Download(g *gin.Context) {
 		return
 	}
 
-	img, error := c.rep.Get(id)
-	if error != nil {
-		g.JSON(http.StatusNotFound, common.StatusMessage{
-			Code:    404,
-			Message: "Raw file does not exist!",
-		})
-		return
-	}
-
-	fileName := img.Desc.FileName
 	g.Header("Content-Description", "File Transfer")
 	g.Header("Content-Disposition", "attachment; filename="+fileName)
 	g.Data(http.StatusOK, "application/octet-stream", raw)
@@ -279,7 +314,26 @@ func (c Controller) Download(g *gin.Context) {
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id/thumbnail [get]
 func (c Controller) Thumbnail(g *gin.Context) {
+	user, error := currentUser(g)
+	if error != nil {
+		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		return
+	}
+
 	id := g.Param("id")
+	img, error := c.rep.Get(id)
+	if error != nil {
+		g.JSON(http.StatusNotFound, common.StatusMessage{
+			Code:    404,
+			Message: "Image file does not exist!",
+		})
+		return
+	}
+	if img.UserID != user.ID.String() {
+		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Image file does not exist!"})
+		return
+	}
+	fileName := img.Desc.FileName
 
 	thumbnail, error := c.rep.Thumbnail(id)
 	if error != nil {
@@ -290,16 +344,6 @@ func (c Controller) Thumbnail(g *gin.Context) {
 		return
 	}
 
-	img, error := c.rep.Get(id)
-	if error != nil {
-		g.JSON(http.StatusNotFound, common.StatusMessage{
-			Code:    404,
-			Message: "Image file does not exist!",
-		})
-		return
-	}
-
-	fileName := img.Desc.FileName
 	g.Header("Content-Description", "File Transfer")
 	g.Header("Content-Disposition", "attachment; filename="+fileName)
 	g.Data(http.StatusOK, "application/octet-stream", thumbnail)
