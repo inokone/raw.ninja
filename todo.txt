@@ -7,8 +7,6 @@ Functionality:
     - Quick search by file names
     - Favorite option for images
   - Next steps:
-    - Make sure frontend works fully without Backend
-    - Make sure frontend does not download image for 404
     - Photo grid component to DRY the search page
     - Frontend regression tests!
     - Add dashboard with latest uploads

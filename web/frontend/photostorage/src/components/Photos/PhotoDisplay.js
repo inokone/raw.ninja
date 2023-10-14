@@ -20,7 +20,14 @@ const PhotoDisplay = () => {
       mode: "cors",
       credentials: "include"
     })
-      .then(response => response.blob())
+      .then(response => {
+        if (!response.ok) {
+          return new Promise((resolve, reject) => {
+            reject(response.status + ":" + response.statusText)
+          })
+        }
+        return response.blob()
+      })
       .then(blob => {
         var url = window.URL.createObjectURL(blob);
         var a = document.createElement('a');
@@ -32,6 +39,9 @@ const PhotoDisplay = () => {
         document.body.appendChild(a);
         a.click();
         a.remove();
+      })
+      .catch(error => {
+        setError(error)
       });
   }
 
