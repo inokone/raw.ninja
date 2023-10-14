@@ -13,6 +13,7 @@ const PhotoDisplay = () => {
   const [loading, setLoading] = React.useState(true)
   const [source, setSource] = React.useState("dummy.png")
   const [metadata, setMetadata] = React.useState({})
+  const path = location.pathname
 
   const handleDownloadClick = () => {
     fetch(REACT_APP_API_PREFIX + '/api/v1' + location.pathname + '/download', {
@@ -47,7 +48,7 @@ const PhotoDisplay = () => {
 
   React.useEffect(() => {
     const loadImage = () => {
-      fetch(REACT_APP_API_PREFIX + '/api/v1' + location.pathname, {
+      fetch(REACT_APP_API_PREFIX + '/api/v1' + path, {
         method: "GET",
         mode: "cors",
         credentials: "include"
@@ -75,7 +76,7 @@ const PhotoDisplay = () => {
     }
 
     loadImage()
-  }, [])
+  }, [path])
 
   return (
     <>
