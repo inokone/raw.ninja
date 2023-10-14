@@ -22,50 +22,50 @@ const Upload = () => {
     data.append('path', files[0].path)
 
     fetch(REACT_APP_API_PREFIX + '/api/v1/photos/', {
-                method: "POST",
-                mode: "cors",
-                credentials: "include",
-                body: data
-            })
-    .then(response => {
-        if (!response.ok) {
-            if (response.status !== 200) {
-              setStage(3)
-              setError(response.status + ": " + response.statusText);
-            } else {
-              setStage(3)
-              response.json().then(content => setError(content.message))
-            }
-        } else {
-            response.json().then(content => {
-              let photoId = content.photoId
-              setStage(2)
-              setError(null)
-              navigate("/photos/" + photoId)
-            })
-        }
+      method: "POST",
+      mode: "cors",
+      credentials: "include",
+      body: data
     })
-    .catch(error => {
-      setError(error)
-      setStage(3)
-    });
+      .then(response => {
+        if (!response.ok) {
+          if (response.status !== 200) {
+            setStage(3)
+            setError(response.status + ": " + response.statusText);
+          } else {
+            setStage(3)
+            response.json().then(content => setError(content.message))
+          }
+        } else {
+          response.json().then(content => {
+            let photoId = content.photoId
+            setStage(2)
+            setError(null)
+            navigate("/photos/" + photoId)
+          })
+        }
+      })
+      .catch(error => {
+        setError(error)
+        setStage(3)
+      });
   }
 
   return (
     <>
-    {stage === 0 ?
-      <Container maxWidth="m">
-        <Box m={5}>
-          <DropzoneArea m={5} variant="sm"
-            onChange={handleChange}
-            acceptedFiles={[".dng, .arw, .cr2, .crw, .nef, .orf, .jpg, .jpeg, .png"]} 
-            maxFileSize={100000000} sx={{ flexGrow: 1 }}
-          />
-        </Box>
-      </Container>: null }
-    {stage === 1 ? <CircularProgress /> : null }
-    {stage === 2 ? <Alert sx={{mb: 4}} severity="success">Upload successful!</Alert>:null}
-    {stage === 3 ? <Alert sx={{mb: 4}} severity="error">{error}</Alert>:null}
+      {stage === 0 ?
+        <Container maxWidth="m">
+          <Box m={5}>
+            <DropzoneArea m={5} variant="sm"
+              onChange={handleChange}
+              acceptedFiles={[".dng, .arw, .cr2, .crw, .nef, .orf, .jpg, .jpeg, .png"]}
+              maxFileSize={100000000} sx={{ flexGrow: 1 }}
+            />
+          </Box>
+        </Container> : null}
+      {stage === 1 ? <CircularProgress /> : null}
+      {stage === 2 ? <Alert sx={{ mb: 4 }} severity="success">Upload successful!</Alert> : null}
+      {stage === 3 ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
     </>
   );
 }

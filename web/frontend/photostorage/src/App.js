@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
 import './App.css';
 import ResponsiveAppBar from './components/Common/AppBar';
@@ -23,27 +23,27 @@ const App = () => {
   return (
     <div className="App">
       <BrowserRouter>
-        <ResponsiveAppBar user={user} setQuery={setQuery}/>
+        <ResponsiveAppBar user={user} setQuery={setQuery} />
         <header className="App-header">
           <div className="wrapper">
             <Routes>
               <Route path="/login" element={<Login />} />
-              <Route path="/logout" element={<Logout setUser={setUser}/>} />
-              <Route path="/register" element={<RegisterForm />} />   
-              <Route element={<ProtectedRoute user={user} setUser={setUser}/>}>
-                <Route path="/" element={<Dashboard user={user}/>} />
-                <Route path="/upload" element={<Upload user={user}/>} />
-                <Route path="/photos" element={<PhotoList user={user}/>} />
-                <Route path="/photos/:photosId" element={<PhotoDisplay user={user}/>} />
-                <Route path="/users/:userId" element={<UserProfile user={user}/>} />
-                <Route path="/profile" element={<Preferences user={user}/>} />
-                <Route path="/search" element={<SearchResult query={query}/>} />
-              </Route> 
-              <Route path="*" element={<NotFoundPage/>} />     
+              <Route path="/logout" element={<Logout setUser={setUser} />} />
+              <Route path="/register" element={<RegisterForm />} />
+              <Route element={<ProtectedRoute user={user} setUser={setUser} />}>
+                <Route path="/" element={<Dashboard user={user} />} />
+                <Route path="/upload" element={<Upload user={user} />} />
+                <Route path="/photos" element={<PhotoList user={user} />} />
+                <Route path="/photos/:photosId" element={<PhotoDisplay user={user} />} />
+                <Route path="/users/:userId" element={<UserProfile user={user} />} />
+                <Route path="/profile" element={<Preferences user={user} />} />
+                <Route path="/search" element={<SearchResult query={query} />} />
+              </Route>
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </div>
         </header>
-      </BrowserRouter>   
+      </BrowserRouter>
     </div>
   );
 }

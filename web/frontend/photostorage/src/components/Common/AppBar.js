@@ -52,7 +52,7 @@ const ResponsiveAppBar = (props) => {
   const getInitials = () => {
     return props.user.email
   }
- 
+
   const handleMenuClick = (page) => {
     setAnchorElNav(null);
     navigate('/' + page);
@@ -130,12 +130,12 @@ const ResponsiveAppBar = (props) => {
               }}
             >
               <MenuItem key="upload" onClick={() => handleMenuClick('upload')}>
-                <CloudUploadIcon sx={{ mr:1 }}/>
-                <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>Upload</Typography>
+                <CloudUploadIcon sx={{ mr: 1 }} />
+                <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Upload</Typography>
               </MenuItem>
               <MenuItem key="photos" onClick={() => handleMenuClick('photos')}>
-                <ViewModuleIcon sx={{ mr:1 }}/>
-                <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>Photos</Typography>
+                <ViewModuleIcon sx={{ mr: 1 }} />
+                <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Photos</Typography>
               </MenuItem>
             </Menu>
           </Box>
@@ -144,7 +144,7 @@ const ResponsiveAppBar = (props) => {
             variant="h5"
             noWrap
             onClick={() => navigate('/')}
-              sx={{
+            sx={{
               mr: 2,
               cursor: "pointer",
               display: { xs: 'flex', md: 'none' },
@@ -157,10 +157,10 @@ const ResponsiveAppBar = (props) => {
           >
             PhotoStore
           </Typography>
-          <Box sx={{ flexGrow: 1 }}/>    
+          <Box sx={{ flexGrow: 1 }} />
           {isAuthenticated() ?
-          <OpeningSearchField setQuery={props.setQuery} /> : null}
-          <Box sx={{ display: { xs: 'none', md: 'flex'} }}>
+            <OpeningSearchField setQuery={props.setQuery} /> : null}
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
               key="upload"
               onClick={() => handleMenuClick("upload")}
@@ -175,39 +175,39 @@ const ResponsiveAppBar = (props) => {
             </Button>
           </Box>
           {isAuthenticated() ?
-          <Box sx={{ md: 0, ml: 1 }}>
-            <Tooltip title={"Open profile"}>
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0}}>
-                <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(props.user.email) }} />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {Object.entries(settings).map(([setting, path], i) => (   
-                <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>
-                  <Typography textAlign="center" sx={{fontFamily: ['"Montserrat"', 'Open Sans'].join(',')}}>{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          : null}
+            <Box sx={{ md: 0, ml: 1 }}>
+              <Tooltip title={"Open profile"}>
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(props.user.email) }} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {Object.entries(settings).map(([setting, path], i) => (
+                  <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>
+                    <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+            : null}
         </Toolbar>
       </Container>
-    </AppBar> 
+    </AppBar>
   );
 }
 export default ResponsiveAppBar;

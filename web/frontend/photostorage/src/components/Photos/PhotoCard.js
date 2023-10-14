@@ -2,7 +2,7 @@ import * as React from 'react';
 import DownloadIcon from '@mui/icons-material/Download';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useNavigate } from "react-router-dom"
-import {Card, CardMedia, Box, CardActions, CardActionArea, Typography, IconButton,  Tooltip } from "@mui/material";
+import { Card, CardMedia, Box, CardActions, CardActionArea, Typography, IconButton, Tooltip } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 
 const { REACT_APP_API_PREFIX } = process.env;
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PhotoCard = (props) => {
-  const navigate = useNavigate()  
+  const navigate = useNavigate()
   const classes = useStyles();
 
   const handleFavoriteClick = (image) => {
@@ -28,12 +28,12 @@ const PhotoCard = (props) => {
 
   const handleDownloadClick = (image) => {
     fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id + '/download', {
-        method: "GET",
-        mode: "cors",
-        credentials: "include"
+      method: "GET",
+      mode: "cors",
+      credentials: "include"
     })
-    .then(response => response.blob())
-    .then(blob => {
+      .then(response => response.blob())
+      .then(blob => {
         var url = window.URL.createObjectURL(blob);
         var a = document.createElement('a');
         a.href = url;
@@ -42,9 +42,9 @@ const PhotoCard = (props) => {
           image.descriptor.filename,
         );
         document.body.appendChild(a);
-        a.click();    
-        a.remove();     
-    });
+        a.click();
+        a.remove();
+      });
   }
 
   const handleClick = (id) => {
@@ -60,7 +60,7 @@ const PhotoCard = (props) => {
           image={props.image.descriptor.thumbnail}
           loading="lazy"
           alt={props.image.descriptor.filename}
-          onClick={() => handleClick(props.image.id)} 
+          onClick={() => handleClick(props.image.id)}
         />
         <Box
           sx={{
@@ -78,19 +78,19 @@ const PhotoCard = (props) => {
         </Box>
       </Box>
       <CardActionArea>
-      <CardActions disableSpacing>
-        <Tooltip title="Prevent file from being deleted by life-cycle rules">
-          <IconButton aria-label="Add to favorites" onClick={() => handleFavoriteClick(props.image)}>
-            <FavoriteIcon className={props.image.descriptor.favorite ? classes.favorite : classes.nonfavorite}/>
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Download RAW file">
-          <IconButton aria-label="Download RAW image" onClick={() => handleDownloadClick(props.image)}>
-            <DownloadIcon />
-          </IconButton>
-        </Tooltip>
-      </CardActions>
-    </CardActionArea>
+        <CardActions disableSpacing>
+          <Tooltip title="Prevent file from being deleted by life-cycle rules">
+            <IconButton aria-label="Add to favorites" onClick={() => handleFavoriteClick(props.image)}>
+              <FavoriteIcon className={props.image.descriptor.favorite ? classes.favorite : classes.nonfavorite} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Download RAW file">
+            <IconButton aria-label="Download RAW image" onClick={() => handleDownloadClick(props.image)}>
+              <DownloadIcon />
+            </IconButton>
+          </Tooltip>
+        </CardActions>
+      </CardActionArea>
     </Card>
   );
 }

@@ -1,24 +1,24 @@
-import React, {useState} from "react";
-import { TextField, Button, Alert, Box, Container,Typography } from "@mui/material";
+import React, { useState } from "react";
+import { TextField, Button, Alert, Box, Container, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom"
 
 const { REACT_APP_API_PREFIX } = process.env;
- 
+
 const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [emailError, setEmailError] = useState(false)
     const [passwordError, setPasswordError] = useState(false)
-    const [error,setError]=useState()
-    const [success,setSuccess]=useState(false)
- 
+    const [error, setError] = useState()
+    const [success, setSuccess] = useState(false)
+
     const handleSubmit = (event) => {
         event.preventDefault()
- 
+
         setEmailError(email === '')
         setPasswordError(password === '')
- 
+
         if (email && password) {
             fetch(REACT_APP_API_PREFIX + '/api/v1/auth/login', {
                 method: "POST",
@@ -32,64 +32,64 @@ const Login = () => {
                     "password": password
                 })
             })
-            .then(response => {
-                if (!response.ok) {
-                    if (response.status !== 200) {
-                        setError(response.status + ": " + response.statusText);
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status !== 200) {
+                            setError(response.status + ": " + response.statusText);
+                        } else {
+                            response.json().then(content => setError(content.message))
+                        }
                     } else {
-                        response.json().then(content => setError(content.message))
+                        response.json().then(content => {
+                            setError(null)
+                            setSuccess(true)
+                            navigate("/")
+                        })
                     }
-                } else {
-                    response.json().then(content => {
-                        setError(null)
-                        setSuccess(true)
-                        navigate("/")
-                    })
-                }
-            })
-            .catch(error => setError(error));
+                })
+                .catch(error => setError(error));
         }
     }
-     
-    return ( 
+
+    return (
         <React.Fragment>
             <Container maxWidth="sm">
-                <Box sx={{width: 500, m: 4}}>
-                <form autoComplete="off" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff" }}>
-                    <TextField 
-                        label="Email"
-                        onChange={e => setEmail(e.target.value)}
-                        required
-                        variant="outlined"
-                        color="primary"
-                        type="email"
-                        sx={{mb: 3, backgroundColor: "#fff"}}
-                        fullWidth
-                        value={email}
-                        error={emailError}
-                    />
-                    <></>
-                    <TextField 
-                        label="Password"
-                        onChange={e => setPassword(e.target.value)}
-                        required
-                        variant="outlined"
-                        color="primary"
-                        type="password"
-                        value={password}
-                        error={passwordError}
-                        fullWidth
-                        sx={{mb: 3, backgroundColor: "#fff"}}
-                    />
-                    {success?<Alert sx={{mb: 4}} severity="success">Logged in successfully!</Alert>:null}
-                    {error?<Alert sx={{mb: 4}} severity="error">{error}</Alert>:null}
-                    <Button sx={{mb: 4}} variant="contained" color="primary" type="submit">Login</Button>
-                </form>
-                <Typography>Need an account? <Link to="/register">Register here</Link></Typography>
+                <Box sx={{ width: 500, m: 4 }}>
+                    <form autoComplete="off" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff" }}>
+                        <TextField
+                            label="Email"
+                            onChange={e => setEmail(e.target.value)}
+                            required
+                            variant="outlined"
+                            color="primary"
+                            type="email"
+                            sx={{ mb: 3, backgroundColor: "#fff" }}
+                            fullWidth
+                            value={email}
+                            error={emailError}
+                        />
+                        <></>
+                        <TextField
+                            label="Password"
+                            onChange={e => setPassword(e.target.value)}
+                            required
+                            variant="outlined"
+                            color="primary"
+                            type="password"
+                            value={password}
+                            error={passwordError}
+                            fullWidth
+                            sx={{ mb: 3, backgroundColor: "#fff" }}
+                        />
+                        {success ? <Alert sx={{ mb: 4 }} severity="success">Logged in successfully!</Alert> : null}
+                        {error ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
+                        <Button sx={{ mb: 4 }} variant="contained" color="primary" type="submit">Login</Button>
+                    </form>
+                    <Typography>Need an account? <Link to="/register">Register here</Link></Typography>
                 </Box>
             </Container>
         </React.Fragment>
-     );
+    );
 }
- 
+
 export default Login;
