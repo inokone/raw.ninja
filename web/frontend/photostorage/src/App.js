@@ -27,10 +27,10 @@ const App = () => {
         <header className="App-header">
           <div className="wrapper">
             <Routes>
-              <Route path="/login" element={<Login />} />
+              <Route path="/login" element={<Login setUser={setUser} />} />
               <Route path="/logout" element={<Logout setUser={setUser} />} />
               <Route path="/register" element={<RegisterForm />} />
-              <Route element={<ProtectedRoute user={user} setUser={setUser} />}>
+              <Route element={<ProtectedRoute user={user} redirect="/login" />}>
                 <Route path="/" element={<Dashboard user={user} />} />
                 <Route path="/upload" element={<Upload user={user} />} />
                 <Route path="/photos" element={<PhotoList user={user} />} />

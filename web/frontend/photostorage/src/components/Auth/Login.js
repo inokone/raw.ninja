@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom"
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const Login = () => {
+const Login = (props) => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -40,15 +40,41 @@ const Login = () => {
                             response.json().then(content => setError(content.message))
                         }
                     } else {
-                        response.json().then(content => {
-                            setError(null)
-                            setSuccess(true)
-                            navigate("/")
-                        })
+                        setError(null)
+                        setSuccess(true)
+                        updateLoggedinUser("/")
                     }
                 })
                 .catch(error => setError(error));
         }
+    }
+
+    const updateLoggedinUser = (redirectPath) => {
+        console.log("fetching profile..")
+        fetch(REACT_APP_API_PREFIX + '/api/v1/auth/profile', {
+            method: "GET",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status !== 200) {
+                        setError(response.status + ": " + response.statusText);
+                    } else {
+                        response.json().then(content => setError(content))
+                        navigate(redirectPath)
+                    }
+                } else {
+                    response.json().then(content => {
+                        props.setUser(content)
+                        navigate(redirectPath)
+                    })
+                }
+            })
+            .catch(error => setError(error));
     }
 
     return (
