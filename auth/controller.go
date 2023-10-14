@@ -13,6 +13,11 @@ const (
 	jwtTokenKey string = "Authorization"
 )
 
+var (
+	StatusInvalidCredentials common.StatusMessage = common.StatusMessage{Code: 404, Message: "User does not exist or password does not match!"}
+	StatusBadRequest         common.StatusMessage = common.StatusMessage{Code: 400, Message: "Incorrect user data provided!"}
+)
+
 type Controller struct {
 	store  Repository
 	config common.AuthConfig
@@ -43,10 +48,7 @@ func (c Controller) Signup(g *gin.Context) {
 	var s Registration
 	err := g.Bind(&s)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{
-			Code:    400,
-			Message: "Incorrect user registration data provided!",
-		})
+		g.JSON(http.StatusBadRequest, StatusBadRequest)
 		return
 	}
 	user, err := NewUser(s.Email, s.Password, s.Phone)
@@ -84,28 +86,19 @@ func (c Controller) Login(g *gin.Context) {
 	var s Credentials
 	err := g.Bind(&s)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{
-			Code:    400,
-			Message: "Incorrect user registration data provided!",
-		})
+		g.JSON(http.StatusBadRequest, StatusBadRequest)
 		return
 	}
 
 	user, err := c.store.ByEmail(s.Email)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{
-			Code:    400,
-			Message: "User does not exist or password does not match!",
-		})
+		g.JSON(http.StatusBadRequest, StatusInvalidCredentials)
 		return
 	}
 
 	verified := user.VerifyPassword(s.Password)
 	if !verified {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{
-			Code:    400,
-			Message: "User does not exist or password does not match!",
-		})
+		g.JSON(http.StatusBadRequest, StatusInvalidCredentials)
 		return
 	}
 

@@ -16,6 +16,12 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	StatusNotFound       = common.StatusMessage{Code: 404, Message: "Photo does not exist!"}
+	StatusMalformedPhoto = common.StatusMessage{Code: 400, Message: "Malformed photo data!"}
+	ErrMalformedRequest  = errors.New("photo data inconsistent")
+)
+
 type Controller struct {
 	rep Repository
 }
@@ -141,7 +147,7 @@ func (c Controller) List(g *gin.Context) {
 
 	result, error := c.rep.All(user.ID.String())
 	if error != nil {
-		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
+		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
 	}
 
@@ -169,26 +175,15 @@ func (c Controller) List(g *gin.Context) {
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id [get]
 func (c Controller) Get(g *gin.Context) {
-	user, error := currentUser(g)
-	if error != nil {
-		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
-		return
-	}
-
 	id := g.Param("id")
-
 	result, error := c.rep.Get(id)
 	if error != nil {
-		g.JSON(http.StatusNotFound, common.StatusMessage{
-			Code:    404,
-			Message: "Photo does not exist!",
-		})
+		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
 	}
 
-	// Accessing other user's photos is forbidden
-	if result.UserID != user.ID.String() {
-		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photo does not exist!"})
+	if error = authorize(g, result.UserID); error != nil {
+		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
 	}
 
@@ -208,34 +203,27 @@ func (c Controller) Get(g *gin.Context) {
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id [put]
 func (c Controller) Update(g *gin.Context) {
-	user, error := currentUser(g)
-	if error != nil {
-		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
-		return
-	}
-
 	id := g.Param("id")
 	persisted, error := c.rep.Get(id)
 	if error != nil {
-		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photo does not exist!"})
+		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
 	}
 
-	// Changing other user's photos is forbidden
-	if persisted.UserID != user.ID.String() {
-		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photo does not exist!"})
+	if error = authorize(g, persisted.UserID); error != nil {
+		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
 	}
 
 	var newVersion Response
 	if err := g.Bind(&newVersion); err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 200, Message: "Malformed photo data!"})
+		g.JSON(http.StatusBadRequest, StatusMalformedPhoto)
 		return
 	}
 
 	err := applyChange(&persisted, newVersion)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 200, Message: err.Error()})
+		g.JSON(http.StatusBadRequest, StatusMalformedPhoto)
 		return
 	}
 
@@ -245,7 +233,7 @@ func (c Controller) Update(g *gin.Context) {
 
 func applyChange(persisted *Photo, newVersion Response) error {
 	if persisted.ID.String() != newVersion.ID {
-		return errors.New("photo data inconsistent, ID does not match the path")
+		return ErrMalformedRequest
 	}
 	persisted.Desc.Tags = newVersion.Desc.Tags
 	persisted.Desc.Favorite = newVersion.Desc.Favorite
@@ -265,34 +253,22 @@ func applyChange(persisted *Photo, newVersion Response) error {
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id/download [get]
 func (c Controller) Download(g *gin.Context) {
-	user, error := currentUser(g)
-	if error != nil {
-		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
-		return
-	}
-
 	id := g.Param("id")
 	img, error := c.rep.Get(id)
 	if error != nil {
-		g.JSON(http.StatusNotFound, common.StatusMessage{
-			Code:    404,
-			Message: "Raw file does not exist!",
-		})
+		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
 	}
 
-	if img.UserID != user.ID.String() {
-		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Raw file does not exist!"})
+	if error = authorize(g, img.UserID); error != nil {
+		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
 	}
+
 	fileName := img.Desc.FileName
-
 	raw, error := c.rep.Raw(id)
 	if error != nil {
-		g.JSON(http.StatusNotFound, common.StatusMessage{
-			Code:    404,
-			Message: "Raw file does not exist!",
-		})
+		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
 	}
 
@@ -314,39 +290,39 @@ func (c Controller) Download(g *gin.Context) {
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id/thumbnail [get]
 func (c Controller) Thumbnail(g *gin.Context) {
-	user, error := currentUser(g)
-	if error != nil {
-		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
-		return
-	}
-
 	id := g.Param("id")
 	img, error := c.rep.Get(id)
 	if error != nil {
-		g.JSON(http.StatusNotFound, common.StatusMessage{
-			Code:    404,
-			Message: "Image file does not exist!",
-		})
+		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
 	}
-	if img.UserID != user.ID.String() {
-		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Image file does not exist!"})
-		return
-	}
-	fileName := img.Desc.FileName
 
+	if error = authorize(g, img.UserID); error != nil {
+		g.JSON(http.StatusNotFound, StatusNotFound)
+		return
+	}
+
+	fileName := img.Desc.FileName
 	thumbnail, error := c.rep.Thumbnail(id)
 	if error != nil {
-		g.JSON(http.StatusNotFound, common.StatusMessage{
-			Code:    404,
-			Message: "Image file does not exist!",
-		})
+		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
 	}
 
 	g.Header("Content-Description", "File Transfer")
 	g.Header("Content-Disposition", "attachment; filename="+fileName)
 	g.Data(http.StatusOK, "application/octet-stream", thumbnail)
+}
+
+func authorize(g *gin.Context, userID string) error {
+	user, error := currentUser(g)
+	if error != nil {
+		return error
+	}
+	if userID != user.ID.String() {
+		return errors.New("user is not authorized")
+	}
+	return nil
 }
 
 func currentUser(g *gin.Context) (*auth.User, error) {
