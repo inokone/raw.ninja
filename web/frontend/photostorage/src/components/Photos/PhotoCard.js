@@ -74,7 +74,6 @@ const PhotoCard = (props) => {
           }}
         >
           <Typography variant="body1">{props.image.descriptor.filename}</Typography>
-          <Typography variant="body2">{new Date(props.image.descriptor.uploaded).toLocaleDateString()}</Typography>
         </Box>
       </Box>
       <CardActionArea>

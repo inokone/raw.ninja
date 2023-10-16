@@ -11,8 +11,8 @@ import (
 )
 
 func initDb(c common.RDBConfig) error {
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", c.Host, c.Username, c.Password, c.Database, c.Port)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	cs := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", c.Host, c.Username, c.Password, c.Database, c.Port)
+	db, err := gorm.Open(postgres.Open(cs), &gorm.Config{})
 	if err != nil {
 		return err
 	}

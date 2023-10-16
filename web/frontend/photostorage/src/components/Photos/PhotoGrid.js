@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CircularProgress, Alert, Grid } from "@mui/material";
+import { CircularProgress, Alert, Grid, Typography } from "@mui/material";
 import PhotoCard from '../Photos/PhotoCard';
 
 
@@ -70,12 +70,28 @@ const PhotoGrid = (props) => {
             });
     }
 
+    const dateOf = (image) => {
+        return new Date(image.descriptor.uploaded).toLocaleDateString()
+    }
+
     return (
         <>
             {error !== null ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
             {loading ? <CircularProgress /> :
                 <Grid container spacing={1} sx={{ flexGrow: 1, pl: 2, pt: 3 }} >
-                    {images.map((image) => {
+                    {images.map((image, index) => {
+                        if (index === 0 || dateOf(image) !== dateOf(images[index - 1])) {
+                            return (
+                                <>
+                                    <Grid item key={dateOf(image)} lg={12} sx={{textAlign: 'left'}}>
+                                        <Typography variant='h5' mt={3}>{dateOf(image)}</Typography>
+                                    </Grid>
+                                    <Grid item key={image.id} xs={6} sm={4} md={3} lg={2}>
+                                        <PhotoCard image={image} setImage={setImage} />
+                                    </Grid>
+                                </>
+                            );
+                        }
                         return (
                             <Grid item key={image.id} xs={6} sm={4} md={3} lg={2}>
                                 <PhotoCard image={image} setImage={setImage} />

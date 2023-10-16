@@ -6,12 +6,24 @@ Functionality:
     - Display image with details and download option
     - Quick search by file names
     - Favorite option for images
-  - Next steps:
+    ----
+    - Improve photo grid with line grid view
+    - New Go static code analysis
+    - Extract constants and Status/Error variables on top of Go modules
+    - Set up proper doc comments
+    - Write unit tests - refactor with dependency injection (no framework)
+    - HATEOAS - links for objects
     - Frontend regression tests!
-    - Add dashboard with latest uploads
+    - Optimize pointer usages for large object passing (Photo, Image, Descriptor)
+    - Add dashboard (with the favorite images)
+  - Next steps:
     - Add tooltips and info icons everywhere
-    - Add rating option for raw images
+    - Have a "rows" type of view for photos - photo with details next to it, potentially dwonload and favorite buttons
+    - Add favorite button to 
+    - Add rating option for images
     - Add tags for images
+    - Create secondary image (~FHD size), optional on user preferences - for better image display
+    - Display used space in user preferences
     - Add filtering, ordering and pagination for images
     - Enable batch uploading files
     - Add grouping for images
@@ -28,14 +40,10 @@ Frontend:
 - Refactor React metadata view to use cards instead of tables (https://mui.com/material-ui/react-card/)
 
 Backend:
-- HATEOAS - links for objects
 - Add CSRF - https://www.stackhawk.com/blog/react-csrf-protection-guide-examples-and-how-to-enable-it/
 - Move out GORM, use plain SQL instead
     - rewrite to plain SQL
     - create migration mechanism
-- Write unit tests - refactor with dependency injection (no framework)
-- Set up proper doc comments
-- Optimize pointer usages for large object passing (Photo, Image, Descriptor)
 - Think about integration tests
 - Add AWS and GCP image storage implementation (S3, G CDN)
 - Create microservices architecture
