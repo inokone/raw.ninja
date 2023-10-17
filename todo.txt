@@ -7,9 +7,9 @@ Functionality:
     - Quick search by file names
     - Favorite option for images
     - Delete image
-    - Add dashboard (with the favorite images)
-    ----
+    - Dashboard (with the favorite images)
     - Profile page (connection details, registration date, image count, favorite count and used quota) 
+    ----
     - New Go static code analysis
     - Extract constants and Status/Error variables on top of Go modules
     - Set up proper doc comments
@@ -20,7 +20,6 @@ Functionality:
   - Next steps:
     - Add tooltips and info icons everywhere
     - Have a "rows" type of view for photos - photo with details next to it, potentially dwonload and favorite buttons
-    - Add favorite button to 
     - Add rating option for images
     - Add tags for images
     - Create secondary image (~FHD size), optional on user preferences - for better image display

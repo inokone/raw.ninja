@@ -7,6 +7,7 @@ import (
 	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
 	"github.com/inokone/photostorage/search"
+	"github.com/inokone/photostorage/statistics"
 	"gorm.io/gorm"
 )
 
@@ -15,6 +16,7 @@ func Init(v1 *gin.RouterGroup, db *gorm.DB, ir image.Repository, conf common.App
 	m := auth.NewJWTHandler(db, conf.Auth)
 	a := auth.NewController(db, &conf.Auth)
 	s := search.NewController(db, ir)
+	st := statistics.NewController(db, ir)
 
 	v1.GET("healthcheck", common.Healthcheck)
 
@@ -42,5 +44,10 @@ func Init(v1 *gin.RouterGroup, db *gorm.DB, ir image.Repository, conf common.App
 	{
 		g.GET("", s.Search)
 		g.GET("/favorites", s.Favorites)
+	}
+
+	g = v1.Group("/statistics", m.Validate)
+	{
+		g.GET("/user", st.UserStatistics)
 	}
 }

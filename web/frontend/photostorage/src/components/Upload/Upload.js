@@ -58,7 +58,7 @@ const Upload = () => {
           <Box m={5}>
             <DropzoneArea m={5} variant="sm"
               onChange={handleChange}
-              acceptedFiles={[".dng, .arw, .cr2, .crw, .nef, .orf, .jpg, .jpeg, .png"]}
+              acceptedFiles={[".dng, .arw, .cr2, .crw, .nef, .orf, .raf, .jpg, .jpeg, .png"]}
               maxFileSize={100000000} sx={{ flexGrow: 1 }}
             />
           </Box>

@@ -61,3 +61,30 @@ func (s *Repository) Raw(id string) ([]byte, error) {
 func (s *Repository) Thumbnail(id string) ([]byte, error) {
 	return s.Ir.Thumbnail(id)
 }
+
+func (s *Repository) Statistics(userID string) (UserStats, error) {
+	var photos, favorites int
+	s.DB.Raw("SELECT count(id) FROM photos WHERE user_id = ?", userID).Scan(&photos)
+	s.DB.Raw("SELECT count(p.id) FROM photos p JOIN descriptors d ON d.id = p.desc_id WHERE p.user_id = ? and d.favorite = true", userID).Scan(&favorites)
+
+	photoList, err := s.All(userID)
+	if err != nil {
+		return UserStats{}, err
+	}
+	photoIDs := make([]string, len(photoList))
+
+	for idx, photo := range photoList {
+		photoIDs[idx] = photo.ID.String()
+	}
+
+	usedSpace, err := s.Ir.UsedSpace(photoIDs)
+	if err != nil {
+		return UserStats{}, err
+	}
+
+	return UserStats{
+		Photos:    photos,
+		Favorites: favorites,
+		UsedSpace: usedSpace,
+	}, nil
+}

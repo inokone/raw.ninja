@@ -15,6 +15,8 @@ type Repository interface {
 	Image(id string) ([]byte, error)
 
 	Delete(id string) error
+
+	UsedSpace(ids []string) (int64, error)
 }
 
 const (
@@ -75,6 +77,36 @@ func (s *LocalRepository) Thumbnail(id string) ([]byte, error) {
 		return nil, err
 	}
 	return thumbnail, nil
+}
+
+func (s *LocalRepository) UsedSpace(ids []string) (int64, error) {
+	var sum int64 = 0
+	for _, id := range ids {
+		path := filepath.Join(s.Path, photoFolder, id)
+		c, err := getFolderSize(path)
+		if err != nil {
+			return 0, err
+		}
+		sum += c
+	}
+	return sum, nil
+}
+
+func getFolderSize(path string) (int64, error) {
+	var size int64
+	err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return nil
+	})
+	if err != nil {
+		return 0, err
+	}
+	return size, nil
 }
 
 // TODO: implement AWS S3 storage and try GCP storage

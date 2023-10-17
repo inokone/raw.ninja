@@ -70,8 +70,8 @@ const App = () => {
                 <Route path="/upload" element={<Upload user={user} />} />
                 <Route path="/photos" element={<PhotoList user={user} />} />
                 <Route path="/photos/:photosId" element={<PhotoDisplay user={user} />} />
-                <Route path="/users/:userId" element={<UserProfile user={user} />} />
-                <Route path="/profile" element={<Preferences user={user} />} />
+                <Route path="/users/:userId" element={<Preferences user={user} />} />
+                <Route path="/profile" element={<UserProfile user={user} />} />
                 <Route path="/search" element={<SearchResult query={query} />} />
               </Route>
               <Route path="*" element={<NotFoundPage />} />

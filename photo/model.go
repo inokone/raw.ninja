@@ -34,3 +34,10 @@ type Response struct {
 	ID   string              `json:"id"`
 	Desc descriptor.Response `json:"descriptor"`
 }
+
+type UserStats struct {
+	ID        uuid.UUID
+	Photos    int
+	Favorites int
+	UsedSpace int64
+}
