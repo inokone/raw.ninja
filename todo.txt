@@ -6,8 +6,10 @@ Functionality:
     - Display image with details and download option
     - Quick search by file names
     - Favorite option for images
+    - Delete image
+    - Add dashboard (with the favorite images)
     ----
-    - Improve photo grid with line grid view
+    - Profile page (connection details, registration date, image count, favorite count and used quota) 
     - New Go static code analysis
     - Extract constants and Status/Error variables on top of Go modules
     - Set up proper doc comments
@@ -15,7 +17,6 @@ Functionality:
     - HATEOAS - links for objects
     - Frontend regression tests!
     - Optimize pointer usages for large object passing (Photo, Image, Descriptor)
-    - Add dashboard (with the favorite images)
   - Next steps:
     - Add tooltips and info icons everywhere
     - Have a "rows" type of view for photos - photo with details next to it, potentially dwonload and favorite buttons

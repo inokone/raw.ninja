@@ -19,6 +19,12 @@ func (s *Repository) Create(photo Photo) (uuid.UUID, error) {
 	return photo.ID, err
 }
 
+func (s *Repository) Delete(id string) error {
+	var photo Photo
+	s.DB.Delete(&photo, "id = ?", id)
+	return nil
+}
+
 func (s *Repository) Update(photo Photo) error {
 	s.DB.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&photo)
 	return nil
@@ -33,6 +39,12 @@ func (s *Repository) Get(id string) (Photo, error) {
 func (s *Repository) All(userID string) ([]Photo, error) {
 	var photos []Photo
 	result := s.DB.Preload("Desc.Metadata").Where("user_id = ?", userID).Order("created_at ASC").Find(&photos)
+	return photos, result.Error
+}
+
+func (s *Repository) Favorites(userID string) ([]Photo, error) {
+	var photos []Photo
+	result := s.DB.Preload("Desc.Metadata").Joins("JOIN descriptors ON descriptors.id = photos.desc_id").Where("photos.user_id = ?", userID).Where("descriptors.favorite = true").Order("photos.created_at DESC").Find(&photos)
 	return photos, result.Error
 }
 

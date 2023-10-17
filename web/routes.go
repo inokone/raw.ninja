@@ -33,6 +33,7 @@ func Init(v1 *gin.RouterGroup, db *gorm.DB, ir image.Repository, conf common.App
 		g.GET("/", p.List)
 		g.GET("/:id", p.Get)
 		g.PUT("/:id", p.Update)
+		g.DELETE("/:id", p.Delete)
 		g.GET("/:id/download", p.Download)
 		g.GET("/:id/thumbnail", p.Thumbnail)
 	}
@@ -40,5 +41,6 @@ func Init(v1 *gin.RouterGroup, db *gorm.DB, ir image.Repository, conf common.App
 	g = v1.Group("/search", m.Validate)
 	{
 		g.GET("", s.Search)
+		g.GET("/favorites", s.Favorites)
 	}
 }

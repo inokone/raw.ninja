@@ -63,7 +63,7 @@ const Upload = () => {
             />
           </Box>
         </Container> : null}
-      {stage === 1 ? <CircularProgress /> : null}
+      {stage === 1 ? <CircularProgress mt={10} /> : null}
       {stage === 2 ? <Alert sx={{ mb: 4 }} severity="success">Upload successful!</Alert> : null}
       {stage === 3 ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
     </>

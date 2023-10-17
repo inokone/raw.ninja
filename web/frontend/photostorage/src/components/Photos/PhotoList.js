@@ -6,7 +6,7 @@ import PhotoGrid from '../Photos/PhotoGrid';
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const SearchResult = (props) => {
+const PhotoList = () => {
 
   const populate = () => {
     return fetch(REACT_APP_API_PREFIX + '/api/v1/photos/', {
@@ -21,4 +21,4 @@ const SearchResult = (props) => {
   )
 }
 
-export default SearchResult;
+export default PhotoList;

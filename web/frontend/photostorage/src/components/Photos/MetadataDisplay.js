@@ -42,10 +42,6 @@ const MetadataDisplay = (props) => {
       <Table size="small">
         <TableBody>
           <TableRow>
-            <TableCell className={classes.tableDataCell}>Name</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.filename}</TableCell>
-          </TableRow>
-          <TableRow>
             <TableCell className={classes.tableDataCell}>Format</TableCell>
             <TableCell className={classes.tableDataCell}>{props.metadata.format}</TableCell>
           </TableRow>

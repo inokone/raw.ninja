@@ -53,7 +53,7 @@ const App = () => {
       {isLoading ? (
         <header className="App-header">
           <div className="wrapper">
-            <CircularProgress />
+            <CircularProgress mt={5}/>
           </div>
         </header>
       ) : (

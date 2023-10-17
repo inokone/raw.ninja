@@ -1,8 +1,7 @@
 import * as React from 'react';
 import DownloadIcon from '@mui/icons-material/Download';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { useNavigate } from "react-router-dom"
-import { Card, CardMedia, Box, CardActions, CardActionArea, Typography, IconButton, Tooltip } from "@mui/material";
+import { Card, CardMedia, Box, CardActions, CardActionArea, IconButton, Tooltip } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 
 const { REACT_APP_API_PREFIX } = process.env;
@@ -12,12 +11,11 @@ const useStyles = makeStyles((theme) => ({
     color: 'red',
   },
   nonfavorite: {
-    color: 'gray',
+    color: 'lightgray',
   },
 }));
 
 const PhotoCard = (props) => {
-  const navigate = useNavigate()
   const classes = useStyles();
 
   const handleFavoriteClick = (image) => {
@@ -48,12 +46,12 @@ const PhotoCard = (props) => {
   }
 
   const handleClick = (id) => {
-    navigate("/photos/" + id)
+    props.onClick(id)
   }
 
   return (
-    <Card sx={{ maxWidth: 250 }}>
-      <Box sx={{ position: 'relative' }}>
+    <Card sx={{ maxWidth: 250, position: 'relative', cursor: "pointer" }}>
+      <Box>
         <CardMedia
           component="img"
           height="200px"
@@ -62,21 +60,16 @@ const PhotoCard = (props) => {
           alt={props.image.descriptor.filename}
           onClick={() => handleClick(props.image.id)}
         />
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            width: '100%',
-            bgcolor: 'rgba(0, 0, 0, 0.54)',
-            color: 'white',
-            padding: '10px',
-          }}
-        >
-          <Typography variant="body1">{props.image.descriptor.filename}</Typography>
-        </Box>
       </Box>
-      <CardActionArea>
+      <CardActionArea sx={{
+        background:
+          'linear-gradient(to top, rgba(0,0,0,0.7) 0%, ' +
+          'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        width: '100%',
+      }}>
         <CardActions disableSpacing>
           <Tooltip title="Prevent file from being deleted by life-cycle rules">
             <IconButton aria-label="Add to favorites" onClick={() => handleFavoriteClick(props.image)}>
@@ -84,7 +77,7 @@ const PhotoCard = (props) => {
             </IconButton>
           </Tooltip>
           <Tooltip title="Download RAW file">
-            <IconButton aria-label="Download RAW image" onClick={() => handleDownloadClick(props.image)}>
+            <IconButton aria-label="Download RAW image" onClick={() => handleDownloadClick(props.image)} sx={{ color: 'lightgray' }}>
               <DownloadIcon />
             </IconButton>
           </Tooltip>

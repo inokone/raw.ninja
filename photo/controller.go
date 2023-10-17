@@ -19,6 +19,7 @@ import (
 var (
 	StatusNotFound       = common.StatusMessage{Code: 404, Message: "Photo does not exist!"}
 	StatusMalformedPhoto = common.StatusMessage{Code: 400, Message: "Malformed photo data!"}
+	StatusUnknownError   = common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"}
 	ErrMalformedRequest  = errors.New("photo data inconsistent")
 )
 
@@ -229,6 +230,38 @@ func (c Controller) Update(g *gin.Context) {
 
 	c.rep.Update(persisted)
 	g.JSON(http.StatusOK, common.StatusMessage{Code: 200, Message: "Photo updated!"})
+}
+
+// Delete godoc
+// @Summary Delete photo endpoint
+// @Schemes
+// @Tags photos
+// @Description Deletes the photo with the provided ID
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the photo to delete"
+// @Success 200 {object} photo.Response
+// @Failure 404 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
+// @Router /photos/:id [delete]
+func (c Controller) Delete(g *gin.Context) {
+	id := g.Param("id")
+	result, error := c.rep.Get(id)
+	if error != nil {
+		g.JSON(http.StatusNotFound, StatusNotFound)
+		return
+	}
+
+	if error = authorize(g, result.UserID); error != nil {
+		g.JSON(http.StatusNotFound, StatusNotFound)
+		return
+	}
+
+	if error = c.rep.Delete(id); error != nil {
+		g.JSON(http.StatusInternalServerError, StatusNotFound)
+		return
+	}
+	g.JSON(http.StatusOK, common.StatusMessage{Code: 200, Message: "Photo deleted!"})
 }
 
 func applyChange(persisted *Photo, newVersion Response) error {

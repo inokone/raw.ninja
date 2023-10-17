@@ -40,7 +40,7 @@ func NewController(db *gorm.DB, ir image.Repository) Controller {
 // @Success 200 {array} photo.Response
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /search [get]
+// @Router /search/quick [get]
 func (c Controller) Search(g *gin.Context) {
 	user, error := currentUser(g)
 	if error != nil {
@@ -51,6 +51,41 @@ func (c Controller) Search(g *gin.Context) {
 	unsafeText := g.DefaultQuery("query", "")
 	searchText := c.p.Sanitize(unsafeText)
 	result, error := c.rep.Search(user.ID.String(), searchText)
+	if error != nil {
+		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
+		return
+	}
+
+	images := make([]photo.Response, len(result))
+	for i, photo := range result {
+		images[i] = photo.AsResp("http://" + g.Request.Host + "/api/v1/photos/" + photo.ID.String())
+	}
+	if error != nil {
+		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Photos could not be exported!"})
+	}
+
+	g.JSON(http.StatusOK, images)
+}
+
+// Favorites godoc
+// @Summary Search user's favorite photo descriptors endpoint
+// @Schemes
+// @Tags photos
+// @Description Returns favorite photo descriptors
+// @Accept json
+// @Produce json
+// @Success 200 {array} photo.Response
+// @Failure 404 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
+// @Router /search/favorites [get]
+func (c Controller) Favorites(g *gin.Context) {
+	user, error := currentUser(g)
+	if error != nil {
+		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		return
+	}
+
+	result, error := c.rep.Favorites(user.ID.String())
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 		return

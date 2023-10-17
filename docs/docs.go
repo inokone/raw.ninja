@@ -167,6 +167,90 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "Updates tags and favorite setting for RAW file",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "Update photo endpoint for tags and favorite setting",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the photo information to collect",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes the photo with the provided ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "Delete photo endpoint",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the photo to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/photo.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
             }
         },
         "/photos/:id/download": {
@@ -186,6 +270,53 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "ID of the RAW photo to download",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/photos/:id/thumbnail": {
+            "get": {
+                "description": "Returns the thumbnail for the provided ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "Thumbnail image endpoint",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the thumbnail to download",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -262,6 +393,82 @@ const docTemplate = `{
                 }
             }
         },
+        "/search/favorites": {
+            "get": {
+                "description": "Returns favorite photo descriptors",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "Search user's favorite photo descriptors endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/photo.Response"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/search/quick": {
+            "get": {
+                "description": "Returns all photo descriptors matching the provided search text",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "Quick search user's photo descriptors endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/photo.Response"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/signup": {
             "post": {
                 "description": "Registers the user",
@@ -320,7 +527,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
+                            "$ref": "#/definitions/photo.UploadSuccess"
                         }
                     },
                     "400": {
@@ -385,6 +592,9 @@ const docTemplate = `{
         "descriptor.Response": {
             "type": "object",
             "properties": {
+                "favorite": {
+                    "type": "boolean"
+                },
                 "filename": {
                     "type": "string"
                 },
@@ -414,34 +624,34 @@ const docTemplate = `{
         "image.Response": {
             "type": "object",
             "properties": {
+                "ISO": {
+                    "type": "integer"
+                },
                 "aperture": {
                     "type": "number"
                 },
-                "cameraMake": {
+                "camera_make": {
                     "type": "string"
                 },
-                "cameraModel": {
+                "camera_model": {
                     "type": "string"
                 },
-                "cameraSW": {
+                "camera_sw": {
                     "type": "string"
                 },
                 "colors": {
                     "type": "integer"
                 },
-                "dataSize": {
+                "data_size": {
                     "type": "integer"
                 },
                 "height": {
                     "type": "integer"
                 },
-                "iso": {
-                    "type": "integer"
-                },
-                "lensMake": {
+                "lens_make": {
                     "type": "string"
                 },
-                "lensModel": {
+                "lens_model": {
                     "type": "string"
                 },
                 "shutter": {
@@ -462,6 +672,17 @@ const docTemplate = `{
                     "$ref": "#/definitions/descriptor.Response"
                 },
                 "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "photo.UploadSuccess": {
+            "type": "object",
+            "properties": {
+                "photoId": {
+                    "type": "string"
+                },
+                "userId": {
                     "type": "string"
                 }
             }

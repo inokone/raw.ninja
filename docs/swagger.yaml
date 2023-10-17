@@ -24,6 +24,8 @@ definitions:
     type: object
   descriptor.Response:
     properties:
+      favorite:
+        type: boolean
       filename:
         type: string
       format:
@@ -43,25 +45,25 @@ definitions:
     type: object
   image.Response:
     properties:
+      ISO:
+        type: integer
       aperture:
         type: number
-      cameraMake:
+      camera_make:
         type: string
-      cameraModel:
+      camera_model:
         type: string
-      cameraSW:
+      camera_sw:
         type: string
       colors:
         type: integer
-      dataSize:
+      data_size:
         type: integer
       height:
         type: integer
-      iso:
-        type: integer
-      lensMake:
+      lens_make:
         type: string
-      lensModel:
+      lens_model:
         type: string
       shutter:
         type: number
@@ -75,6 +77,13 @@ definitions:
       descriptor:
         $ref: '#/definitions/descriptor.Response'
       id:
+        type: string
+    type: object
+  photo.UploadSuccess:
+    properties:
+      photoId:
+        type: string
+      userId:
         type: string
     type: object
 info:
@@ -153,6 +162,34 @@ paths:
       tags:
       - photos
   /photos/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the photo with the provided ID
+      parameters:
+      - description: ID of the photo to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/photo.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Delete photo endpoint
+      tags:
+      - photos
     get:
       consumes:
       - application/json
@@ -179,6 +216,34 @@ paths:
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: Get photo endpoint
+      tags:
+      - photos
+    put:
+      consumes:
+      - application/json
+      description: Updates tags and favorite setting for RAW file
+      parameters:
+      - description: ID of the photo information to collect
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Update photo endpoint for tags and favorite setting
       tags:
       - photos
   /photos/:id/download:
@@ -212,6 +277,37 @@ paths:
       summary: Download RAW file endpoint
       tags:
       - photos
+  /photos/:id/thumbnail:
+    get:
+      consumes:
+      - application/json
+      description: Returns the thumbnail for the provided ID
+      parameters:
+      - description: ID of the thumbnail to download
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Thumbnail image endpoint
+      tags:
+      - photos
   /profile:
     get:
       consumes:
@@ -242,6 +338,56 @@ paths:
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: Reset password endpoint
+  /search/favorites:
+    get:
+      consumes:
+      - application/json
+      description: Returns favorite photo descriptors
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/photo.Response'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Search user's favorite photo descriptors endpoint
+      tags:
+      - photos
+  /search/quick:
+    get:
+      consumes:
+      - application/json
+      description: Returns all photo descriptors matching the provided search text
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/photo.Response'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Quick search user's photo descriptors endpoint
+      tags:
+      - photos
   /signup:
     post:
       consumes:
@@ -280,7 +426,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/common.StatusMessage'
+            $ref: '#/definitions/photo.UploadSuccess'
         "400":
           description: Bad Request
           schema:

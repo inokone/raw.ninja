@@ -35,7 +35,7 @@ const Logout = ({ setUser }) => {
     useEffect(logout);
 
 
-    return <CircularProgress />;
+    return <CircularProgress mt={10}/>;
 };
 
 export default Logout;
