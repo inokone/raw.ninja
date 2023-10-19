@@ -1,7 +1,8 @@
 import React from 'react';
-import { CircularProgress, Alert } from "@mui/material";
+import { Alert } from "@mui/material";
 import { useLocation } from "react-router-dom"
 import DetailedPhotoCard from './DetailedPhotoCard';
+import ProgressDisplay from '../Common/ProgressDisplay';
 
 const { REACT_APP_API_PREFIX } = process.env;
 
@@ -46,7 +47,7 @@ const PhotoDisplay = () => {
   return (
     <>
       {error !== null ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
-      {loading ? <CircularProgress mt={10} /> : <DetailedPhotoCard image={image} closable={false} />}
+      {loading ? <ProgressDisplay /> : <DetailedPhotoCard image={image} closable={false} />}
     </>
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
-import { CircularProgress, Alert, Grid, Box, Typography } from "@mui/material";
+import { Alert, Grid, Box, Typography } from "@mui/material";
+import ProgressDisplay from '../Common/ProgressDisplay';
 
 const { REACT_APP_API_PREFIX } = process.env;
 
@@ -54,7 +55,7 @@ const Profile = () => {
   return (
     <>
       {error !== null ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
-      {loading ? <CircularProgress mt={10} /> :
+      {loading ? <ProgressDisplay /> :
         <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
           <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.34)', color: 'white', mt: 10, borderRadius: '4px', width: '500px' }}>
             <Grid container>

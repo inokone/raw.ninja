@@ -15,7 +15,7 @@ import Logout from './components/Auth/Logout';
 import ProtectedRoute from './components/Common/ProtectedRoute';
 import NotFoundPage from './components/Common/NotFoundPage';
 import SearchResult from './components/Search/SearchResult';
-import { CircularProgress } from "@mui/material";
+import ProgressDisplay from './components/Common/ProgressDisplay';
 
 
 const { REACT_APP_API_PREFIX } = process.env;
@@ -53,7 +53,7 @@ const App = () => {
       {isLoading ? (
         <header className="App-header">
           <div className="wrapper">
-            <CircularProgress mt={5}/>
+            <ProgressDisplay />
           </div>
         </header>
       ) : (

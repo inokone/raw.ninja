@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from "react-router-dom"
-import { CircularProgress } from "@mui/material";
+import ProgressDisplay from '../Common/ProgressDisplay';
 
 
 const { REACT_APP_API_PREFIX } = process.env;
@@ -35,7 +35,7 @@ const Logout = ({ setUser }) => {
     useEffect(logout);
 
 
-    return <CircularProgress mt={10}/>;
+    return <ProgressDisplay />;
 };
 
 export default Logout;

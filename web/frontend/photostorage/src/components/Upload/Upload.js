@@ -1,9 +1,10 @@
 import * as React from "react";
 import "./Upload.css";
 import { DropzoneArea } from "react-mui-dropzone";
-import { CircularProgress, Alert, Container, Box, Button } from "@mui/material";
+import { Alert, Container, Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom"
 import { createStyles, makeStyles } from '@mui/styles';
+import ProgressDisplay from "../Common/ProgressDisplay";
 
 
 const { REACT_APP_API_PREFIX } = process.env;
@@ -95,7 +96,7 @@ const Upload = () => {
           {files.length > 0 ?
           <Button onClick={handleClick} variant="contained">Upload</Button>: null}
         </Container> : null}
-      {stage === 1 ? <CircularProgress mt={10} /> : null}
+      {stage === 1 ? <ProgressDisplay text="Please wait for processing the uploaded photos..." /> : null}
       {stage === 2 ? <Alert sx={{ mb: 4 }} severity="success">Upload successful!</Alert> : null}
       {stage === 3 ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
     </>

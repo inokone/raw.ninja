@@ -10,6 +10,7 @@ Functionality:
     - Dashboard (with the favorite images)
     - Profile page (connection details, registration date, image count, favorite count and used quota) 
     ----
+    - Fix PhotoGrid selection display mechanism
     - New Go static code analysis
     - Extract constants and Status/Error variables on top of Go modules
     - Set up proper doc comments

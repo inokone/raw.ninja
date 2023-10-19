@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { CircularProgress, Alert, Grid, Typography } from "@mui/material";
+import { Alert, Grid, Typography } from "@mui/material";
 import PhotoCard from '../Photos/PhotoCard';
 import DetailedPhotoCard from './DetailedPhotoCard';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom"
+import ProgressDisplay from '../Common/ProgressDisplay';
 
 const { REACT_APP_API_PREFIX } = process.env;
 
@@ -195,7 +196,7 @@ const PhotoGrid = (props) => {
     return (
         <>
             {error !== null ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
-            {loading ? <CircularProgress mt={15} /> :
+            {loading ? <ProgressDisplay /> :
                 <Grid container spacing={1} sx={{ flexGrow: 1, pl: 2, pt: 3 }} >
                     {images.map((image, index) => {
                         if (isPlaceForSelection(index)) {
