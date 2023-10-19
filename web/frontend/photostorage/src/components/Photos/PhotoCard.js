@@ -62,9 +62,16 @@ const PhotoCard = (props) => {
         />
       </Box>
       <CardActionArea sx={{
+        ...(!props.selected && {
         background:
           'linear-gradient(to top, rgba(0,0,0,0.7) 0%, ' +
           'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+        }),
+        ...(props.selected && {
+          background:
+            'linear-gradient(to top, rgba(0,255,0,0.9) 0%, ' +
+            'rgba(0,255,0,0.9) 10%, rgba(0,0,0,0.65) 11%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+        }),
         position: 'absolute',
         bottom: 0,
         right: 0,

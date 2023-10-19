@@ -39,8 +39,8 @@ func NewController(db *gorm.DB, ir image.Repository) Controller {
 }
 
 type UploadSuccess struct {
-	PhotoID string `json:"photoId"`
-	UserID  string `json:"userId"`
+	PhotoIDs []string `json:"photo_ids"`
+	UserID   string   `json:"user_id"`
 }
 
 // @BasePath /api/v1/photo
@@ -49,10 +49,10 @@ type UploadSuccess struct {
 // @Summary Photo upload endpoint
 // @Schemes
 // @Tags photos
-// @Description Upload a RAW file with descriptor
-// @Accept json
+// @Description Upload RAW files to store
+// @Accept multipart/form-data
 // @Produce json
-// @Param photo formData file true "Photo to store"
+// @Param files[] formData file true "Photos to store"
 // @Success 201 {object} UploadSuccess
 // @Failure 400 {object} common.StatusMessage
 // @Failure 415 {object} common.StatusMessage
@@ -65,43 +65,55 @@ func (c Controller) Upload(g *gin.Context) {
 		return
 	}
 
-	file, err := g.FormFile("file")
+	form, err := g.MultipartForm()
 	if err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Could not extract uploaded file from request!"})
 		return
 	}
 
-	mp, err := file.Open()
-	if err != nil {
-		g.Error(err)
-		return
-	}
-	defer mp.Close()
-	raw, err := io.ReadAll(mp)
-	if err != nil {
-		g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file is corrupt!"})
-		return
-	}
-	target, err := createPhoto(
-		*user,
-		filepath.Base(file.Filename),
-		filepath.Ext(file.Filename)[1:],
-		raw,
-	)
-	if err != nil {
-		g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: fmt.Sprintf("Uploaded file format is not supported! Cause: %v", err)})
+	files := form.File["files[]"]
+	ids := make([]string, 0)
+
+	if len(files) == 0 {
+		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "You have to upload at least 1 file!"})
 		return
 	}
 
-	id, err := c.rep.Create(*target)
-	if err != nil {
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
-		return
+	for _, file := range files {
+		mp, err := file.Open()
+		if err != nil {
+			g.Error(err)
+			return
+		}
+		defer mp.Close()
+		raw, err := io.ReadAll(mp)
+		if err != nil {
+			g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file is corrupt!"})
+			return
+		}
+		target, err := createPhoto(
+			*user,
+			filepath.Base(file.Filename),
+			filepath.Ext(file.Filename)[1:],
+			raw,
+		)
+		if err != nil {
+			g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: fmt.Sprintf("Uploaded file format is not supported! Cause: %v", err)})
+			return
+		}
+
+		id, err := c.rep.Create(*target)
+		if err != nil {
+			g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
+			return
+		}
+
+		ids = append(ids, id.String())
 	}
 
 	g.JSON(http.StatusCreated, UploadSuccess{
-		PhotoID: id.String(),
-		UserID:  user.ID.String(),
+		PhotoIDs: ids,
+		UserID:   user.ID.String(),
 	})
 }
 

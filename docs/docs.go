@@ -15,6 +15,44 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/favorites": {
+            "get": {
+                "description": "Returns favorite photo descriptors",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "Search user's favorite photo descriptors endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/photo.Response"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/healthcheck": {
             "get": {
                 "description": "Returns the status and version of the application",
@@ -373,65 +411,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/reset": {
-            "post": {
-                "description": "Returns the status and version of the application",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Reset password endpoint",
-                "responses": {
-                    "501": {
-                        "description": "Not Implemented",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/search/favorites": {
-            "get": {
-                "description": "Returns favorite photo descriptors",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "photos"
-                ],
-                "summary": "Search user's favorite photo descriptors endpoint",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/photo.Response"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/search/quick": {
+        "/quick": {
             "get": {
                 "description": "Returns all photo descriptors matching the provided search text",
                 "consumes": [
@@ -462,6 +442,26 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/reset": {
+            "post": {
+                "description": "Returns the status and version of the application",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Reset password endpoint",
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
                         "schema": {
                             "$ref": "#/definitions/common.StatusMessage"
                         }
@@ -503,9 +503,9 @@ const docTemplate = `{
         },
         "/upload": {
             "post": {
-                "description": "Upload a RAW file with descriptor",
+                "description": "Upload RAW files to store",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -517,8 +517,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "file",
-                        "description": "Photo to store",
-                        "name": "photo",
+                        "description": "Photos to store",
+                        "name": "files[]",
                         "in": "formData",
                         "required": true
                     }
@@ -538,6 +538,38 @@ const docTemplate = `{
                     },
                     "415": {
                         "description": "Unsupported Media Type",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/user": {
+            "get": {
+                "description": "Returns the user statistics on stored photos",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "User statistics endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/statistics.UserStatistics"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/common.StatusMessage"
                         }
@@ -679,11 +711,40 @@ const docTemplate = `{
         "photo.UploadSuccess": {
             "type": "object",
             "properties": {
-                "photoId": {
+                "photo_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "statistics.UserStatistics": {
+            "type": "object",
+            "properties": {
+                "email": {
                     "type": "string"
                 },
-                "userId": {
+                "favorites": {
+                    "type": "integer"
+                },
+                "id": {
                     "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "photos": {
+                    "type": "integer"
+                },
+                "registration_date": {
+                    "type": "integer"
+                },
+                "used_space": {
+                    "type": "integer"
                 }
             }
         }

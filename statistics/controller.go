@@ -11,6 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// @BasePath /api/v1/statistics
+
 type Controller struct {
 	rep photo.Repository
 }
@@ -25,17 +27,16 @@ func NewController(db *gorm.DB, ir image.Repository) Controller {
 	}
 }
 
-// Statistics godoc
+// UserStatistics godoc
 // @Summary User statistics endpoint
 // @Schemes
-// @Tags photos
 // @Description Returns the user statistics on stored photos
 // @Accept json
 // @Produce json
 // @Success 200 {object} UserStatistics
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /statistics/user [get]
+// @Router /user [get]
 func (c Controller) UserStatistics(g *gin.Context) {
 	userObj, _ := g.Get("user")
 	user := userObj.(auth.User)

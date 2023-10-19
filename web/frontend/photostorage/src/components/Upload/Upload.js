@@ -1,25 +1,45 @@
 import * as React from "react";
+import "./Upload.css";
 import { DropzoneArea } from "react-mui-dropzone";
-import { CircularProgress, Alert, Container, Box } from "@mui/material";
+import { CircularProgress, Alert, Container, Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom"
+import { createStyles, makeStyles } from '@mui/styles';
 
 
 const { REACT_APP_API_PREFIX } = process.env;
+
+const useStyles = makeStyles(theme => createStyles({
+  previewChip: {
+    minWidth: 160,
+    maxWidth: 210,
+    borderWidth: '2px',
+    background: '#bbb',
+    color: '#0056b2',
+    fontWeight: 'bold',
+  },
+}));
 
 const Upload = () => {
   const navigate = useNavigate()
   const [stage, setStage] = React.useState(0)
   const [error, setError] = React.useState()
+  const [files, setFiles] = React.useState([])
+  const classes = useStyles();
 
   const handleChange = (files) => {
+    setFiles(files)
+  }
+
+  const handleClick = () => {
     if (files.length === 0) {
       return
     }
     setStage(1)
-    console.log(files)
     var data = new FormData()
-    data.append('file', files[0])
-    data.append('path', files[0].path)
+
+    for (const file of files) {
+      data.append('files[]', file, file.name);
+    }
 
     fetch(REACT_APP_API_PREFIX + '/api/v1/photos/', {
       method: "POST",
@@ -28,6 +48,7 @@ const Upload = () => {
       body: data
     })
       .then(response => {
+        console.log(response)
         if (!response.ok) {
           if (response.status !== 200) {
             setStage(3)
@@ -38,10 +59,10 @@ const Upload = () => {
           }
         } else {
           response.json().then(content => {
-            let photoId = content.photoId
+            let first = content.photo_ids[0]
             setStage(2)
             setError(null)
-            navigate("/photos/" + photoId)
+            navigate("/photos/" + first)
           })
         }
       })
@@ -54,14 +75,25 @@ const Upload = () => {
   return (
     <>
       {stage === 0 ?
-        <Container maxWidth="m">
+        <Container>
           <Box m={5}>
-            <DropzoneArea m={5} variant="sm"
+            <DropzoneArea 
+              m={5} 
+              variant="l" 
+              filesLimit={20}
               onChange={handleChange}
               acceptedFiles={[".dng, .arw, .cr2, .crw, .nef, .orf, .raf, .jpg, .jpeg, .png"]}
               maxFileSize={100000000} sx={{ flexGrow: 1 }}
+              showPreviews={true}
+              showPreviewsInDropzone={false}
+              useChipsForPreview
+              previewGridProps={{ container: { spacing: 1, direction: 'row' } }}
+              previewChipProps={{ classes: { root: classes.previewChip } }}
+              previewText=""
             />
           </Box>
+          {files.length > 0 ?
+          <Button onClick={handleClick} variant="contained">Upload</Button>: null}
         </Container> : null}
       {stage === 1 ? <CircularProgress mt={10} /> : null}
       {stage === 2 ? <Alert sx={{ mb: 4 }} severity="success">Upload successful!</Alert> : null}

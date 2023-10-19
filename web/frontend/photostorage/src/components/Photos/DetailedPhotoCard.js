@@ -125,7 +125,7 @@ const DetailedPhotoCard = (props) => {
               </Grid>
               <Grid xs={4}>
                 <Tooltip title="Mark file as favorite">
-                  <Button variant='contained' color='secondary' onClick={handleFavoriteClick}>Favorite</Button>
+                  <Button variant='contained' color='secondary' onClick={handleFavoriteClick}>{!props.image.descriptor.favorite ? "Favorite" : "Unfavorite"}</Button>
                 </Tooltip>
               </Grid>
               <Grid xs={4}>

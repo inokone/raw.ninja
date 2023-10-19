@@ -119,7 +119,7 @@ const PhotoGrid = (props) => {
                 </>
             );
         }
-        return card(image, index);
+        return card(image, index, isSelected);
     };
 
     const selection = (image) => {
@@ -173,6 +173,10 @@ const PhotoGrid = (props) => {
         return result
     }
 
+    const isInLastRow = (index) => {
+        return rowDividers().slice(-1) <= index
+    }
+
     const thumbnailsInARow = () => {
         if (isSmScreen) {
             return 2
@@ -202,7 +206,7 @@ const PhotoGrid = (props) => {
                                 </>
                             )
                         }
-                        if (selected === images.length - 1 && index === selected) {
+                        if (index === images.length-1 && isInLastRow(selected)) {
                             return (
                                 <>
                                     {cardWithHeader(images, image, index, selected === index)}

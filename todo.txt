@@ -1,7 +1,7 @@
 Functionality:
   - MVP:
     - Auth for single role - user
-    - Upload RAW files
+    - Upload RAW files with option for multiple files
     - Display file list - thumbnails
     - Display image with details and download option
     - Quick search by file names
@@ -18,14 +18,13 @@ Functionality:
     - Frontend regression tests!
     - Optimize pointer usages for large object passing (Photo, Image, Descriptor)
   - Next steps:
-    - Add tooltips and info icons everywhere
-    - Have a "rows" type of view for photos - photo with details next to it, potentially dwonload and favorite buttons
+    - Enable batch uploading files
     - Add rating option for images
     - Add tags for images
     - Create secondary image (~FHD size), optional on user preferences - for better image display
-    - Display used space in user preferences
+    - Add tooltips and info icons everywhere
+    - Have a "rows" type of view for photos - photo with details next to it, potentially dwonload and favorite buttons
     - Add filtering, ordering and pagination for images
-    - Enable batch uploading files
     - Add grouping for images
     - Add history/audit
     - Add OpenID for Google/Facebook

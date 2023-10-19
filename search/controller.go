@@ -13,6 +13,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// @BasePath /api/v1/search
+
 type Controller struct {
 	rep photo.Repository
 	p   bluemonday.Policy
@@ -40,7 +42,7 @@ func NewController(db *gorm.DB, ir image.Repository) Controller {
 // @Success 200 {array} photo.Response
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /search/quick [get]
+// @Router /quick [get]
 func (c Controller) Search(g *gin.Context) {
 	user, error := currentUser(g)
 	if error != nil {
@@ -77,7 +79,7 @@ func (c Controller) Search(g *gin.Context) {
 // @Success 200 {array} photo.Response
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /search/favorites [get]
+// @Router /favorites [get]
 func (c Controller) Favorites(g *gin.Context) {
 	user, error := currentUser(g)
 	if error != nil {

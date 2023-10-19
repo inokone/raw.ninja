@@ -81,14 +81,58 @@ definitions:
     type: object
   photo.UploadSuccess:
     properties:
-      photoId:
+      photo_ids:
+        items:
+          type: string
+        type: array
+      user_id:
         type: string
-      userId:
+    type: object
+  statistics.UserStatistics:
+    properties:
+      email:
         type: string
+      favorites:
+        type: integer
+      id:
+        type: string
+      phone:
+        type: string
+      photos:
+        type: integer
+      registration_date:
+        type: integer
+      used_space:
+        type: integer
     type: object
 info:
   contact: {}
 paths:
+  /favorites:
+    get:
+      consumes:
+      - application/json
+      description: Returns favorite photo descriptors
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/photo.Response'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Search user's favorite photo descriptors endpoint
+      tags:
+      - photos
   /healthcheck:
     get:
       consumes:
@@ -325,45 +369,7 @@ paths:
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: Get user profile endpoint
-  /reset:
-    post:
-      consumes:
-      - application/json
-      description: Returns the status and version of the application
-      produces:
-      - application/json
-      responses:
-        "501":
-          description: Not Implemented
-          schema:
-            $ref: '#/definitions/common.StatusMessage'
-      summary: Reset password endpoint
-  /search/favorites:
-    get:
-      consumes:
-      - application/json
-      description: Returns favorite photo descriptors
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/photo.Response'
-            type: array
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/common.StatusMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/common.StatusMessage'
-      summary: Search user's favorite photo descriptors endpoint
-      tags:
-      - photos
-  /search/quick:
+  /quick:
     get:
       consumes:
       - application/json
@@ -388,6 +394,19 @@ paths:
       summary: Quick search user's photo descriptors endpoint
       tags:
       - photos
+  /reset:
+    post:
+      consumes:
+      - application/json
+      description: Returns the status and version of the application
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Reset password endpoint
   /signup:
     post:
       consumes:
@@ -412,12 +431,12 @@ paths:
   /upload:
     post:
       consumes:
-      - application/json
-      description: Upload a RAW file with descriptor
+      - multipart/form-data
+      description: Upload RAW files to store
       parameters:
-      - description: Photo to store
+      - description: Photos to store
         in: formData
-        name: photo
+        name: files[]
         required: true
         type: file
       produces:
@@ -442,4 +461,25 @@ paths:
       summary: Photo upload endpoint
       tags:
       - photos
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Returns the user statistics on stored photos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/statistics.UserStatistics'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User statistics endpoint
 swagger: "2.0"
