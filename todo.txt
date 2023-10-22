@@ -12,11 +12,11 @@ Functionality:
     ----
     - Fix static code analysis issues
     - Optimize pointer usages for large object passing (Photo, Image, Descriptor)
+    - Implement quota for free tier and global quota to protect for overflowing free limit at CDN
     - Integrate with at least 1 online RAW editor
     - Integrate with at least 1 CDN, so it can be deployed in Cloud
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
     - Create Free tier, display other tiers as disabled for now
-    - Implement quota for free tier and global quota to protect for overflowing free limit at CDN
     - Implement DDOS protection, captcha for registration and login
     - Set up proper godoc comments
     - Testing (handlers and unit testing) - Backend and Frontend

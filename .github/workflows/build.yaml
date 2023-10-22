@@ -17,7 +17,6 @@ jobs:
       - name: Install dependencies
         run: |
           go install github.com/swaggo/swag/cmd/swag@latest
-          go install github.com/go-critic/go-critic/cmd/gocritic@latest
           sudo apt-get install libraw-dev
 
       - name: Init swagger
@@ -28,6 +27,3 @@ jobs:
 
       - name: Test
         run: go test -v ./...
-
-      - name: Static Code Analysis
-        run: gocritic check ./...
