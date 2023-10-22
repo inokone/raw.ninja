@@ -12,6 +12,7 @@ Functionality:
     ----
     - Optimize pointer usages for large object passing (Photo, Image, Descriptor)
     - Implement quota for free tier and global quota to protect for overflowing free limit at CDN
+    - Improve file upload. Concurrency option
     - Integrate with at least 1 online RAW editor
     - Integrate with at least 1 CDN, so it can be deployed in Cloud
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)

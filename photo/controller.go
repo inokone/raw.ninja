@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"path/filepath"
 	"time"
@@ -77,7 +78,7 @@ func (c Controller) Upload(g *gin.Context) {
 			g.Error(err)
 			return
 		}
-		defer mp.Close()
+		defer closeRequestFile(mp)
 		raw, err := io.ReadAll(mp)
 		if err != nil {
 			g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file is corrupt!"})
@@ -109,6 +110,10 @@ func (c Controller) Upload(g *gin.Context) {
 	})
 }
 
+func closeRequestFile(mp multipart.File) {
+	mp.Close()
+}
+
 func createPhoto(user auth.User, filename, extension string, raw []byte) (*Photo, error) {
 	i := image.NewLibrawImporter()
 	thumbnail, err := i.Thumbnail(raw)
@@ -119,7 +124,7 @@ func createPhoto(user auth.User, filename, extension string, raw []byte) (*Photo
 	if err != nil {
 		return nil, err
 	}
-	return &Photo{
+	res := &Photo{
 		Desc: descriptor.Descriptor{
 			FileName:  filename,
 			Format:    descriptor.ParseFormat(extension),
@@ -129,7 +134,8 @@ func createPhoto(user auth.User, filename, extension string, raw []byte) (*Photo
 		},
 		User: user,
 		Raw:  raw,
-	}, nil
+	}
+	return res, nil
 }
 
 // List is a method of `Controller`. Handles listing all photos and RAW files of the authenticated user.
