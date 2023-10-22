@@ -10,25 +10,31 @@ Functionality:
     - Dashboard (with the favorite images)
     - Profile page (connection details, registration date, image count, favorite count and used quota) 
     ----
-    - Fix PhotoGrid selection display mechanism
-    - New Go static code analysis
-    - Extract constants and Status/Error variables on top of Go modules
-    - Set up proper doc comments
-    - Write unit tests - refactor with dependency injection (no framework)
-    - HATEOAS - links for objects
-    - Frontend regression tests!
+    - Fix static code analysis issues
     - Optimize pointer usages for large object passing (Photo, Image, Descriptor)
+    - Integrate with at least 1 online RAW editor
+    - Integrate with at least 1 CDN, so it can be deployed in Cloud
+    - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
+    - Create Free tier, display other tiers as disabled for now
+    - Implement quota for free tier and global quota to protect for overflowing free limit at CDN
+    - Implement DDOS protection, captcha for registration and login
+    - Set up proper godoc comments
+    - Testing (handlers and unit testing) - Backend and Frontend
+    - Fix PhotoGrid selection display mechanism
+    - Create deployment in cloud (Google cloud and a CDN)
   - Next steps:
-    - Enable batch uploading files
     - Add rating option for images
     - Add tags for images
+    - Extract constants and Status/Error variables on top of Go modules
+    - Refactor with dependency injection (no framework)
+    - HATEOAS - links for objects
     - Create secondary image (~FHD size), optional on user preferences - for better image display
     - Add tooltips and info icons everywhere
     - Have a "rows" type of view for photos - photo with details next to it, potentially dwonload and favorite buttons
     - Add filtering, ordering and pagination for images
     - Add grouping for images
     - Add history/audit
-    - Add OpenID for Google/Facebook
+    - Add batch uploading files
     - Add personal lifecycle rules
       - archive files after Y days
       - delete files after X days

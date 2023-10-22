@@ -9,6 +9,7 @@ import (
 	raw "github.com/inokone/golibraw"
 )
 
+// Importer is an interface for importing RAW camera images.
 type Importer interface {
 	Image(raw []byte) (*image.Image, error)
 
@@ -17,10 +18,19 @@ type Importer interface {
 	Thumbnail(raw []byte) ([]byte, error)
 }
 
+// LibrawImporter is an implementation of `Importer` using LibRAW library.
 type LibrawImporter struct {
 	uuid uuid.UUID
 }
 
+// NewLibrawImporter creates a new `LibrawImporter` instance.
+func NewLibrawImporter() Importer {
+	return LibrawImporter{
+		uuid: uuid.New(),
+	}
+}
+
+// Image is a method of `LibrawImporter` for importing a RAW image byte array into an `image.Image`
 func (p LibrawImporter) Image(rawBytes []byte) (*image.Image, error) {
 	path, err := p.tempFile(rawBytes)
 	defer os.Remove(path)
@@ -35,6 +45,7 @@ func (p LibrawImporter) Image(rawBytes []byte) (*image.Image, error) {
 	return &result, nil
 }
 
+// Describe is a method of `LibrawImporter` for importing the description from the RAW image byte array.
 func (p LibrawImporter) Describe(rawBytes []byte) (*Metadata, error) {
 	path, err := p.tempFile(rawBytes)
 	defer os.Remove(path)
@@ -66,6 +77,8 @@ func (p LibrawImporter) Describe(rawBytes []byte) (*Metadata, error) {
 	}, nil
 }
 
+// Thumbnail is a methof of `LibrawImporter` for extracting existing thumbnail image from the RAW image byte array.
+// If the RAW image does not contain a thumbnail, this function generates one from the RAW image.
 func (p LibrawImporter) Thumbnail(rawBytes []byte) ([]byte, error) {
 	path, err := p.tempFile(rawBytes)
 	defer os.Remove(path)
@@ -96,8 +109,8 @@ func (p LibrawImporter) Thumbnail(rawBytes []byte) ([]byte, error) {
 	return ExportJpeg(*img)
 }
 
-func (l LibrawImporter) tempFile(content []byte) (string, error) {
-	f, err := os.CreateTemp("", fmt.Sprintf("%v_*", l.uuid.String()))
+func (p LibrawImporter) tempFile(content []byte) (string, error) {
+	f, err := os.CreateTemp("", fmt.Sprintf("%v_*", p.uuid.String()))
 	if err != nil {
 		return "", err
 	}
@@ -109,10 +122,4 @@ func (l LibrawImporter) tempFile(content []byte) (string, error) {
 	}
 
 	return f.Name(), nil
-}
-
-func NewImporter() Importer {
-	return LibrawImporter{
-		uuid: uuid.New(),
-	}
 }

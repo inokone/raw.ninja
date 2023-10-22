@@ -6,19 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Health struct {
-	Status  string `json:"status"`
-	Version string `json:"version"`
-}
-
-type StatusMessage struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
 // @BasePath /api/v1
 
-// Healthcheck godoc
+// Healthcheck is the REST handler for polling whether the application is available.
 // @Summary Health check endpoint of the Photostorage app
 // @Schemes
 // @Description Returns the status and version of the application

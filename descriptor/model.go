@@ -9,12 +9,15 @@ import (
 	"gorm.io/gorm"
 )
 
+// Format is a representation of imge format
 type Format string
 
+// ParseFormat parses a string - usually file extension - and returns the image format
 func ParseFormat(s string) Format {
 	return Format(strings.ToLower(strings.TrimSpace(s)))
 }
 
+// Descriptor is a collection of metadata for a photo
 type Descriptor struct {
 	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
 	FileName   string    `gorm:"type:varchar(255);not null"`
@@ -30,19 +33,21 @@ type Descriptor struct {
 	DeletedAt  gorm.DeletedAt
 }
 
-func (p Descriptor) AsResp(baseUrl string) Response {
+// AsResp converts `Descriptor` entity to a `Response“ entity
+func (p Descriptor) AsResp(baseURL string) Response {
 	return Response{
 		ID:        p.ID.String(),
 		FileName:  p.FileName,
 		Uploaded:  p.Uploaded,
 		Format:    string(p.Format),
-		Thumbnail: baseUrl + "/thumbnail",
+		Thumbnail: baseURL + "/thumbnail",
 		Metadata:  p.Metadata.AsResp(),
 		Tags:      p.Tags,
 		Favorite:  p.Favorite,
 	}
 }
 
+// Response entity is a REST response representation of a `Descriptor“.
 type Response struct {
 	ID        string       `json:"id"`
 	FileName  string       `json:"filename"`

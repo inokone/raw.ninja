@@ -28,7 +28,9 @@ sudo apt-get install libraw-dev                                # on Ubuntu
 
 go install github.com/cosmtrek/air@latest                      # Hot-reload for Gin server
 go install github.com/swaggo/swag/cmd/swag@latest              # OpenAPI spec generator
-go install github.com/go-critic/go-critic/cmd/gocritic@latest  # Static code anlanysis for Go
+
+brew tap golangci/tap                                          # Setting source for brew, then
+brew install golangci/tap/golangci-lint                        # Static code anlanysis for Go
 ```
 
 Note: on M1/M2 OSX you need to manually install Libraw based on the [official doc](https://www.libraw.org/docs/Install-LibRaw-eng.html).
@@ -41,7 +43,7 @@ swag i -d "./,./app,./auth,./common,./photo,./descriptor,./web,./statistics"  # 
 go build main.go                                                              # Build app
 
 go test -v ./...                                                              # Run unit tests
-gocritic check ./...                                                          # Run static code analysis
+golangci-lint run                                                             # Run static code analysis
 ```
 
 On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin` to your PATH.

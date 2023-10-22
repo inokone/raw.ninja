@@ -7,28 +7,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/inokone/photostorage/auth"
 	"github.com/inokone/photostorage/common"
-	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
 	"github.com/microcosm-cc/bluemonday"
-	"gorm.io/gorm"
 )
 
 // @BasePath /api/v1/search
 
 type Controller struct {
-	rep photo.Repository
-	p   bluemonday.Policy
+	photos photo.Storer
+	p      bluemonday.Policy
 }
 
-func NewController(db *gorm.DB, ir image.Repository) Controller {
-	rep := photo.Repository{
-		DB: db,
-		Ir: ir,
-	}
+func NewController(photos photo.Storer) Controller {
 	p := bluemonday.UGCPolicy()
 	return Controller{
-		rep: rep,
-		p:   *p,
+		photos: photos,
+		p:      *p,
 	}
 }
 
@@ -52,7 +46,7 @@ func (c Controller) Search(g *gin.Context) {
 
 	unsafeText := g.DefaultQuery("query", "")
 	searchText := c.p.Sanitize(unsafeText)
-	result, error := c.rep.Search(user.ID.String(), searchText)
+	result, error := c.photos.Search(user.ID.String(), searchText)
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 		return
@@ -87,7 +81,7 @@ func (c Controller) Favorites(g *gin.Context) {
 		return
 	}
 
-	result, error := c.rep.Favorites(user.ID.String())
+	result, error := c.photos.Favorites(user.ID.String())
 	if error != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 		return

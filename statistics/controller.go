@@ -6,28 +6,24 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/inokone/photostorage/auth"
 	"github.com/inokone/photostorage/common"
-	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
-	"gorm.io/gorm"
 )
 
 // @BasePath /api/v1/statistics
 
+// Controller is a collection of handlers for statistical and aggregated data.
 type Controller struct {
-	rep photo.Repository
+	photos photo.Storer
 }
 
-func NewController(db *gorm.DB, ir image.Repository) Controller {
-	rep := photo.Repository{
-		DB: db,
-		Ir: ir,
-	}
+// NewController creates a new `Controller` instance based on the photo persistence provided in the parameters.
+func NewController(photos photo.Storer) Controller {
 	return Controller{
-		rep: rep,
+		photos: photos,
 	}
 }
 
-// UserStatistics godoc
+// UserStatistics is a method of `Controller` returning aggregated data on the photos of a user.
 // @Summary User statistics endpoint
 // @Schemes
 // @Description Returns the user statistics on stored photos
@@ -41,7 +37,7 @@ func (c Controller) UserStatistics(g *gin.Context) {
 	userObj, _ := g.Get("user")
 	user := userObj.(auth.User)
 	statistics := NewUserStatistics(user)
-	ps, err := c.rep.Statistics(user.ID.String())
+	ps, err := c.photos.Statistics(user.ID.String())
 	if err != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"})
 	}

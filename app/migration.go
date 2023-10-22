@@ -11,14 +11,15 @@ import (
 	"github.com/inokone/photostorage/photo"
 )
 
+// Migrate executes the necessary database initialization and migration
 func Migrate() {
 	if err := initDb(config.Database); err != nil {
 		log.Error().Err(err).Msg("Failed to set up connection to database. Application spinning down.")
 		os.Exit(1)
 	}
 
-	DB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
-	if err := DB.AutoMigrate(&photo.Photo{}, &auth.User{}, &descriptor.Descriptor{}, &image.Metadata{}); err != nil {
+	db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
+	if err := db.AutoMigrate(&photo.Photo{}, &auth.User{}, &descriptor.Descriptor{}, &image.Metadata{}); err != nil {
 		log.Error().Err(err).Msg("Database migration failed. Application spinning down.")
 		os.Exit(1)
 	}

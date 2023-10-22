@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// Camera is a struct representing metadata on the camera used to create the image.
 type Camera struct {
 	Make     string
 	Model    string
@@ -14,12 +15,14 @@ type Camera struct {
 	Colors   uint
 }
 
+// Lens is a struct representing metadata on the lens used to create the image.
 type Lens struct {
 	Make   string
 	Model  string
 	Serial string
 }
 
+// Metadata is a struct representing generic metadata on the image.
 type Metadata struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
 	Timestamp int64
@@ -36,6 +39,7 @@ type Metadata struct {
 	DeletedAt gorm.DeletedAt
 }
 
+// Response is the JSON representation of `Metadata` when retrieving from the application.
 type Response struct {
 	Width       int       `json:"width"`
 	Height      int       `json:"height"`
@@ -52,6 +56,7 @@ type Response struct {
 	LensModel   string    `json:"lens_model"`
 }
 
+// AsResp is a method of the `Metadata` struct. It converts a `Metadata` object into a `Response` object.
 func (m Metadata) AsResp() Response {
 	return Response{
 		Width:       m.Width,

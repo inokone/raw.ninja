@@ -13,7 +13,6 @@ import (
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/descriptor"
 	"github.com/inokone/photostorage/image"
-	"gorm.io/gorm"
 )
 
 var (
@@ -24,17 +23,13 @@ var (
 )
 
 type Controller struct {
-	rep Repository
+	photos Storer
 }
 
-func NewController(db *gorm.DB, ir image.Repository) Controller {
-	rep := Repository{
-		DB: db,
-		Ir: ir,
-	}
-
+// NewController creates a new `Controller` instance based on the photo persistence provided in the parameter.
+func NewController(photos Storer) Controller {
 	return Controller{
-		rep: rep,
+		photos: photos,
 	}
 }
 
@@ -102,7 +97,7 @@ func (c Controller) Upload(g *gin.Context) {
 			return
 		}
 
-		id, err := c.rep.Create(*target)
+		id, err := c.photos.Store(*target)
 		if err != nil {
 			g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
 			return
@@ -118,7 +113,7 @@ func (c Controller) Upload(g *gin.Context) {
 }
 
 func createPhoto(user auth.User, filename, extension string, raw []byte) (*Photo, error) {
-	i := image.NewImporter()
+	i := image.NewLibrawImporter()
 	thumbnail, err := i.Thumbnail(raw)
 	if err != nil {
 		return nil, err
@@ -158,7 +153,7 @@ func (c Controller) List(g *gin.Context) {
 		return
 	}
 
-	result, error := c.rep.All(user.ID.String())
+	result, error := c.photos.All(user.ID.String())
 	if error != nil {
 		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
@@ -189,7 +184,7 @@ func (c Controller) List(g *gin.Context) {
 // @Router /photos/:id [get]
 func (c Controller) Get(g *gin.Context) {
 	id := g.Param("id")
-	result, error := c.rep.Get(id)
+	result, error := c.photos.Load(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
@@ -217,7 +212,7 @@ func (c Controller) Get(g *gin.Context) {
 // @Router /photos/:id [put]
 func (c Controller) Update(g *gin.Context) {
 	id := g.Param("id")
-	persisted, error := c.rep.Get(id)
+	persisted, error := c.photos.Load(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
@@ -240,7 +235,7 @@ func (c Controller) Update(g *gin.Context) {
 		return
 	}
 
-	c.rep.Update(persisted)
+	c.photos.Update(persisted)
 	g.JSON(http.StatusOK, common.StatusMessage{Code: 200, Message: "Photo updated!"})
 }
 
@@ -258,7 +253,7 @@ func (c Controller) Update(g *gin.Context) {
 // @Router /photos/:id [delete]
 func (c Controller) Delete(g *gin.Context) {
 	id := g.Param("id")
-	result, error := c.rep.Get(id)
+	result, error := c.photos.Load(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
@@ -269,7 +264,7 @@ func (c Controller) Delete(g *gin.Context) {
 		return
 	}
 
-	if error = c.rep.Delete(id); error != nil {
+	if error = c.photos.Delete(id); error != nil {
 		g.JSON(http.StatusInternalServerError, StatusNotFound)
 		return
 	}
@@ -299,7 +294,7 @@ func applyChange(persisted *Photo, newVersion Response) error {
 // @Router /photos/:id/download [get]
 func (c Controller) Download(g *gin.Context) {
 	id := g.Param("id")
-	img, error := c.rep.Get(id)
+	img, error := c.photos.Load(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
@@ -311,7 +306,7 @@ func (c Controller) Download(g *gin.Context) {
 	}
 
 	fileName := img.Desc.FileName
-	raw, error := c.rep.Raw(id)
+	raw, error := c.photos.Raw(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
@@ -336,7 +331,7 @@ func (c Controller) Download(g *gin.Context) {
 // @Router /photos/:id/thumbnail [get]
 func (c Controller) Thumbnail(g *gin.Context) {
 	id := g.Param("id")
-	img, error := c.rep.Get(id)
+	img, error := c.photos.Load(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, StatusNotFound)
 		return
@@ -348,7 +343,7 @@ func (c Controller) Thumbnail(g *gin.Context) {
 	}
 
 	fileName := img.Desc.FileName
-	thumbnail, error := c.rep.Thumbnail(id)
+	thumbnail, error := c.photos.Thumbnail(id)
 	if error != nil {
 		g.JSON(http.StatusNotFound, StatusNotFound)
 		return

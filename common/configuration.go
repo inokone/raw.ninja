@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// RDBConfig is a configuration of the relational database.
 type RDBConfig struct {
 	Host            string        `mapstructure:"DB_HOST"`
 	Port            int           `mapstructure:"DB_PORT"`
@@ -17,22 +18,26 @@ type RDBConfig struct {
 	ConnMaxLifetime time.Duration `mapstructure:"DB_CONN_LIFETIME"`
 }
 
+// ImageStoreConfig is a configuration of the image store.
 type ImageStoreConfig struct {
 	Type string `mapstructure:"IMG_STORE_TYPE"`
 	Path string `mapstructure:"IMG_STORE_PATH"`
 }
 
+// AuthConfig is a configuration of the authentication.
 type AuthConfig struct {
 	JWTSecret string `mapstructure:"JWT_SIGN_SECRET"`
 	JWTExp    int    `mapstructure:"JWT_EXPIRATION_HOURS"`
 	JWTSecure bool   `mapstructure:"JWT_COOKIE_SECURE"`
 }
 
+// LogConfig is a configuration of the logging.
 type LogConfig struct {
 	LogLevel  string `mapstructure:"LOG_LEVEL"`
 	PrettyLog bool   `mapstructure:"PRETTY_LOG"`
 }
 
+// AppConfig is the holder of all configurations for the application
 type AppConfig struct {
 	Database RDBConfig
 	Store    ImageStoreConfig
@@ -40,6 +45,8 @@ type AppConfig struct {
 	Log      LogConfig
 }
 
+// LoadConfig is a function loading the configuration from app.env file in the runtime directory or environment variables.
+// As a fallback `$HOME/.photostorage` directory also can be used for the .evn file.
 func LoadConfig() (*AppConfig, error) {
 	var db RDBConfig
 	var is ImageStoreConfig

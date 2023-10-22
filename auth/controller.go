@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 
 	"github.com/inokone/photostorage/common"
 )
@@ -14,30 +13,32 @@ const (
 )
 
 var (
+	// StatusInvalidCredentials is a `common.StatusMessage` is a response for non-existing users and invalid credentials.
 	StatusInvalidCredentials common.StatusMessage = common.StatusMessage{Code: 404, Message: "User does not exist or password does not match!"}
-	StatusBadRequest         common.StatusMessage = common.StatusMessage{Code: 400, Message: "Incorrect user data provided!"}
+	// StatusBadRequest is a `common.StatusMessage` is a response for invalid requests.
+	StatusBadRequest common.StatusMessage = common.StatusMessage{Code: 400, Message: "Incorrect user data provided!"}
 )
 
+// Controller is a struct for web handles related to authentication and authorization.
 type Controller struct {
-	store  Repository
-	config common.AuthConfig
-	jwt    JWTHandler
+	users Storer
+	jwt   JWTHandler
 }
 
-func NewController(db *gorm.DB, config *common.AuthConfig) Controller {
+// NewController creates a new `Controller`, based on the user persistence and the authentication configuration parameters.
+func NewController(users Storer, jwt JWTHandler) Controller {
 	return Controller{
-		store:  Repository{db: db},
-		config: *config,
-		jwt:    NewJWTHandler(db, *config),
+		users: users,
+		jwt:   jwt,
 	}
 }
 
 // @BasePath /api/v1/auth
 
-// Register godoc
+// Signup is a method of `Controller`. Signs the user up for the application with username/password credentials.
 // @Summary User registration endpoint
 // @Schemes
-// @Description Registers the user
+// @Description Signs the user up for the application
 // @Accept json
 // @Produce json
 // @Success 201 {object} common.StatusMessage
@@ -46,8 +47,7 @@ func NewController(db *gorm.DB, config *common.AuthConfig) Controller {
 // @Router /signup [post]
 func (c Controller) Signup(g *gin.Context) {
 	var s Registration
-	err := g.Bind(&s)
-	if err != nil {
+	if err := g.Bind(&s); err != nil {
 		g.JSON(http.StatusBadRequest, StatusBadRequest)
 		return
 	}
@@ -59,7 +59,7 @@ func (c Controller) Signup(g *gin.Context) {
 		})
 		return
 	}
-	if err = c.store.Create(*user); err != nil {
+	if err = c.users.Store(*user); err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{
 			Code:    400,
 			Message: "User with this email already exist.",
@@ -72,7 +72,7 @@ func (c Controller) Signup(g *gin.Context) {
 	})
 }
 
-// Login godoc
+// Login is a method of `Controller`. Authenticates the user to the application, sets a JWT token on success in the cookies.
 // @Summary User login endpoint
 // @Schemes
 // @Description Logs in the user, sets up the JWT authorization
@@ -90,7 +90,7 @@ func (c Controller) Login(g *gin.Context) {
 		return
 	}
 
-	user, err := c.store.ByEmail(s.Email)
+	user, err := c.users.ByEmail(s.Email)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, StatusInvalidCredentials)
 		return
@@ -102,7 +102,7 @@ func (c Controller) Login(g *gin.Context) {
 		return
 	}
 
-	c.jwt.Create(g, user.ID.String())
+	c.jwt.Issue(g, user.ID.String())
 
 	g.JSON(http.StatusOK, common.StatusMessage{
 		Code:    200,
@@ -110,7 +110,7 @@ func (c Controller) Login(g *gin.Context) {
 	})
 }
 
-// Profile godoc
+// Profile is a method of `Controller`. Retrieves profile data of the user based on the JWT token in the request.
 // @Summary Get user profile endpoint
 // @Schemes
 // @Description Gets the current logged in user
@@ -140,7 +140,7 @@ func (c Controller) Reset(g *gin.Context) {
 	})
 }
 
-// Logout godoc
+// Logout is a method of `Controller`. Clears the JWT token from the cookies thus logging out the current user.
 // @Summary Logout endpoint
 // @Schemes
 // @Description Logs out of the application, deletes the JWT token uased for authorization

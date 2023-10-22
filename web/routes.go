@@ -4,19 +4,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/inokone/photostorage/auth"
 	"github.com/inokone/photostorage/common"
-	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
 	"github.com/inokone/photostorage/search"
 	"github.com/inokone/photostorage/statistics"
-	"gorm.io/gorm"
 )
 
-func Init(v1 *gin.RouterGroup, db *gorm.DB, ir image.Repository, conf common.AppConfig) {
-	p := photo.NewController(db, ir)
-	m := auth.NewJWTHandler(db, conf.Auth)
-	a := auth.NewController(db, &conf.Auth)
-	s := search.NewController(db, ir)
-	st := statistics.NewController(db, ir)
+// Init is a function to initialize handler mapping for URLs
+func Init(v1 *gin.RouterGroup, photos photo.Storer, users auth.Storer, conf common.AppConfig) {
+	p := photo.NewController(photos)
+	m := auth.NewJWTHandler(users, conf.Auth)
+	a := auth.NewController(users, m)
+	s := search.NewController(photos)
+	st := statistics.NewController(photos)
 
 	v1.GET("healthcheck", common.Healthcheck)
 

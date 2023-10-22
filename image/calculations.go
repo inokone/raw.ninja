@@ -16,6 +16,7 @@ const (
 	thumbHeight float64 = 200
 )
 
+// Thumbnail is a function to generate a thumbnail image of max size [`thumbWidth`, `thumbHeight`] for the image provided as a parameter.
 func Thumbnail(original image.Image) (image.Image, error) {
 	start := time.Now()
 	result := canvas(original.Bounds().Size().X, original.Bounds().Size().Y)
@@ -32,6 +33,7 @@ func canvas(width int, height int) *image.RGBA {
 	return result
 }
 
+// ExportJpeg is a function to export the image provided as parameter as a byte array in JPEG format.
 func ExportJpeg(image image.Image) ([]byte, error) {
 	start := time.Now()
 	buf := new(bytes.Buffer)
@@ -40,6 +42,7 @@ func ExportJpeg(image image.Image) ([]byte, error) {
 	return buf.Bytes(), err
 }
 
+// ImportJpeg is a function to import a byte array in JPEG format into an Image object.
 func ImportJpeg(b []byte) (image.Image, error) {
 	return jpeg.Decode(bytes.NewReader(b))
 }

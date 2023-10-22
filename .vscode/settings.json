@@ -1,0 +1,30 @@
+{
+    // Go Modules
+    "go.toolsEnvVars": {"GO111MODULE": "on"},
+    // Formatter
+    "go.useLanguageServer": true,
+    "go.alternateTools": {
+        "go-langserver": "gopls"
+    },
+    "go.languageServerExperimentalFeatures": {
+        "format": true,
+        "autoComplete": true
+    },
+    "[go]": {
+        "editor.snippetSuggestions": "none",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        },
+    },
+    "gopls": {
+        "usePlaceholders": true,
+        "formatting.gofumpt": true,
+    },
+    // Go Linter
+    "go.lintTool":"golangci-lint",
+    "go.lintFlags": [
+        "--fast"
+    ],
+    "docwriter.style": "GoDoc"
+}

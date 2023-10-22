@@ -10,24 +10,24 @@ import (
 	"github.com/google/uuid"
 	"github.com/inokone/photostorage/common"
 	"github.com/rs/zerolog/log"
-	"gorm.io/gorm"
 )
 
+// JWTHandler is a struct for issuing and validating JWT tokens.
 type JWTHandler struct {
 	conf  common.AuthConfig
-	users Repository
+	users Storer
 }
 
-func NewJWTHandler(db *gorm.DB, conf common.AuthConfig) JWTHandler {
+// NewJWTHandler creates a new `JWTHandler`.
+func NewJWTHandler(users Storer, conf common.AuthConfig) JWTHandler {
 	return JWTHandler{
-		conf: conf,
-		users: Repository{
-			db: db,
-		},
+		conf:  conf,
+		users: users,
 	}
 }
 
-func (h JWTHandler) Validate(g *gin.Context) {
+// Validate is a method of `JWTHandler`. Validates the authentication token in the Gin context provided as a parameter.
+func (h *JWTHandler) Validate(g *gin.Context) {
 	log.Debug().Msg("Validating JWT token...")
 	tokenString, err := g.Cookie(jwtTokenKey)
 	if err != nil {
@@ -75,7 +75,10 @@ func (h JWTHandler) Validate(g *gin.Context) {
 	g.Next()
 }
 
-func (h JWTHandler) Create(g *gin.Context, userID string) {
+// Issue is a method of `JWTHandler`. Issues a new authentication token for a user ID into the Gin context provided as parameters.
+// The JWT token is set as a http-only cookie. The JWTSecure option of the AuthConfig controle "secure" option for the cookie.
+// For production deployment this must be set to true.
+func (h *JWTHandler) Issue(g *gin.Context, userID string) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": userID,
 		"exp": time.Now().Add(time.Hour * time.Duration(h.conf.JWTExp)).Unix(),
