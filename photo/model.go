@@ -45,3 +45,9 @@ type UserStats struct {
 	Favorites int
 	UsedSpace int64
 }
+
+// UploadSuccess is a JSON response type for upload results.
+type UploadSuccess struct {
+	PhotoIDs []string `json:"photo_ids"`
+	UserID   string   `json:"user_id"`
+}

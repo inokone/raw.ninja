@@ -10,7 +10,6 @@ Functionality:
     - Dashboard (with the favorite images)
     - Profile page (connection details, registration date, image count, favorite count and used quota) 
     ----
-    - Fix static code analysis issues
     - Optimize pointer usages for large object passing (Photo, Image, Descriptor)
     - Implement quota for free tier and global quota to protect for overflowing free limit at CDN
     - Integrate with at least 1 online RAW editor

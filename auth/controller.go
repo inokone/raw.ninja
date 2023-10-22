@@ -13,10 +13,8 @@ const (
 )
 
 var (
-	// StatusInvalidCredentials is a `common.StatusMessage` is a response for non-existing users and invalid credentials.
-	StatusInvalidCredentials common.StatusMessage = common.StatusMessage{Code: 404, Message: "User does not exist or password does not match!"}
-	// StatusBadRequest is a `common.StatusMessage` is a response for invalid requests.
-	StatusBadRequest common.StatusMessage = common.StatusMessage{Code: 400, Message: "Incorrect user data provided!"}
+	statusInvalidCredentials common.StatusMessage = common.StatusMessage{Code: 404, Message: "User does not exist or password does not match!"}
+	statusBadRequest         common.StatusMessage = common.StatusMessage{Code: 400, Message: "Incorrect user data provided!"}
 )
 
 // Controller is a struct for web handles related to authentication and authorization.
@@ -48,7 +46,7 @@ func NewController(users Storer, jwt JWTHandler) Controller {
 func (c Controller) Signup(g *gin.Context) {
 	var s Registration
 	if err := g.Bind(&s); err != nil {
-		g.JSON(http.StatusBadRequest, StatusBadRequest)
+		g.JSON(http.StatusBadRequest, statusBadRequest)
 		return
 	}
 	user, err := NewUser(s.Email, s.Password, s.Phone)
@@ -86,19 +84,19 @@ func (c Controller) Login(g *gin.Context) {
 	var s Credentials
 	err := g.Bind(&s)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, StatusBadRequest)
+		g.JSON(http.StatusBadRequest, statusBadRequest)
 		return
 	}
 
 	user, err := c.users.ByEmail(s.Email)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, StatusInvalidCredentials)
+		g.JSON(http.StatusBadRequest, statusInvalidCredentials)
 		return
 	}
 
 	verified := user.VerifyPassword(s.Password)
 	if !verified {
-		g.JSON(http.StatusBadRequest, StatusInvalidCredentials)
+		g.JSON(http.StatusBadRequest, statusInvalidCredentials)
 		return
 	}
 

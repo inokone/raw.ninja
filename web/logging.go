@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// LoggingMiddleware is a middleware function for create `zerolog` log entries for all Gin Gonic handler method executions.
 func LoggingMiddleware(g *gin.Context) {
 	start := time.Now()
 	g.Next()

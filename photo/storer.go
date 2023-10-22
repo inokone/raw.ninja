@@ -2,7 +2,7 @@ package photo
 
 import (
 	"github.com/google/uuid"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // Postgres driver package for GORM, no need to have a name
 	"gorm.io/gorm"
 
 	"github.com/inokone/photostorage/image"

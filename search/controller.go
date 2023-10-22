@@ -13,11 +13,13 @@ import (
 
 // @BasePath /api/v1/search
 
+// Controller is a struct containing all handlers about searching for a photo.
 type Controller struct {
 	photos photo.Storer
 	p      bluemonday.Policy
 }
 
+// NewController is a function to create a new `Controller` instance based on the photo persistence.
 func NewController(photos photo.Storer) Controller {
 	p := bluemonday.UGCPolicy()
 	return Controller{
@@ -38,16 +40,16 @@ func NewController(photos photo.Storer) Controller {
 // @Failure 500 {object} common.StatusMessage
 // @Router /quick [get]
 func (c Controller) Search(g *gin.Context) {
-	user, error := currentUser(g)
-	if error != nil {
+	user, err := currentUser(g)
+	if err != nil {
 		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
 
 	unsafeText := g.DefaultQuery("query", "")
 	searchText := c.p.Sanitize(unsafeText)
-	result, error := c.photos.Search(user.ID.String(), searchText)
-	if error != nil {
+	result, err := c.photos.Search(user.ID.String(), searchText)
+	if err != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 		return
 	}
@@ -55,9 +57,6 @@ func (c Controller) Search(g *gin.Context) {
 	images := make([]photo.Response, len(result))
 	for i, photo := range result {
 		images[i] = photo.AsResp("http://" + g.Request.Host + "/api/v1/photos/" + photo.ID.String())
-	}
-	if error != nil {
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Photos could not be exported!"})
 	}
 
 	g.JSON(http.StatusOK, images)
@@ -75,14 +74,14 @@ func (c Controller) Search(g *gin.Context) {
 // @Failure 500 {object} common.StatusMessage
 // @Router /favorites [get]
 func (c Controller) Favorites(g *gin.Context) {
-	user, error := currentUser(g)
-	if error != nil {
+	user, err := currentUser(g)
+	if err != nil {
 		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
 
-	result, error := c.photos.Favorites(user.ID.String())
-	if error != nil {
+	result, err := c.photos.Favorites(user.ID.String())
+	if err != nil {
 		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 		return
 	}
@@ -90,9 +89,6 @@ func (c Controller) Favorites(g *gin.Context) {
 	images := make([]photo.Response, len(result))
 	for i, photo := range result {
 		images[i] = photo.AsResp("http://" + g.Request.Host + "/api/v1/photos/" + photo.ID.String())
-	}
-	if error != nil {
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Photos could not be exported!"})
 	}
 
 	g.JSON(http.StatusOK, images)

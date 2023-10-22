@@ -16,12 +16,13 @@ import (
 )
 
 var (
-	StatusNotFound       = common.StatusMessage{Code: 404, Message: "Photo does not exist!"}
-	StatusMalformedPhoto = common.StatusMessage{Code: 400, Message: "Malformed photo data!"}
-	StatusUnknownError   = common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"}
-	ErrMalformedRequest  = errors.New("photo data inconsistent")
+	statusNotFound       = common.StatusMessage{Code: 404, Message: "Photo does not exist!"}
+	statusMalformedPhoto = common.StatusMessage{Code: 400, Message: "Malformed photo data!"}
+	// ErrMalformedRequest is an error for invalid or inconsistent photo data
+	ErrMalformedRequest = errors.New("photo data inconsistent")
 )
 
+// Controller is a struct for all REST handlers related to photos in the application.
 type Controller struct {
 	photos Storer
 }
@@ -33,14 +34,10 @@ func NewController(photos Storer) Controller {
 	}
 }
 
-type UploadSuccess struct {
-	PhotoIDs []string `json:"photo_ids"`
-	UserID   string   `json:"user_id"`
-}
-
 // @BasePath /api/v1/photo
 
-// Upload godoc
+// Upload is a method of `Controller`. Handles RAW and photo upload requests. Capable of handling multiple files
+// uploaded within a single request.
 // @Summary Photo upload endpoint
 // @Schemes
 // @Tags photos
@@ -54,8 +51,8 @@ type UploadSuccess struct {
 // @Failure 500 {object} common.StatusMessage
 // @Router /upload [post]
 func (c Controller) Upload(g *gin.Context) {
-	user, error := currentUser(g)
-	if error != nil {
+	user, err := currentUser(g)
+	if err != nil {
 		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
@@ -135,7 +132,7 @@ func createPhoto(user auth.User, filename, extension string, raw []byte) (*Photo
 	}, nil
 }
 
-// List godoc
+// List is a method of `Controller`. Handles listing all photos and RAW files of the authenticated user.
 // @Summary List user's photo descriptors endpoint
 // @Schemes
 // @Tags photos
@@ -147,15 +144,15 @@ func createPhoto(user auth.User, filename, extension string, raw []byte) (*Photo
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos [get]
 func (c Controller) List(g *gin.Context) {
-	user, error := currentUser(g)
-	if error != nil {
+	user, err := currentUser(g)
+	if err != nil {
 		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
 
-	result, error := c.photos.All(user.ID.String())
-	if error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	result, err := c.photos.All(user.ID.String())
+	if err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
@@ -163,14 +160,12 @@ func (c Controller) List(g *gin.Context) {
 	for i, photo := range result {
 		images[i] = photo.AsResp("http://" + g.Request.Host + g.Request.URL.Path + photo.ID.String())
 	}
-	if error != nil {
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Photos could not be exported!"})
-	}
 
 	g.JSON(http.StatusOK, images)
 }
 
-// Get godoc
+// Get is a method of `Controller`. Handles requests for retrieving metadata for a single photo or RAW file
+// of the authenticated user. The target photo is specified by the photo ID in the URL parameter.
 // @Summary Get photo endpoint
 // @Schemes
 // @Tags photos
@@ -184,21 +179,22 @@ func (c Controller) List(g *gin.Context) {
 // @Router /photos/:id [get]
 func (c Controller) Get(g *gin.Context) {
 	id := g.Param("id")
-	result, error := c.photos.Load(id)
-	if error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	result, err := c.photos.Load(id)
+	if err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
-	if error = authorize(g, result.UserID); error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	if err = authorize(g, result.UserID); err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	g.JSON(http.StatusOK, result.AsResp("http://"+g.Request.Host+g.Request.URL.Path))
 }
 
-// Update godoc
+// Update is a method of `Controller`. Handles requests for updating a single photo or RAW file of the authenticated user.
+// The target photo specified by the photo ID in the URL parameter. Update is limited only for a subset of the metadata.
 // @Summary Update photo endpoint for tags and favorite setting
 // @Schemes
 // @Tags photos
@@ -212,26 +208,25 @@ func (c Controller) Get(g *gin.Context) {
 // @Router /photos/:id [put]
 func (c Controller) Update(g *gin.Context) {
 	id := g.Param("id")
-	persisted, error := c.photos.Load(id)
-	if error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	persisted, err := c.photos.Load(id)
+	if err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
-	if error = authorize(g, persisted.UserID); error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	if err = authorize(g, persisted.UserID); err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	var newVersion Response
 	if err := g.Bind(&newVersion); err != nil {
-		g.JSON(http.StatusBadRequest, StatusMalformedPhoto)
+		g.JSON(http.StatusBadRequest, statusMalformedPhoto)
 		return
 	}
 
-	err := applyChange(&persisted, newVersion)
-	if err != nil {
-		g.JSON(http.StatusBadRequest, StatusMalformedPhoto)
+	if err = applyChange(&persisted, newVersion); err != nil {
+		g.JSON(http.StatusBadRequest, statusMalformedPhoto)
 		return
 	}
 
@@ -239,7 +234,8 @@ func (c Controller) Update(g *gin.Context) {
 	g.JSON(http.StatusOK, common.StatusMessage{Code: 200, Message: "Photo updated!"})
 }
 
-// Delete godoc
+// Delete is a method of `Controller`. Handles requests for deleting a single photo or RAW file of the authenticated user.
+// The target photo specified by the photo ID in the URL parameter.
 // @Summary Delete photo endpoint
 // @Schemes
 // @Tags photos
@@ -253,19 +249,19 @@ func (c Controller) Update(g *gin.Context) {
 // @Router /photos/:id [delete]
 func (c Controller) Delete(g *gin.Context) {
 	id := g.Param("id")
-	result, error := c.photos.Load(id)
-	if error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	result, err := c.photos.Load(id)
+	if err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
-	if error = authorize(g, result.UserID); error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	if err = authorize(g, result.UserID); err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
-	if error = c.photos.Delete(id); error != nil {
-		g.JSON(http.StatusInternalServerError, StatusNotFound)
+	if err = c.photos.Delete(id); err != nil {
+		g.JSON(http.StatusInternalServerError, statusNotFound)
 		return
 	}
 	g.JSON(http.StatusOK, common.StatusMessage{Code: 200, Message: "Photo deleted!"})
@@ -280,7 +276,8 @@ func applyChange(persisted *Photo, newVersion Response) error {
 	return nil
 }
 
-// Download godoc
+// Download is a method of `Controller`. Handles requests for downloding binary for a single photo or RAW file of the
+// authenticated user. The target photo specified by the photo ID in the URL parameter.
 // @Summary Download RAW file endpoint
 // @Schemes
 // @Tags photos
@@ -294,21 +291,21 @@ func applyChange(persisted *Photo, newVersion Response) error {
 // @Router /photos/:id/download [get]
 func (c Controller) Download(g *gin.Context) {
 	id := g.Param("id")
-	img, error := c.photos.Load(id)
-	if error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	img, err := c.photos.Load(id)
+	if err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
-	if error = authorize(g, img.UserID); error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	if err = authorize(g, img.UserID); err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	fileName := img.Desc.FileName
-	raw, error := c.photos.Raw(id)
-	if error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	raw, err := c.photos.Raw(id)
+	if err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
@@ -317,7 +314,8 @@ func (c Controller) Download(g *gin.Context) {
 	g.Data(http.StatusOK, "application/octet-stream", raw)
 }
 
-// Thumbnail godoc
+// Thumbnail is a method of `Controller`. Handles requests for downloding thumbnail binary for a single photo or RAW file of the
+// authenticated user. The target photo specified by the photo ID in the URL parameter.
 // @Summary Thumbnail image endpoint
 // @Schemes
 // @Tags photos
@@ -331,21 +329,21 @@ func (c Controller) Download(g *gin.Context) {
 // @Router /photos/:id/thumbnail [get]
 func (c Controller) Thumbnail(g *gin.Context) {
 	id := g.Param("id")
-	img, error := c.photos.Load(id)
-	if error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	img, err := c.photos.Load(id)
+	if err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
-	if error = authorize(g, img.UserID); error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	if err = authorize(g, img.UserID); err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	fileName := img.Desc.FileName
-	thumbnail, error := c.photos.Thumbnail(id)
-	if error != nil {
-		g.JSON(http.StatusNotFound, StatusNotFound)
+	thumbnail, err := c.photos.Thumbnail(id)
+	if err != nil {
+		g.JSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
@@ -355,9 +353,9 @@ func (c Controller) Thumbnail(g *gin.Context) {
 }
 
 func authorize(g *gin.Context, userID string) error {
-	user, error := currentUser(g)
-	if error != nil {
-		return error
+	user, err := currentUser(g)
+	if err != nil {
+		return err
 	}
 	if userID != user.ID.String() {
 		return errors.New("user is not authorized")
