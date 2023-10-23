@@ -104,7 +104,7 @@ const PhotoGrid = (props) => {
     };
 
     const card = (image, index, selected) => {
-        return (    
+        return (
             <Grid item key={image.id} xs={6} sm={4} md={3} lg={2}>
                 <PhotoCard image={image} setImage={setImage} selected={selected} onClick={() => handleImageClick(index)} />
             </Grid>
@@ -125,10 +125,13 @@ const PhotoGrid = (props) => {
 
     const selection = (image) => {
         return (
-            <Grid item key={"selection"} xs={72} sm={48} md={24} lg={12}>
-                <DetailedPhotoCard image={image} onClose={() => setSelected(null)} setImage={setImage} closable={true} />
-            </Grid>
-        )
+            <>            
+                {selected !== null ?
+                <Grid item key={"selection"} xs={72} sm={48} md={24} lg={12}>
+                    <DetailedPhotoCard image={image} onClose={() => setSelected(null)} setImage={setImage} closable={true} />
+                </Grid> : null
+                }
+            </>)
     }
 
     const isPlaceForSelection = (index) => {
@@ -151,7 +154,7 @@ const PhotoGrid = (props) => {
     }
 
     const rowDividers = () => {
-        if(images.length < 1) {
+        if (images.length < 1) {
             return []
         }
         let result = []
@@ -207,7 +210,7 @@ const PhotoGrid = (props) => {
                                 </>
                             )
                         }
-                        if (index === images.length-1 && isInLastRow(selected)) {
+                        if (index === images.length - 1 && isInLastRow(selected)) {
                             return (
                                 <>
                                     {cardWithHeader(images, image, index, selected === index)}
