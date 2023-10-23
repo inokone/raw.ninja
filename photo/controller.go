@@ -95,7 +95,7 @@ func (c Controller) Upload(g *gin.Context) {
 			return
 		}
 
-		id, err := c.photos.Store(*target)
+		id, err := c.photos.Store(target)
 		if err != nil {
 			g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
 			return
@@ -231,7 +231,7 @@ func (c Controller) Update(g *gin.Context) {
 		return
 	}
 
-	if err = applyChange(&persisted, newVersion); err != nil {
+	if err = applyChange(persisted, newVersion); err != nil {
 		g.JSON(http.StatusBadRequest, statusMalformedPhoto)
 		return
 	}

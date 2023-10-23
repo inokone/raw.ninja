@@ -10,14 +10,14 @@ import (
 
 // Writer is an interface for persistence of `Photo` entities.
 type Writer interface {
-	Store(photo Photo) (uuid.UUID, error)
-	Update(photo Photo) error
+	Store(photo *Photo) (uuid.UUID, error)
+	Update(photo *Photo) error
 	Delete(id string) error
 }
 
 // Loader is an interface for loading `Photo` entities from persistence.
 type Loader interface {
-	Load(id string) (Photo, error)
+	Load(id string) (*Photo, error)
 	All(userID string) ([]Photo, error)
 	Raw(id string) ([]byte, error)
 	Thumbnail(id string) ([]byte, error)
@@ -53,7 +53,7 @@ func NewGORMStorer(db *gorm.DB, ir image.Storer) *GORMStorer {
 }
 
 // Store is a method of `GORMStorer` for persisting a `Photo` entity.
-func (s *GORMStorer) Store(photo Photo) (uuid.UUID, error) {
+func (s *GORMStorer) Store(photo *Photo) (uuid.UUID, error) {
 	s.db.Save(&photo)
 	err := s.ir.Store(photo.ID.String(), photo.Raw, photo.Desc.Thumbnail)
 	return photo.ID, err
@@ -67,16 +67,16 @@ func (s *GORMStorer) Delete(id string) error {
 }
 
 // Update is a method of `GORMStorer` for updating metadata of a `Photo` entity in persistence.
-func (s *GORMStorer) Update(photo Photo) error {
+func (s *GORMStorer) Update(photo *Photo) error {
 	s.db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&photo)
 	return nil
 }
 
 // Load is a method of `GORMStorer` for loading a single `Photo` entity by ID provided as parameter.
-func (s *GORMStorer) Load(id string) (Photo, error) {
+func (s *GORMStorer) Load(id string) (*Photo, error) {
 	var photo Photo
 	result := s.db.Preload("Desc.Metadata").First(&photo, "id = ?", id)
-	return photo, result.Error
+	return &photo, result.Error
 }
 
 // All is a method of `GORMStorer` for loading a all `Photo`s of a user specified by the ID as a parameter.
