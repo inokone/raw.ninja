@@ -49,7 +49,9 @@ const Profile = () => {
         });
     }
 
-    loadStats()
+    if (!stats) {
+      loadStats()
+    }
   },)
 
   return (
@@ -59,31 +61,31 @@ const Profile = () => {
         <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
           <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.34)', color: 'white', mt: 10, borderRadius: '4px', width: '500px' }}>
             <Grid container>
-              <Grid xs={12}><Typography variant='h6' sx={{ borderRadius: '4px', bgcolor: 'rgba(0, 0, 0, 0.54)' }}>Profile</Typography></Grid>
+              <Grid item xs={12}><Typography variant='h6' sx={{ borderRadius: '4px', bgcolor: 'rgba(0, 0, 0, 0.54)' }}>Profile</Typography></Grid>
             </Grid>
             <Grid container>
-              <Grid xs={5}><Typography>E-mail:</Typography></Grid>
-              <Grid xs={7}><Typography>{stats.email}</Typography></Grid>
+              <Grid item xs={5}><Typography>E-mail:</Typography></Grid>
+              <Grid item xs={7}><Typography>{stats.email}</Typography></Grid>
             </Grid>
             <Grid container>
-              <Grid xs={5}><Typography>Phone:</Typography></Grid>
-              <Grid xs={7}><Typography>{stats.phone}</Typography></Grid>
+              <Grid item xs={5}><Typography>Phone:</Typography></Grid>
+              <Grid item xs={7}><Typography>{stats.phone}</Typography></Grid>
             </Grid>
             <Grid container>
-              <Grid xs={5}><Typography>Registered on:</Typography></Grid>
-              <Grid xs={7}><Typography>{new Date(stats.registration_date * 1000).toLocaleDateString()}</Typography></Grid>
+              <Grid item xs={5}><Typography>Registered on:</Typography></Grid>
+              <Grid item xs={7}><Typography>{new Date(stats.registration_date * 1000).toLocaleDateString()}</Typography></Grid>
             </Grid>
             <Grid container>
-              <Grid xs={5}><Typography>Photo count:</Typography></Grid>
-              <Grid xs={7}><Typography>{stats.photos}</Typography></Grid>
+              <Grid item xs={5}><Typography>Photo count:</Typography></Grid>
+              <Grid item xs={7}><Typography>{stats.photos}</Typography></Grid>
             </Grid>
             <Grid container>
-              <Grid xs={5}><Typography>Favorites:</Typography></Grid>
-              <Grid xs={7}><Typography>{stats.favorites}</Typography></Grid>
+              <Grid item xs={5}><Typography>Favorites:</Typography></Grid>
+              <Grid item xs={7}><Typography>{stats.favorites}</Typography></Grid>
             </Grid>
             <Grid container>
-              <Grid xs={5}><Typography>User space:</Typography></Grid>
-              <Grid xs={7}><Typography>{formatBytes(stats.used_space)}</Typography></Grid>
+              <Grid item xs={5}><Typography>User space:</Typography></Grid>
+              <Grid item xs={7}><Typography>{formatBytes(stats.used_space)}</Typography></Grid>
             </Grid>
           </Box>
         </Box>}

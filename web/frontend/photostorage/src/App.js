@@ -5,6 +5,7 @@ import ResponsiveAppBar from './components/Common/AppBar';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/Dashboard/Dashboard';
 import Preferences from './components/Preferences/Preferences';
+import Admin from './components/Admin/Admin';
 import Upload from './components/Upload/Upload';
 import PhotoList from './components/Photos/PhotoList';
 import UserProfile from './components/Auth/UserProfile';
@@ -73,6 +74,9 @@ const App = () => {
                 <Route path="/users/:userId" element={<Preferences user={user} />} />
                 <Route path="/profile" element={<UserProfile user={user} />} />
                 <Route path="/search" element={<SearchResult query={query} />} />
+              </Route>
+              <Route element={<ProtectedRoute user={user} target="admin" redirect="/login" />}>
+                <Route path="/admin" element={<Admin user={user} />} />
               </Route>
               <Route path="*" element={<NotFoundPage />} />
             </Routes>

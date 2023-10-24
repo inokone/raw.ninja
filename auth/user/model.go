@@ -98,15 +98,15 @@ type AdminView struct {
 	Email   string           `json:"email"`
 	Phone   string           `json:"phone"`
 	Role    role.ProfileRole `json:"role"`
-	Created int
-	Updated int
-	Deleted *int
+	Created int              `json:"created"`
+	Updated int              `json:"updated"`
+	Deleted *int             `json:"deleted"`
 }
 
 // RoleUser is aggregated data on the role, with the user count.
 type RoleUser struct {
-	Role  string
-	Users int
+	Role  string `json:"role"`
+	Users int    `json:"users"`
 }
 
 // Stats is aggregated data on the storer.

@@ -19,15 +19,28 @@ import { useNavigate } from "react-router-dom";
 import stringToColor from 'string-to-color';
 
 const settings = {
-  'Profile': 'profile',
-  'Account': 'account',
-  'Logout': 'logout'
+  Profile: 'profile',
+  Account: 'account',
+  Logout: 'logout'
 };
 
 const ResponsiveAppBar = (props) => {
   const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const adminRoleID = 0
+
+  const isAdmin = (user) => {
+    return user.role.id === adminRoleID
+  }
+
+  const profileMenu = () => {
+    let res = {...settings}
+    if (isAdmin(props.user)) {
+      res.Admin = 'admin'
+    }
+    return res
+  }
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -197,7 +210,7 @@ const ResponsiveAppBar = (props) => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {Object.entries(settings).map(([setting, path], i) => (
+                {Object.entries(profileMenu()).map(([setting, path], i) => (
                   <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>
                     <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>{setting}</Typography>
                   </MenuItem>
