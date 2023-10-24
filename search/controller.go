@@ -11,8 +11,6 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 )
 
-// @BasePath /api/v1/search
-
 // Controller is a struct containing all handlers about searching for a photo.
 type Controller struct {
 	photos photo.Storer
@@ -28,8 +26,8 @@ func NewController(photos photo.Storer) Controller {
 	}
 }
 
-// Search godoc
-// @Summary Quick search user's photo descriptors endpoint
+// Search is a handler for searching the authenticated user's photo descriptors by file name by prefix
+// @Summary Quick search user's photo descriptors endpoint, case sensitive prefix search
 // @Schemes
 // @Tags photos
 // @Description Returns all photo descriptors matching the provided search text
@@ -38,7 +36,7 @@ func NewController(photos photo.Storer) Controller {
 // @Success 200 {array} photo.Response
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /quick [get]
+// @Router /search/quick [get]
 func (c Controller) Search(g *gin.Context) {
 	user, err := currentUser(g)
 	if err != nil {
@@ -62,17 +60,17 @@ func (c Controller) Search(g *gin.Context) {
 	g.JSON(http.StatusOK, images)
 }
 
-// Favorites godoc
+// Favorites is a handler for listing the authenticaed user's favorite photo descriptors endpoint
 // @Summary Search user's favorite photo descriptors endpoint
 // @Schemes
 // @Tags photos
-// @Description Returns favorite photo descriptors
+// @Description Returns favorite photo descriptors for the authenticated user
 // @Accept json
 // @Produce json
 // @Success 200 {array} photo.Response
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /favorites [get]
+// @Router /search/favorites [get]
 func (c Controller) Favorites(g *gin.Context) {
 	user, err := currentUser(g)
 	if err != nil {

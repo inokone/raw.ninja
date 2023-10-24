@@ -20,7 +20,7 @@ jobs:
           sudo apt-get install libraw-dev
 
       - name: Init swagger
-        run: swag i -d "./,./app,./auth,./common,./photo,./descriptor,./web,./statistics"
+        run: swag i
 
       - name: Build
         run: go build -v main.go

@@ -9,8 +9,6 @@ import (
 	"github.com/inokone/photostorage/photo"
 )
 
-// @BasePath /api/v1/statistics
-
 // Controller is a collection of handlers for statistical and aggregated data.
 type Controller struct {
 	photos photo.Storer
@@ -36,7 +34,7 @@ func NewController(photos photo.Storer, users user.Storer, config common.ImageSt
 // @Success 200 {object} UserStats
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /user [get]
+// @Router /statistics/user [get]
 func (c Controller) UserStats(g *gin.Context) {
 	u, _ := g.Get("user")
 	usr := u.(user.User)
@@ -60,7 +58,7 @@ func (c Controller) UserStats(g *gin.Context) {
 // @Success 200 {object} AppStats
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /app [get]
+// @Router /statistics/app [get]
 func (c Controller) AppStats(g *gin.Context) {
 	stats := AppStats{}
 

@@ -15,65 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/favorites": {
-            "get": {
-                "description": "Returns favorite photo descriptors",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "photos"
-                ],
-                "summary": "Search user's favorite photo descriptors endpoint",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/photo.Response"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/healthcheck": {
-            "get": {
-                "description": "Returns the status and version of the application",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Health check endpoint of the Photostorage app",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/common.Health"
-                        }
-                    }
-                }
-            }
-        },
-        "/login": {
+        "/auth/login": {
             "post": {
                 "description": "Logs in the user, sets up the JWT authorization",
                 "consumes": [
@@ -105,7 +47,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/logout": {
+        "/auth/logout": {
             "get": {
                 "description": "Logs out of the application, deletes the JWT token uased for authorization",
                 "consumes": [
@@ -120,6 +62,58 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/signup": {
+            "post": {
+                "description": "Signs the user up for the application",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "User registration endpoint",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/healthcheck": {
+            "get": {
+                "description": "Returns the status and version of the application",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Health check endpoint of the Photostorage app",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.Health"
                         }
                     }
                 }
@@ -385,123 +379,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/profile": {
-            "get": {
-                "description": "Gets the current logged in user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Get user profile endpoint",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/auth.Profile"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/quick": {
-            "get": {
-                "description": "Returns all photo descriptors matching the provided search text",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "photos"
-                ],
-                "summary": "Quick search user's photo descriptors endpoint",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/photo.Response"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/reset": {
-            "post": {
-                "description": "Returns the status and version of the application",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Reset password endpoint",
-                "responses": {
-                    "501": {
-                        "description": "Not Implemented",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/signup": {
-            "post": {
-                "description": "Registers the user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "User registration endpoint",
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/upload": {
+        "/photos/upload": {
             "post": {
                 "description": "Upload RAW files to store",
                 "consumes": [
@@ -551,21 +429,88 @@ const docTemplate = `{
                 }
             }
         },
-        "/user": {
+        "/roles/": {
             "get": {
-                "description": "Returns the user statistics on stored photos",
+                "description": "Lists all roles of the application",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "User statistics endpoint",
+                "summary": "Role list endpoint",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/statistics.UserStatistics"
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/roles/:id": {
+            "patch": {
+                "description": "Updates the settings of a role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Role update endpoint",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the role information to patch",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/search/favorites": {
+            "get": {
+                "description": "Returns favorite photo descriptors for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "Search user's favorite photo descriptors endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/photo.Response"
+                            }
                         }
                     },
                     "404": {
@@ -582,23 +527,218 @@ const docTemplate = `{
                     }
                 }
             }
-        }
-    },
-    "definitions": {
-        "auth.Profile": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
+        },
+        "/search/quick": {
+            "get": {
+                "description": "Returns all photo descriptors matching the provided search text",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "Quick search user's photo descriptors endpoint, case sensitive prefix search",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/photo.Response"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
                 }
             }
         },
+        "/statistics/app": {
+            "get": {
+                "description": "Returns the app statistics on stored photos",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "App statistics endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/stats.AppStats"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/statistics/user": {
+            "get": {
+                "description": "Returns the user statistics on stored photos",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "User statistics endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/stats.UserStats"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Lists the users of the application.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "List users endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/:id": {
+            "patch": {
+                "description": "Updates the target user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "User update endpoint",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the user information to patch",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/profile": {
+            "get": {
+                "description": "Gets the current logged in user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get user profile endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.Profile"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/reset": {
+            "post": {
+                "description": "Resets the password of the logged in user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Reset password endpoint",
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
         "common.Health": {
             "type": "object",
             "properties": {
@@ -722,7 +862,47 @@ const docTemplate = `{
                 }
             }
         },
-        "statistics.UserStatistics": {
+        "role.ProfileRole": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "quota": {
+                    "type": "integer"
+                }
+            }
+        },
+        "stats.AppStats": {
+            "type": "object",
+            "properties": {
+                "favorites": {
+                    "type": "integer"
+                },
+                "photos": {
+                    "type": "integer"
+                },
+                "quota": {
+                    "type": "integer"
+                },
+                "total_users": {
+                    "type": "integer"
+                },
+                "used_space": {
+                    "type": "integer"
+                },
+                "user_distribution": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/user.RoleUser"
+                    }
+                }
+            }
+        },
+        "stats.UserStats": {
             "type": "object",
             "properties": {
                 "email": {
@@ -747,18 +927,50 @@ const docTemplate = `{
                     "type": "integer"
                 }
             }
+        },
+        "user.Profile": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/role.ProfileRole"
+                }
+            }
+        },
+        "user.RoleUser": {
+            "type": "object",
+            "properties": {
+                "role": {
+                    "type": "string"
+                },
+                "users": {
+                    "type": "integer"
+                }
+            }
         }
+    },
+    "externalDocs": {
+        "description": "OpenAPI",
+        "url": "https://swagger.io/resources/open-api/"
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "0.1",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "PhotoStore API",
+	Description:      "Photostorage is an application to store RAW image files.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

@@ -26,9 +26,13 @@ import (
 	"github.com/inokone/photostorage/app"
 )
 
+// @title                     PhotoStore API
+// @version                   0.1
+// @description               Photostorage is an application to store RAW image files.
+// @BasePath                  /api/v1
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
-	// TODO: set up configuration options for logging here
-	// TODO: add logging where necessary
 	var (
 		isMigration = flag.Bool("migrate", false, "Start migration of the database. Default: [false]")
 		application = flag.Bool("application", true, "Start the web application on the provided port. Default: [true].")

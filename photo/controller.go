@@ -35,8 +35,6 @@ func NewController(photos Storer) Controller {
 	}
 }
 
-// @BasePath /api/v1/photo
-
 // Upload is a method of `Controller`. Handles RAW and photo upload requests. Capable of handling multiple files
 // uploaded within a single request.
 // @Summary Photo upload endpoint
@@ -50,7 +48,7 @@ func NewController(photos Storer) Controller {
 // @Failure 400 {object} common.StatusMessage
 // @Failure 415 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /upload [post]
+// @Router /photos/upload [post]
 func (c Controller) Upload(g *gin.Context) {
 	user, err := currentUser(g)
 	if err != nil {

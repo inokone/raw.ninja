@@ -38,12 +38,12 @@ Note: on M1/M2 OSX you need to manually install Libraw based on the [official do
 #### Build
 
 ``` sh
-go mod download                                                               # Download Go dependencies
-swag i -d "./,./app,./auth,./common,./photo,./descriptor,./web,./statistics"  # Generate OpenAPI spec files
-go build main.go                                                              # Build app
+go mod download    # Download Go dependencies
+swag i             # Generate OpenAPI spec files
+go build main.go   # Build app
 
-go test -v ./...                                                              # Run unit tests
-golangci-lint run                                                             # Run static code analysis
+go test -v ./...   # Run unit tests
+golangci-lint run  # Run static code analysis
 ```
 
 On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin` to your PATH.

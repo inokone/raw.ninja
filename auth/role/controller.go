@@ -20,17 +20,15 @@ func NewController(roles Storer) Controller {
 	}
 }
 
-// @BasePath /api/v1/roles
-
 // List lists all roles of the application.
 // @Summary Role list endpoint
 // @Schemes
-// @Description Updates the settings of a role
+// @Description Lists all roles of the application
 // @Accept json
 // @Produce json
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
-// @Router / [get]
+// @Router /roles/ [get]
 func (c Controller) List(g *gin.Context) {
 	var (
 		roles []Role
@@ -62,7 +60,7 @@ func (c Controller) List(g *gin.Context) {
 // @Param id path int true "ID of the role information to patch"
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
-// @Router /:id [patch]
+// @Router /roles/:id [patch]
 func (c Controller) Patch(g *gin.Context) {
 	var (
 		in  ProfileRole

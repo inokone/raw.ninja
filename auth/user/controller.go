@@ -28,7 +28,7 @@ func NewController(users Storer) Controller {
 // @Produce json
 // @Success 200 {object} Profile
 // @Failure 403 {object} common.StatusMessage
-// @Router /profile [get]
+// @Router /users/profile [get]
 func (c Controller) Profile(g *gin.Context) {
 	u, _ := g.Get("user")
 	usr := u.(User)
@@ -38,11 +38,11 @@ func (c Controller) Profile(g *gin.Context) {
 // Reset resets the password of the logged in user - not implemented yet
 // @Summary Reset password endpoint
 // @Schemes
-// @Description Returns the status and version of the application
+// @Description Resets the password of the logged in user
 // @Accept json
 // @Produce json
 // @Failure 501 {object} common.StatusMessage
-// @Router /reset [post]
+// @Router /users/reset [post]
 func (c Controller) Reset(g *gin.Context) {
 	g.JSON(http.StatusNotImplemented, common.StatusMessage{
 		Code:    501,
@@ -50,10 +50,10 @@ func (c Controller) Reset(g *gin.Context) {
 	})
 }
 
-// List lists ths users of the application.
-// @Summary Reset password the the target user endpoint
+// List lists the users of the application.
+// @Summary List users endpoint
 // @Schemes
-// @Description Resets the password for a user, essentially sending out an e-mail.
+// @Description Lists the users of the application.
 // @Accept json
 // @Produce json
 // @Success 200 {object} common.StatusMessage

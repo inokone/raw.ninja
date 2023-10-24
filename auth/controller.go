@@ -32,8 +32,6 @@ func NewController(users user.Storer, jwt JWTHandler) Controller {
 	}
 }
 
-// @BasePath /api/v1/auth
-
 // Signup is a method of `Controller`. Signs the user up for the application with username/password credentials.
 // @Summary User registration endpoint
 // @Schemes
@@ -43,7 +41,7 @@ func NewController(users user.Storer, jwt JWTHandler) Controller {
 // @Success 201 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /signup [post]
+// @Router /auth/signup [post]
 func (c Controller) Signup(g *gin.Context) {
 	var s user.Registration
 	if err := g.Bind(&s); err != nil {
@@ -80,7 +78,7 @@ func (c Controller) Signup(g *gin.Context) {
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /login [post]
+// @Router /auth/login [post]
 func (c Controller) Login(g *gin.Context) {
 	var s user.Credentials
 	err := g.Bind(&s)
@@ -116,7 +114,7 @@ func (c Controller) Login(g *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} common.StatusMessage
-// @Router /logout [get]
+// @Router /auth/logout [get]
 func (c Controller) Logout(g *gin.Context) {
 	g.SetCookie(jwtTokenKey, "", 0, "", "", true, true)
 	g.JSON(http.StatusOK, common.StatusMessage{
