@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/inokone/photostorage/auth"
+	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/descriptor"
 	"github.com/inokone/photostorage/image"
@@ -114,7 +114,7 @@ func closeRequestFile(mp multipart.File) {
 	mp.Close()
 }
 
-func createPhoto(user auth.User, filename, extension string, raw []byte) (*Photo, error) {
+func createPhoto(user user.User, filename, extension string, raw []byte) (*Photo, error) {
 	i := image.NewLibrawImporter()
 	thumbnail, err := i.Thumbnail(raw)
 	if err != nil {
@@ -369,11 +369,11 @@ func authorize(g *gin.Context, userID string) error {
 	return nil
 }
 
-func currentUser(g *gin.Context) (*auth.User, error) {
-	user, ok := g.Get("user")
+func currentUser(g *gin.Context) (*user.User, error) {
+	u, ok := g.Get("user")
 	if !ok {
 		return nil, errors.New("user could not be extracted from session")
 	}
-	userObj := user.(auth.User)
-	return &userObj, nil
+	usr := u.(user.User)
+	return &usr, nil
 }

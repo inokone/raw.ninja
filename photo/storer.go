@@ -35,7 +35,8 @@ type Storer interface {
 	Loader
 	Searcher
 
-	Statistics(userID string) (UserStats, error)
+	UserStats(userID string) (UserStats, error)
+	Stats() (Stats, error)
 }
 
 // GORMStorer is an implementation of `Storer` interface based on GORM library.
@@ -121,18 +122,25 @@ func (s *GORMStorer) Thumbnail(id string) ([]byte, error) {
 	return s.ir.LoadThumbnail(id)
 }
 
-// Statistics is a method of `GORMStorer` for collecting aggregated data on the photos of the user specified by the ID in the parameter.
-func (s *GORMStorer) Statistics(userID string) (UserStats, error) {
+// UserStats is a method of `GORMStorer` for collecting aggregated data on the photos of the user specified by the ID in the parameter.
+func (s *GORMStorer) UserStats(userID string) (UserStats, error) {
 	var photos, favorites int
-	s.db.Raw("SELECT count(id) FROM photos WHERE user_id = ?", userID).Scan(&photos)
-	s.db.Raw("SELECT count(p.id) FROM photos p JOIN descriptors d ON d.id = p.desc_id WHERE p.user_id = ? and d.favorite = true", userID).Scan(&favorites)
+	res := s.db.Raw("SELECT count(id) FROM photos WHERE user_id = ?", userID).Scan(&photos)
+	if res.Error != nil {
+		return UserStats{}, res.Error
+	}
+
+	res = s.db.Raw("SELECT count(p.id) FROM photos p JOIN descriptors d ON d.id = p.desc_id WHERE p.user_id = ? and d.favorite = true", userID).Scan(&favorites)
+	if res.Error != nil {
+		return UserStats{}, res.Error
+	}
 
 	photoList, err := s.All(userID)
 	if err != nil {
 		return UserStats{}, err
 	}
-	photoIDs := make([]string, len(photoList))
 
+	photoIDs := make([]string, len(photoList))
 	for idx, photo := range photoList {
 		photoIDs[idx] = photo.ID.String()
 	}
@@ -143,6 +151,31 @@ func (s *GORMStorer) Statistics(userID string) (UserStats, error) {
 	}
 
 	return UserStats{
+		Photos:    photos,
+		Favorites: favorites,
+		UsedSpace: usedSpace,
+	}, nil
+}
+
+// Stats is a method of `GORMStorer` for collecting aggregated data on the storer.
+func (s *GORMStorer) Stats() (Stats, error) {
+	var photos, favorites int
+	res := s.db.Raw("SELECT count(id) FROM photos").Scan(&photos)
+	if res.Error != nil {
+		return Stats{}, res.Error
+	}
+
+	res = s.db.Raw("SELECT count(id) FROM descriptors WHERE favorite = true").Scan(&favorites)
+	if res.Error != nil {
+		return Stats{}, res.Error
+	}
+
+	usedSpace, err := s.ir.TotalSpace()
+	if err != nil {
+		return Stats{}, err
+	}
+
+	return Stats{
 		Photos:    photos,
 		Favorites: favorites,
 		UsedSpace: usedSpace,

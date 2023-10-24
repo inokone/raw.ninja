@@ -1,19 +1,22 @@
-package auth
+package user
 
 import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/inokone/photostorage/auth/role"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-// User is the user representation for database storage
+// User is the user representation for database storage.
 type User struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
 	Email     string    `gorm:"type:varchar(255);uniqueIndex;not null"`
 	PassHash  string    `gorm:"type:varchar(100)"`
 	Phone     string    `gorm:"type:varchar(20)"`
+	Role      role.Role `gorm:"foreignKey:RoleID"`
+	RoleID    int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
@@ -46,6 +49,25 @@ func (u *User) AsProfile() Profile {
 		ID:    u.ID.String(),
 		Email: u.Email,
 		Phone: u.Phone,
+		Role:  u.Role.AsProfileRole(),
+	}
+}
+
+// AsAdminView is a method of the `User` struct. It converts a `User` object into a `AdminView` object.
+func (u *User) AsAdminView() AdminView {
+	var deleted *int
+	if u.DeletedAt.Valid {
+		d := int(u.DeletedAt.Time.Unix())
+		deleted = &d
+	}
+	return AdminView{
+		ID:      u.ID.String(),
+		Email:   u.Email,
+		Phone:   u.Phone,
+		Role:    u.Role.AsProfileRole(),
+		Created: int(u.CreatedAt.Unix()),
+		Updated: int(u.UpdatedAt.Unix()),
+		Deleted: deleted,
 	}
 }
 
@@ -57,9 +79,10 @@ type Credentials struct {
 
 // Profile is the JSON user representation for authenticated users
 type Profile struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
-	Phone string `json:"phone"`
+	ID    string           `json:"id"`
+	Email string           `json:"email"`
+	Phone string           `json:"phone"`
+	Role  role.ProfileRole `json:"role"`
 }
 
 // Registration is the JSON user representation for registration/signup process
@@ -67,4 +90,27 @@ type Registration struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Phone    string `json:"phone"`
+}
+
+// AdminView is the user representation for the admin view of the application.
+type AdminView struct {
+	ID      string           `json:"id"`
+	Email   string           `json:"email"`
+	Phone   string           `json:"phone"`
+	Role    role.ProfileRole `json:"role"`
+	Created int
+	Updated int
+	Deleted *int
+}
+
+// RoleUser is aggregated data on the role, with the user count.
+type RoleUser struct {
+	Role  string
+	Users int
+}
+
+// Stats is aggregated data on the storer.
+type Stats struct {
+	TotalUsers   int
+	Distribution []RoleUser
 }

@@ -8,7 +8,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/inokone/photostorage/auth"
+	"github.com/inokone/photostorage/auth/role"
+	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
@@ -52,7 +53,8 @@ func initStore(c common.ImageStoreConfig) error {
 		return gorm.ErrNotImplemented
 	}
 	photos = photo.NewGORMStorer(db, is)
-	users = auth.NewGORMStorer(db)
+	users = user.NewGORMStorer(db)
+	roles = role.NewGORMStorer(db)
 	return nil
 }
 

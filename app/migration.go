@@ -5,7 +5,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/inokone/photostorage/auth"
+	"github.com/inokone/photostorage/auth/role"
+	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/descriptor"
 	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
@@ -18,9 +19,26 @@ func Migrate() {
 		os.Exit(1)
 	}
 
-	db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
-	if err := db.AutoMigrate(&photo.Photo{}, &auth.User{}, &descriptor.Descriptor{}, &image.Metadata{}); err != nil {
+	res := db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
+	if res.Error != nil {
+		log.Error().Err(res.Error).Msg("Database migration failed. Application spinning down.")
+		os.Exit(1)
+	}
+
+	if err := db.AutoMigrate(&photo.Photo{}, &role.Role{}, &user.User{}, &descriptor.Descriptor{}, &image.Metadata{}); err != nil {
 		log.Error().Err(err).Msg("Database migration failed. Application spinning down.")
+		os.Exit(1)
+	}
+
+	res = db.Exec("INSERT INTO roles (role_type, quota, display_name) VALUES (0, -1, 'Admin')")
+	if res.Error != nil {
+		log.Error().Err(res.Error).Msg("Database migration failed. Application spinning down.")
+		os.Exit(1)
+	}
+
+	res = db.Exec("INSERT INTO roles (role_type, quota, display_name) VALUES (1, 500000000, 'Free Tier')") // 500 Mb limit for free tier
+	if res.Error != nil {
+		log.Error().Err(res.Error).Msg("Database migration failed. Application spinning down.")
 		os.Exit(1)
 	}
 

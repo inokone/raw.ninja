@@ -10,8 +10,10 @@ Functionality:
     - Dashboard (with the favorite images)
     - Profile page (connection details, registration date, image count, favorite count and used quota) 
     ----
-    - Optimize pointer usages for large object passing (Photo, Image, Descriptor)
+    - Create administrator role to display used quota, aggregated data on users, etc.
     - Implement quota for free tier and global quota to protect for overflowing free limit at CDN
+    - Create reset password functionality
+    - Create an entity in the main package for storers.
     - Improve file upload. Concurrency option
     - Integrate with at least 1 online RAW editor
     - Integrate with at least 1 CDN, so it can be deployed in Cloud

@@ -3,7 +3,7 @@ package photo
 import (
 	"time"
 
-	"github.com/inokone/photostorage/auth"
+	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/descriptor"
 	"gorm.io/gorm"
 
@@ -15,7 +15,7 @@ type Photo struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
 	Raw       []byte    `gorm:"-"`
 	UserID    string
-	User      auth.User `gorm:"foreignKey:UserID"`
+	User      user.User `gorm:"foreignKey:UserID"`
 	DescID    string
 	Desc      descriptor.Descriptor `gorm:"foreignKey:DescID"`
 	CreatedAt time.Time
@@ -41,6 +41,13 @@ type Response struct {
 // UserStats is aggregated data on the photos of a user.
 type UserStats struct {
 	ID        uuid.UUID
+	Photos    int
+	Favorites int
+	UsedSpace int64
+}
+
+// Stats is aggregated data on the storer.
+type Stats struct {
 	Photos    int
 	Favorites int
 	UsedSpace int64

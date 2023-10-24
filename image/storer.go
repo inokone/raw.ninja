@@ -28,6 +28,8 @@ type Storer interface {
 	Loader
 
 	UsedSpace(ids []string) (int64, error)
+
+	TotalSpace() (int64, error)
 }
 
 const (
@@ -99,7 +101,7 @@ func (s *LocalStorer) LoadThumbnail(id string) ([]byte, error) {
 	return thumbnail, nil
 }
 
-// UsedSpace calculates the disk space needed to store the images with the provided IDs
+// UsedSpace calculates the disk space used by storing the images with the provided IDs.
 func (s *LocalStorer) UsedSpace(ids []string) (int64, error) {
 	var sum int64
 	for _, id := range ids {
@@ -111,6 +113,11 @@ func (s *LocalStorer) UsedSpace(ids []string) (int64, error) {
 		sum += c
 	}
 	return sum, nil
+}
+
+// TotalSpace calculates the total disk space used by the store.
+func (s *LocalStorer) TotalSpace() (int64, error) {
+	return getFolderSize(s.path)
 }
 
 func getFolderSize(path string) (int64, error) {

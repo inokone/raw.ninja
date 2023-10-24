@@ -20,8 +20,9 @@ type RDBConfig struct {
 
 // ImageStoreConfig is a configuration of the image store.
 type ImageStoreConfig struct {
-	Type string `mapstructure:"IMG_STORE_TYPE"`
-	Path string `mapstructure:"IMG_STORE_PATH"`
+	Type  string `mapstructure:"IMG_STORE_TYPE"`
+	Path  string `mapstructure:"IMG_STORE_PATH"`
+	Quota int64  `mapstructure:"IMG_STORE_QUOTA"`
 }
 
 // AuthConfig is a configuration of the authentication.

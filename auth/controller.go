@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
 )
 
@@ -19,12 +20,12 @@ var (
 
 // Controller is a struct for web handles related to authentication and authorization.
 type Controller struct {
-	users Storer
+	users user.Storer
 	jwt   JWTHandler
 }
 
 // NewController creates a new `Controller`, based on the user persistence and the authentication configuration parameters.
-func NewController(users Storer, jwt JWTHandler) Controller {
+func NewController(users user.Storer, jwt JWTHandler) Controller {
 	return Controller{
 		users: users,
 		jwt:   jwt,
@@ -44,12 +45,12 @@ func NewController(users Storer, jwt JWTHandler) Controller {
 // @Failure 500 {object} common.StatusMessage
 // @Router /signup [post]
 func (c Controller) Signup(g *gin.Context) {
-	var s Registration
+	var s user.Registration
 	if err := g.Bind(&s); err != nil {
 		g.JSON(http.StatusBadRequest, statusBadRequest)
 		return
 	}
-	user, err := NewUser(s.Email, s.Password, s.Phone)
+	user, err := user.NewUser(s.Email, s.Password, s.Phone)
 	if err != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{
 			Code:    500,
@@ -81,7 +82,7 @@ func (c Controller) Signup(g *gin.Context) {
 // @Failure 500 {object} common.StatusMessage
 // @Router /login [post]
 func (c Controller) Login(g *gin.Context) {
-	var s Credentials
+	var s user.Credentials
 	err := g.Bind(&s)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, statusBadRequest)
@@ -105,36 +106,6 @@ func (c Controller) Login(g *gin.Context) {
 	g.JSON(http.StatusOK, common.StatusMessage{
 		Code:    200,
 		Message: "Logged in!",
-	})
-}
-
-// Profile is a method of `Controller`. Retrieves profile data of the user based on the JWT token in the request.
-// @Summary Get user profile endpoint
-// @Schemes
-// @Description Gets the current logged in user
-// @Accept json
-// @Produce json
-// @Success 200 {object} Profile
-// @Failure 403 {object} common.StatusMessage
-// @Router /profile [get]
-func (c Controller) Profile(g *gin.Context) {
-	userObj, _ := g.Get("user")
-	user := userObj.(User)
-	g.JSON(http.StatusOK, user.AsProfile())
-}
-
-// Reset godoc - not implemented yet
-// @Summary Reset password endpoint
-// @Schemes
-// @Description Returns the status and version of the application
-// @Accept json
-// @Produce json
-// @Failure 501 {object} common.StatusMessage
-// @Router /reset [post]
-func (c Controller) Reset(g *gin.Context) {
-	g.JSON(http.StatusNotImplemented, common.StatusMessage{
-		Code:    501,
-		Message: "Functionality has not been implemented yet!",
 	})
 }
 

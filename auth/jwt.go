@@ -8,71 +8,25 @@ import (
 	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
 	"github.com/rs/zerolog/log"
 )
 
+const adminRole = 0 // O is the RoleType for admin by default (#iota)
+
 // JWTHandler is a struct for issuing and validating JWT tokens.
 type JWTHandler struct {
 	conf  common.AuthConfig
-	users Storer
+	users user.Storer
 }
 
 // NewJWTHandler creates a new `JWTHandler`.
-func NewJWTHandler(users Storer, conf common.AuthConfig) JWTHandler {
+func NewJWTHandler(users user.Storer, conf common.AuthConfig) JWTHandler {
 	return JWTHandler{
 		conf:  conf,
 		users: users,
 	}
-}
-
-// Validate is a method of `JWTHandler`. Validates the authentication token in the Gin context provided as a parameter.
-func (h *JWTHandler) Validate(g *gin.Context) {
-	log.Debug().Msg("Validating JWT token...")
-	tokenString, err := g.Cookie(jwtTokenKey)
-	if err != nil {
-		g.AbortWithStatus(http.StatusUnauthorized)
-		return
-	}
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, g.AbortWithError(http.StatusBadRequest, fmt.Errorf("unexpected signing method: %v", token.Header["alg"]))
-		}
-		return []byte(h.conf.JWTSecret), nil
-	})
-	if err != nil {
-		g.AbortWithStatus(http.StatusUnauthorized)
-		return
-	}
-
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		g.AbortWithStatus(http.StatusUnauthorized)
-		return
-	}
-
-	expired := float64(time.Now().Unix()) > claims["exp"].(float64)
-	if expired {
-		g.AbortWithStatus(http.StatusUnauthorized)
-		return
-	}
-
-	userID := claims["sub"]
-	uuid, err := uuid.Parse(userID.(string))
-	if err != nil {
-		g.AbortWithStatus(http.StatusUnauthorized)
-		return
-	}
-
-	user, err := h.users.ByID(uuid)
-	if err != nil || user.Email == "" {
-		g.AbortWithStatus(http.StatusUnauthorized)
-		return
-	}
-
-	g.Set("user", user)
-	g.Next()
 }
 
 // Issue is a method of `JWTHandler`. Issues a new authentication token for a user ID into the Gin context provided as parameters.
@@ -95,4 +49,68 @@ func (h *JWTHandler) Issue(g *gin.Context, userID string) {
 
 	g.SetSameSite(http.SameSiteLaxMode)
 	g.SetCookie(jwtTokenKey, tokenString, 3600*24*30, "", "", h.conf.JWTSecure, true) // Max live time is 30 days
+}
+
+// Validate is a method of `JWTHandler`. Validates the authentication token in the Gin context provided as a parameter.
+func (h *JWTHandler) Validate(g *gin.Context) {
+	h.validateUser(g)
+	g.Next()
+}
+
+// ValidateAdmin is a method of `JWTHandler`. Validates the authentication token and administrator authorization in
+// the Gin context provided as a parameter.
+func (h *JWTHandler) ValidateAdmin(g *gin.Context) {
+	user := h.validateUser(g)
+	if user.Role.RoleType != adminRole {
+		g.AbortWithStatus(http.StatusUnauthorized)
+	}
+	g.Next()
+}
+
+func (h *JWTHandler) validateUser(g *gin.Context) *user.User {
+	log.Debug().Msg("Validating JWT token...")
+	tokenString, err := g.Cookie(jwtTokenKey)
+	if err != nil {
+		g.AbortWithStatus(http.StatusUnauthorized)
+		return nil
+	}
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, g.AbortWithError(http.StatusBadRequest, fmt.Errorf("unexpected signing method: %v", token.Header["alg"]))
+		}
+		return []byte(h.conf.JWTSecret), nil
+	})
+	if err != nil {
+		g.AbortWithStatus(http.StatusUnauthorized)
+		return nil
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		g.AbortWithStatus(http.StatusUnauthorized)
+		return nil
+	}
+
+	expired := float64(time.Now().Unix()) > claims["exp"].(float64)
+	if expired {
+		g.AbortWithStatus(http.StatusUnauthorized)
+		return nil
+	}
+
+	userID := claims["sub"]
+	uuid, err := uuid.Parse(userID.(string))
+	if err != nil {
+		g.AbortWithStatus(http.StatusUnauthorized)
+		return nil
+	}
+
+	user, err := h.users.ByID(uuid)
+	if err != nil || user.Email == "" {
+		g.AbortWithStatus(http.StatusUnauthorized)
+		return nil
+	}
+
+	g.Set("user", user)
+	return &user
 }

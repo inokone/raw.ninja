@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/inokone/photostorage/auth"
+	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/photo"
 	"github.com/microcosm-cc/bluemonday"
@@ -94,11 +94,11 @@ func (c Controller) Favorites(g *gin.Context) {
 	g.JSON(http.StatusOK, images)
 }
 
-func currentUser(g *gin.Context) (*auth.User, error) {
-	user, ok := g.Get("user")
+func currentUser(g *gin.Context) (*user.User, error) {
+	u, ok := g.Get("user")
 	if !ok {
 		return nil, errors.New("user could not be extracted from session")
 	}
-	userObj := user.(auth.User)
-	return &userObj, nil
+	usr := u.(user.User)
+	return &usr, nil
 }
