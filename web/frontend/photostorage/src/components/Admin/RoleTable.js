@@ -5,18 +5,9 @@ import { Alert, Paper, TableContainer, TableBody, Table, TableHead, TableRow, Bo
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 
 import ProgressDisplay from '../Common/ProgressDisplay';
+import EditableTableCell from './EditableTableCell';
 
 const { REACT_APP_API_PREFIX } = process.env;
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-        fontSize: 14,
-    },
-}));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
@@ -25,6 +16,16 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     // hide last border
     '&:last-child td, &:last-child th': {
         border: 0,
+    },
+}));
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+        backgroundColor: theme.palette.common.black,
+        color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+        fontSize: 14,
     },
 }));
 
@@ -45,6 +46,25 @@ const RoleTable = () => {
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
     }
 
+    const handleCellEdit = (role, field, value) => {
+        let newRoles = roles.slice()
+        for (let i = 0; i < newRoles.length; i++) {
+            if (newRoles[i].id === role.id) {
+                newRoles[i][field] = value
+            }
+        }
+        setRoles(newRoles)
+        return fetch(REACT_APP_API_PREFIX + '/api/v1/roles/' + role.id, {
+            method: "PATCH",
+            mode: "cors",
+            credentials: "include",
+            body: JSON.stringify({
+                'id': role.id,
+                field: value
+            })
+        })
+    }
+
     React.useEffect(() => {
         const loadRoles = () => {
             fetch(REACT_APP_API_PREFIX + '/api/v1/roles/', {
@@ -54,12 +74,7 @@ const RoleTable = () => {
             })
                 .then(response => {
                     if (!response.ok) {
-                        if (response.status !== 200) {
-                            setError(response.status + ": " + response.statusText);
-                        } else {
-                            response.json().then(content => setError(content.message))
-                        }
-                        setLoading(false)
+                        throw new Error(response.status + ": " + response.statusText);
                     } else {
                         response.json().then(content => {
                             setLoading(false)
@@ -94,9 +109,17 @@ const RoleTable = () => {
                             <TableBody>
                                 {roles.map((role) => {
                                     return (
-                                        <StyledTableRow>
-                                            <StyledTableCell>{role.name}</StyledTableCell>
-                                            <StyledTableCell>{role.quota <= 0 ? 'Unlimited' : formatBytes(role.quota)}</StyledTableCell>
+                                        <StyledTableRow key={role.id}>
+                                            <EditableTableCell
+                                                value={role.name}
+                                                formatter={(value) => { return value }}
+                                                onCellEdit={(value) => handleCellEdit(role, 'name', value)}>
+                                            </EditableTableCell>
+                                            <EditableTableCell
+                                                value={role.quota}
+                                                formatter={(value) => { return value <= 0 ? 'Unlimited' : formatBytes(value) }}
+                                                onCellEdit={(value) => handleCellEdit(role, 'quota', value)}>
+                                            </EditableTableCell>
                                         </StyledTableRow>
                                     )
                                 })}
