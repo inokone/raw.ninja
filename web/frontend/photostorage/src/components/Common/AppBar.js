@@ -28,6 +28,7 @@ const ResponsiveAppBar = (props) => {
   const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const { user, setQuery } = props
   const adminRoleID = 0
 
   const isAdmin = (user) => {
@@ -36,7 +37,7 @@ const ResponsiveAppBar = (props) => {
 
   const profileMenu = () => {
     let res = {}
-    if (isAdmin(props.user)) {
+    if (isAdmin(user)) {
       res.Admin = 'admin'
     }
     return { ...res, ...settings }
@@ -59,11 +60,11 @@ const ResponsiveAppBar = (props) => {
   };
 
   const isAuthenticated = () => {
-    return props.user !== null
+    return user !== null
   }
 
   const getInitials = () => {
-    return props.user.email
+    return user.email
   }
 
   const handleMenuClick = (page) => {
@@ -172,7 +173,7 @@ const ResponsiveAppBar = (props) => {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           {isAuthenticated() ?
-            <OpeningSearchField setQuery={props.setQuery} /> : null}
+            <OpeningSearchField setQuery={setQuery} /> : null}
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
               key="upload"
@@ -191,7 +192,7 @@ const ResponsiveAppBar = (props) => {
             <Box sx={{ md: 0, ml: 1 }}>
               <Tooltip title={"Open profile"}>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(props.user.email) }} />
+                  <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(user.email) }} />
                 </IconButton>
               </Tooltip>
               <Menu

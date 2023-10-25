@@ -12,6 +12,8 @@ const Login = (props) => {
     const [passwordError, setPasswordError] = useState(false)
     const [error, setError] = useState()
     const [success, setSuccess] = useState(false)
+    const { setUser } = props
+
 
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -59,7 +61,7 @@ const Login = (props) => {
                     throw new Error(response.status + ": " + response.statusText);
                 } else {
                     response.json().then(content => {
-                        props.setUser(content)
+                        setUser(content)
                         navigate(redirectPath)
                     })
                 }

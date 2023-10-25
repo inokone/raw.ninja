@@ -15,6 +15,8 @@ const useStyles = makeStyles({
 
 const MetadataDisplay = (props) => {
   const classes = useStyles();
+  const { metadata } = props
+
 
   const formatShutterSpeed = (shutterSpeed) => {
     let validDividers = [2, 4, 8, 15, 30, 60, 125, 250, 500, 1000, 2000, 4000, 8000]
@@ -43,15 +45,15 @@ const MetadataDisplay = (props) => {
         <TableBody>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Format</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.format}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.format}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Uploaded</TableCell>
-            <TableCell className={classes.tableDataCell}>{new Date(props.metadata.uploaded).toLocaleString()}</TableCell>
+            <TableCell className={classes.tableDataCell}>{new Date(metadata.uploaded).toLocaleString()}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Taken</TableCell>
-            <TableCell className={classes.tableDataCell}>{new Date(props.metadata.metadata.timestamp).toLocaleString()}</TableCell>
+            <TableCell className={classes.tableDataCell}>{new Date(metadata.metadata.timestamp).toLocaleString()}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -60,23 +62,23 @@ const MetadataDisplay = (props) => {
         <TableBody>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Width</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.width + " px"}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.metadata.width + " px"}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Height</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.height + " px"}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.metadata.height + " px"}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>ISO</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.ISO}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.metadata.ISO}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Aperture</TableCell>
-            <TableCell className={classes.tableDataCell}>{Math.round((props.metadata.metadata.aperture + Number.EPSILON) * 100) / 100}</TableCell>
+            <TableCell className={classes.tableDataCell}>{Math.round((metadata.metadata.aperture + Number.EPSILON) * 100) / 100}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Shutter Speed</TableCell>
-            <TableCell className={classes.tableDataCell}>{formatShutterSpeed(props.metadata.metadata.shutter)}</TableCell>
+            <TableCell className={classes.tableDataCell}>{formatShutterSpeed(metadata.metadata.shutter)}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -85,15 +87,15 @@ const MetadataDisplay = (props) => {
         <TableBody>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Manufacturer</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.camera_make}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.metadata.camera_make}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Model</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.camera_model}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.metadata.camera_model}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Software Version</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.camera_sw}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.metadata.camera_sw}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -102,11 +104,11 @@ const MetadataDisplay = (props) => {
         <TableBody>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Manufacturer</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.lens_make}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.metadata.lens_make}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Model</TableCell>
-            <TableCell className={classes.tableDataCell}>{props.metadata.metadata.lens_model}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.metadata.lens_model}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

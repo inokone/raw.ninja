@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 
 const ProtectedRoute = (props) => {
   const navigate = useNavigate();
+  const { user, target, redirect, children } = props
   const adminRoleID = 0
 
   const isAdmin = (user) => {
@@ -10,14 +11,14 @@ const ProtectedRoute = (props) => {
   }
 
   React.useEffect(() => {
-    if (props.user === null) {
-      navigate(props.redirect);
+    if (user === null) {
+      navigate(redirect);
     }
-    if (props.target === "admin" && !isAdmin(props.user)) { 
-      navigate(props.redirect);
+    if (target === "admin" && !isAdmin(user)) { 
+      navigate(redirect);
     }
   });
 
-  return props.children ? props.children : <Outlet />;
+  return children ? children : <Outlet />;
 };
 export default ProtectedRoute;

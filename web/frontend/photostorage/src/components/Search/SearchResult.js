@@ -5,9 +5,10 @@ import PhotoGrid from '../Photos/PhotoGrid';
 const { REACT_APP_API_PREFIX } = process.env;
 
 const SearchResult = (props) => {
+  const { query } = props
 
   const populate = () => {
-    let url = REACT_APP_API_PREFIX + '/api/v1/search?query=' + props.query;
+    let url = REACT_APP_API_PREFIX + '/api/v1/search?query=' + query;
     return fetch(url, {
       method: "GET",
       mode: "cors",
@@ -16,7 +17,7 @@ const SearchResult = (props) => {
   }
 
   return (
-    <PhotoGrid populator={populate} data={props.query}></PhotoGrid>
+    <PhotoGrid populator={populate} data={query}></PhotoGrid>
   )
 }
 

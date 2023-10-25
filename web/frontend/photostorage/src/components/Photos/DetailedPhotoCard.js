@@ -12,9 +12,11 @@ const { REACT_APP_API_PREFIX } = process.env;
 const DetailedPhotoCard = (props) => {
   const navigate = useNavigate();
   const [error, setError] = React.useState(null)
+  const { image, setImage, closable, onClose } = props
+
 
   const handleDownloadClick = () => {
-    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + props.image.id + '/download', {
+    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id + '/download', {
       method: "GET",
       mode: "cors",
       credentials: "include"
@@ -33,7 +35,7 @@ const DetailedPhotoCard = (props) => {
         a.href = url;
         a.setAttribute(
           'download',
-          props.image.descriptor.filename,
+          image.descriptor.filename,
         );
         document.body.appendChild(a);
         a.click();
@@ -45,7 +47,7 @@ const DetailedPhotoCard = (props) => {
   }
 
   const handleDeleteClick = () => {
-    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + props.image.id, {
+    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id, {
       method: "DELETE",
       mode: "cors",
       credentials: "include"
@@ -61,10 +63,10 @@ const DetailedPhotoCard = (props) => {
   }
 
   const handleFavoriteClick = () => {
-    const updatedImage = { ...props.image };
-    updatedImage.descriptor.favorite = !props.image.descriptor.favorite
-    if (props.setImage) {
-      props.setImage(updatedImage)
+    const updatedImage = { ...image };
+    updatedImage.descriptor.favorite = !image.descriptor.favorite
+    if (setImage) {
+      setImage(updatedImage)
     } else {
       uploadImage(updatedImage)
     }
@@ -97,10 +99,10 @@ const DetailedPhotoCard = (props) => {
         <Box
           sx={{ bgcolor: 'rgba(0, 0, 0, 0.54)', color: 'white', padding: '4px', borderRadius: '4px' }}>
           <Grid container>
-            <Grid xs={11}><Typography variant="h5" >{props.image.descriptor.filename}</Typography></Grid>
+            <Grid xs={11}><Typography variant="h5" >{image.descriptor.filename}</Typography></Grid>
             <Grid xs={1} sx={{ position: 'relative' }}>
-              {props.closable ?
-                <IconButton onClick={props.onClose} sx={{ color: 'white', position: 'absolute', right: '0' }}>
+              {closable ?
+                <IconButton onClick={onClose} sx={{ color: 'white', position: 'absolute', right: '0' }}>
                   <CloseIcon />
                 </IconButton>
                 : null}
@@ -109,10 +111,10 @@ const DetailedPhotoCard = (props) => {
         </Box>
         <Grid container spacing={2} padding={3}>
           <Grid xs={9}>
-            <Image src={props.image.descriptor.thumbnail} height="80vh" />
+            <Image src={image.descriptor.thumbnail} height="80vh" />
           </Grid>
           <Grid xs={3}>
-            <MetadataDisplay metadata={props.image.descriptor} />
+            <MetadataDisplay metadata={image.descriptor} />
             <Grid container spacing={1} padding={1}>
               <Grid xs={4}>
                 <Tooltip title="Download RAW file">
@@ -121,7 +123,7 @@ const DetailedPhotoCard = (props) => {
               </Grid>
               <Grid xs={4}>
                 <Tooltip title="Mark file as favorite">
-                  <Button variant='contained' color='secondary' onClick={handleFavoriteClick}>{!props.image.descriptor.favorite ? "Favorite" : "Unfavorite"}</Button>
+                  <Button variant='contained' color='secondary' onClick={handleFavoriteClick}>{!image.descriptor.favorite ? "Favorite" : "Unfavorite"}</Button>
                 </Tooltip>
               </Grid>
               <Grid xs={4}>

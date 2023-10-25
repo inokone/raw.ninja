@@ -16,7 +16,7 @@ const PhotoGrid = (props) => {
     const [loading, setLoading] = React.useState(true)
     const [images, setImages] = React.useState(null)
     const [selected, setSelected] = React.useState(null)
-    const gridPopulator = props.populator
+    const {populator, data} = props
     const isSmScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const isMdScreen = useMediaQuery(theme.breakpoints.between('sm', 'md'));
     const isLgScreen = useMediaQuery(theme.breakpoints.between('md', 'lg'));
@@ -25,7 +25,7 @@ const PhotoGrid = (props) => {
 
     React.useEffect(() => {
         const loadImages = () => {
-            gridPopulator()
+            populator()
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(response.status + ": " + response.statusText);
@@ -42,7 +42,7 @@ const PhotoGrid = (props) => {
                 });
         }
         loadImages()
-    }, [gridPopulator, props.data])
+    }, [populator, data])
 
 
     const handleImageClick = (index) => {

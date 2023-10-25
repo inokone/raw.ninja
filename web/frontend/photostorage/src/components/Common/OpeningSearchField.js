@@ -51,8 +51,10 @@ const handleQueryChange = (event, setQuery, location, navigate) => {
 }
 
 const OpeningSearchField = (props) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const location = useLocation()
+  const { setQuery } = props
+
 
   return (<Search>
     <SearchIconWrapper>
@@ -62,7 +64,7 @@ const OpeningSearchField = (props) => {
       placeholder="Search…"
       sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}
       inputProps={{ 'aria-label': 'search' }}
-      onChange={e => handleQueryChange(e, props.setQuery, location, navigate)}
+      onChange={e => handleQueryChange(e, setQuery, location, navigate)}
     />
   </Search>);
 }

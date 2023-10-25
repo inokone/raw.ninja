@@ -17,11 +17,13 @@ const useStyles = makeStyles((theme) => ({
 
 const PhotoCard = (props) => {
   const classes = useStyles();
+  const { image, setImage, selected, onClick } = props
+
 
   const handleFavoriteClick = (image) => {
     const updatedImage = { ...image };
     updatedImage.descriptor.favorite = !image.descriptor.favorite
-    props.setImage(updatedImage)
+    setImage(updatedImage)
   }
 
   const handleDownloadClick = (image) => {
@@ -46,7 +48,7 @@ const PhotoCard = (props) => {
   }
 
   const handleClick = (id) => {
-    props.onClick(id)
+    onClick(id)
   }
 
   return (
@@ -55,19 +57,19 @@ const PhotoCard = (props) => {
         <CardMedia
           component="img"
           height="200px"
-          image={props.image.descriptor.thumbnail}
+          image={image.descriptor.thumbnail}
           loading="lazy"
-          alt={props.image.descriptor.filename}
-          onClick={() => handleClick(props.image.id)}
+          alt={image.descriptor.filename}
+          onClick={() => handleClick(image.id)}
         />
       </Box>
       <CardActionArea component="div" sx={{
-        ...(!props.selected && {
+        ...(!selected && {
         background:
           'linear-gradient(to top, rgba(0,0,0,0.7) 0%, ' +
           'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
         }),
-        ...(props.selected && {
+        ...(selected && {
           background:
             'linear-gradient(to top, rgba(0,255,0,0.9) 0%, ' +
             'rgba(0,255,0,0.9) 10%, rgba(0,0,0,0.65) 11%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
@@ -79,12 +81,12 @@ const PhotoCard = (props) => {
       }}>
         <CardActions disableSpacing>
           <Tooltip title="Prevent file from being deleted by life-cycle rules">
-            <IconButton aria-label="Add to favorites" onClick={() => handleFavoriteClick(props.image)}>
-              <FavoriteIcon className={props.image.descriptor.favorite ? classes.favorite : classes.nonfavorite} />
+            <IconButton aria-label="Add to favorites" onClick={() => handleFavoriteClick(image)}>
+              <FavoriteIcon className={image.descriptor.favorite ? classes.favorite : classes.nonfavorite} />
             </IconButton>
           </Tooltip>
           <Tooltip title="Download RAW file">
-            <IconButton aria-label="Download RAW image" onClick={() => handleDownloadClick(props.image)} sx={{ color: 'lightgray' }}>
+            <IconButton aria-label="Download RAW image" onClick={() => handleDownloadClick(image)} sx={{ color: 'lightgray' }}>
               <DownloadIcon />
             </IconButton>
           </Tooltip>
