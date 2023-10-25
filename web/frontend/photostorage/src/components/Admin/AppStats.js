@@ -63,7 +63,7 @@ const AppStats = () => {
                             <Grid item xs={7}><Typography>{stats.total_users}</Typography></Grid>
                         </Grid>
                         {stats.user_distribution.map((entry) => {
-                            return (<Grid container>
+                            return (<Grid container key={entry.role}>
                                 <Grid item xs={5}><Typography>{entry.role} users:</Typography></Grid>
                                 <Grid item xs={7}><Typography>{entry.users}</Typography></Grid>
                             </Grid>)

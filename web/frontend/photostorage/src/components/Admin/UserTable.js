@@ -85,7 +85,7 @@ const UserTable = () => {
                             <TableBody>
                                 {users.map((user) => {
                                     return (
-                                        <StyledTableRow>
+                                        <StyledTableRow key={user.id}>
                                             <StyledTableCell>{user.email}</StyledTableCell>
                                             <StyledTableCell>{user.phone}</StyledTableCell>
                                             <StyledTableCell>{user.role.name}</StyledTableCell>

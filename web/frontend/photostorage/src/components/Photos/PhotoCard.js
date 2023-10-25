@@ -61,7 +61,7 @@ const PhotoCard = (props) => {
           onClick={() => handleClick(props.image.id)}
         />
       </Box>
-      <CardActionArea sx={{
+      <CardActionArea component="div" sx={{
         ...(!props.selected && {
         background:
           'linear-gradient(to top, rgba(0,0,0,0.7) 0%, ' +

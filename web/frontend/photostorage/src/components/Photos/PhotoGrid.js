@@ -195,21 +195,25 @@ const PhotoGrid = (props) => {
                     {images.map((image, index) => {
                         if (isPlaceForSelection(index)) {
                             return (
-                                <>
+                                <React.Fragment key={index}>
                                     {selection(images[selected])}
                                     {cardWithHeader(images, image, index, selected === index)}
-                                </>
+                                </React.Fragment>
                             )
                         }
                         if (index === images.length - 1 && isInLastRow(selected)) {
                             return (
-                                <>
+                                <React.Fragment key={index}>
                                     {cardWithHeader(images, image, index, selected === index)}
                                     {selection(images[selected])}
-                                </>
+                                </React.Fragment>
                             )
                         }
-                        return cardWithHeader(images, image, index, selected === index)
+                        return (
+                            <React.Fragment key={index}>
+                                {cardWithHeader(images, image, index, selected === index)}
+                            </React.Fragment>
+                        )
                     })}
                 </Grid>}
         </>

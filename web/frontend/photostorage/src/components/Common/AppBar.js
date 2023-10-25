@@ -35,11 +35,11 @@ const ResponsiveAppBar = (props) => {
   }
 
   const profileMenu = () => {
-    let res = {...settings}
+    let res = {}
     if (isAdmin(props.user)) {
       res.Admin = 'admin'
     }
-    return res
+    return { ...res, ...settings }
   }
 
   const handleOpenNavMenu = (event) => {
