@@ -19,11 +19,7 @@ const Logout = ({ setUser }) => {
         })
             .then(response => {
                 if (!response.ok) {
-                    if (response.status !== 200) {
-                        console.log(response.status + ": " + response.statusText);
-                    } else {
-                        response.json().then(content => console.log(content))
-                    }
+                    throw new Error(response.status + ": " + response.statusText);
                 } else {
                     setUser(null);
                     navigate("/", { replace: true });

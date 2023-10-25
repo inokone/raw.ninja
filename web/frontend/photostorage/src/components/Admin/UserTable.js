@@ -46,12 +46,7 @@ const UserTable = () => {
             })
                 .then(response => {
                     if (!response.ok) {
-                        if (response.status !== 200) {
-                            setError(response.status + ": " + response.statusText);
-                        } else {
-                            response.json().then(content => setError(content.message))
-                        }
-                        setLoading(false)
+                        throw new Error(response.status + ": " + response.statusText);
                     } else {
                         response.json().then(content => {
                             setLoading(false)
@@ -65,7 +60,7 @@ const UserTable = () => {
                 });
         }
 
-        if(!users) {
+        if (!users) {
             loadUsers()
         }
     },)
@@ -75,34 +70,34 @@ const UserTable = () => {
             {error !== null ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
             {loading ? <ProgressDisplay /> :
                 <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
-                <TableContainer component={Paper} style={{ width: 1200 }}>
-                    <Table style={{ width: 1200 }}>
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell>E-mail</StyledTableCell>
-                                <StyledTableCell>Phone</StyledTableCell>
-                                <StyledTableCell>Role</StyledTableCell>
-                                <StyledTableCell>Registered</StyledTableCell>
-                                <StyledTableCell>Last Updated</StyledTableCell>
-                                <StyledTableCell>Deleted</StyledTableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {users.map((user) => {
-                                return (
-                                    <StyledTableRow>
-                                        <StyledTableCell>{user.email}</StyledTableCell>
-                                        <StyledTableCell>{user.phone}</StyledTableCell>
-                                        <StyledTableCell>{user.role.name}</StyledTableCell>
-                                        <StyledTableCell>{asDate(user.created)}</StyledTableCell>
-                                        <StyledTableCell>{asDate(user.updated)}</StyledTableCell>
-                                        <StyledTableCell>{user.deleted}</StyledTableCell>
-                                    </StyledTableRow>
-                                )
-                            })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                    <TableContainer component={Paper} style={{ width: 1200 }}>
+                        <Table style={{ width: 1200 }}>
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>E-mail</StyledTableCell>
+                                    <StyledTableCell>Phone</StyledTableCell>
+                                    <StyledTableCell>Role</StyledTableCell>
+                                    <StyledTableCell>Registered</StyledTableCell>
+                                    <StyledTableCell>Last Updated</StyledTableCell>
+                                    <StyledTableCell>Deleted</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {users.map((user) => {
+                                    return (
+                                        <StyledTableRow>
+                                            <StyledTableCell>{user.email}</StyledTableCell>
+                                            <StyledTableCell>{user.phone}</StyledTableCell>
+                                            <StyledTableCell>{user.role.name}</StyledTableCell>
+                                            <StyledTableCell>{asDate(user.created)}</StyledTableCell>
+                                            <StyledTableCell>{asDate(user.updated)}</StyledTableCell>
+                                            <StyledTableCell>{user.deleted}</StyledTableCell>
+                                        </StyledTableRow>
+                                    )
+                                })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Box>
             }
         </>

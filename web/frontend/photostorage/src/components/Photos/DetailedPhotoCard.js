@@ -82,11 +82,7 @@ const DetailedPhotoCard = (props) => {
     })
       .then(response => {
         if (!response.ok) {
-          if (response.status !== 200) {
-            setError(response.status + ": " + response.statusText);
-          } else {
-            response.json().then(content => setError(content.message))
-          }
+          throw new Error(response.status + ": " + response.statusText);
         }
       })
       .catch(error => {

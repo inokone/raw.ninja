@@ -34,11 +34,7 @@ const Login = (props) => {
             })
                 .then(response => {
                     if (!response.ok) {
-                        if (response.status !== 200) {
-                            setError(response.status + ": " + response.statusText);
-                        } else {
-                            response.json().then(content => setError(content.message))
-                        }
+                        throw new Error(response.status + ": " + response.statusText);
                     } else {
                         setError(null)
                         setSuccess(true)
@@ -60,12 +56,7 @@ const Login = (props) => {
         })
             .then(response => {
                 if (!response.ok) {
-                    if (response.status !== 200) {
-                        setError(response.status + ": " + response.statusText);
-                    } else {
-                        response.json().then(content => setError(content))
-                        navigate(redirectPath)
-                    }
+                    throw new Error(response.status + ": " + response.statusText);
                 } else {
                     response.json().then(content => {
                         props.setUser(content)

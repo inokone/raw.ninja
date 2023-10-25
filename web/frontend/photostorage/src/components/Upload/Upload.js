@@ -51,13 +51,7 @@ const Upload = () => {
       .then(response => {
         console.log(response)
         if (!response.ok) {
-          if (response.status !== 200) {
-            setStage(3)
-            setError(response.status + ": " + response.statusText);
-          } else {
-            setStage(3)
-            response.json().then(content => setError(content.message))
-          }
+          throw new Error(response.status + ": " + response.statusText);
         } else {
           response.json().then(content => {
             let first = content.photo_ids[0]

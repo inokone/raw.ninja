@@ -28,9 +28,7 @@ const RegisterForm = () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    response.json().then(content => {
-                        setError(content.message)
-                    })
+                    throw new Error(response.status + ": " + response.statusText);
                 } else {
                     setError(null)
                     setSuccess(true)

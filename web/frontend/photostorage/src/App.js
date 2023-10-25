@@ -42,7 +42,7 @@ const App = () => {
             setIsLoading(false);
           })
         } else {
-          setIsLoading(false);
+          throw new Error(response.status + ": " + response.statusText);
         }
       }).catch(() => {
         setIsLoading(false);

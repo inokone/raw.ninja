@@ -22,12 +22,7 @@ const PhotoDisplay = () => {
       })
         .then(response => {
           if (!response.ok) {
-            if (response.status !== 200) {
-              setError(response.status + ": " + response.statusText);
-            } else {
-              response.json().then(content => setError(content.message))
-            }
-            setLoading(false)
+            throw new Error(response.status + ": " + response.statusText);
           } else {
             response.json().then(content => {
               setLoading(false)
