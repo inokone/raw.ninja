@@ -14,7 +14,7 @@ import (
 // Init is a function to initialize handler mapping for URLs
 func Init(v1 *gin.RouterGroup, photos photo.Storer, users user.Storer, roles role.Storer, conf common.AppConfig) {
 	var (
-		p  = photo.NewController(photos)
+		p  = photo.NewController(photos, conf.Store)
 		m  = auth.NewJWTHandler(users, conf.Auth)
 		a  = auth.NewController(users, m)
 		s  = search.NewController(photos)

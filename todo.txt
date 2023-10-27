@@ -1,7 +1,7 @@
 Functionality:
   - MVP:
     - Auth for 2 roles - free user and administrator
-    - Upload RAW files with option for multiple files
+    - Upload RAW files with option for multiple files with user and global quota check
     - Display file list - thumbnails
     - Display image with details and download option
     - Quick search by file names
@@ -11,7 +11,6 @@ Functionality:
     - Administrator page (app stats, users, roles and used / total quota)
     - Profile page (connection details, registration date, image count, favorite count and used quota) 
     ----
-    - Implement restriction for quota per user and quota per app to protect for overflowing free limit at CDN
     - Create reset password functionality
     - Create timeout with exponential backoff for failed authentication
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)

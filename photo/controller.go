@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/descriptor"
@@ -26,12 +27,14 @@ var (
 // Controller is a struct for all REST handlers related to photos in the application.
 type Controller struct {
 	photos Storer
+	config common.ImageStoreConfig
 }
 
 // NewController creates a new `Controller` instance based on the photo persistence provided in the parameter.
-func NewController(photos Storer) Controller {
+func NewController(photos Storer, config common.ImageStoreConfig) Controller {
 	return Controller{
 		photos: photos,
+		config: config,
 	}
 }
 
@@ -50,20 +53,32 @@ func NewController(photos Storer) Controller {
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/upload [post]
 func (c Controller) Upload(g *gin.Context) {
-	user, err := currentUser(g)
+	var (
+		usr           *user.User
+		err           error
+		form          *multipart.Form
+		files         []*multipart.FileHeader
+		ids           []string
+		mp            multipart.File
+		raw           []byte
+		target        *Photo
+		id            uuid.UUID
+		quotaExceeded bool
+	)
+	usr, err = currentUser(g)
 	if err != nil {
 		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
 
-	form, err := g.MultipartForm()
+	form, err = g.MultipartForm()
 	if err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Could not extract uploaded file from request!"})
 		return
 	}
 
-	files := form.File["files[]"]
-	ids := make([]string, 0)
+	files = form.File["files[]"]
+	ids = make([]string, 0)
 
 	if len(files) == 0 {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "You have to upload at least 1 file!"})
@@ -71,19 +86,19 @@ func (c Controller) Upload(g *gin.Context) {
 	}
 
 	for _, file := range files {
-		mp, err := file.Open()
+		mp, err = file.Open()
 		if err != nil {
 			g.Error(err)
 			return
 		}
 		defer closeRequestFile(mp)
-		raw, err := io.ReadAll(mp)
+		raw, err = io.ReadAll(mp)
 		if err != nil {
 			g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file is corrupt!"})
 			return
 		}
-		target, err := createPhoto(
-			*user,
+		target, err = createPhoto(
+			*usr,
 			filepath.Base(file.Filename),
 			filepath.Ext(file.Filename)[1:],
 			raw,
@@ -93,7 +108,19 @@ func (c Controller) Upload(g *gin.Context) {
 			return
 		}
 
-		id, err := c.photos.Store(target)
+		quotaExceeded, err = c.exceededUserQuota(usr, target.Desc.Metadata.DataSize)
+		if quotaExceeded || err != nil {
+			g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 403, Message: "You can not upload files, you have reached your quota!"})
+			return
+		}
+
+		quotaExceeded, err = c.exceededGlobalQuota(target.Desc.Metadata.DataSize)
+		if quotaExceeded || err != nil {
+			g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "You can not upload files, please contact an administrator!"})
+			return
+		}
+
+		id, err = c.photos.Store(target)
 		if err != nil {
 			g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
 			return
@@ -104,8 +131,44 @@ func (c Controller) Upload(g *gin.Context) {
 
 	g.JSON(http.StatusCreated, UploadSuccess{
 		PhotoIDs: ids,
-		UserID:   user.ID.String(),
+		UserID:   usr.ID.String(),
 	})
+}
+
+func (c Controller) exceededGlobalQuota(fileSize int64) (bool, error) {
+	var (
+		quota int64
+		stats Stats
+		err   error
+	)
+
+	quota = c.config.Quota
+	if quota <= 0 {
+		return false, nil
+	}
+
+	stats, err = c.photos.Stats()
+	if err != nil {
+		return false, err
+	}
+	return stats.UsedSpace+fileSize > quota, nil
+}
+
+func (c Controller) exceededUserQuota(usr *user.User, fileSize int64) (bool, error) {
+	var (
+		stats UserStats
+		err   error
+	)
+
+	if usr.Role.Quota <= 0 {
+		return false, nil
+	}
+
+	stats, err = c.photos.UserStats(usr.ID.String())
+	if err != nil {
+		return false, err
+	}
+	return stats.UsedSpace+fileSize > usr.Role.Quota, nil
 }
 
 func closeRequestFile(mp multipart.File) {
