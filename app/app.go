@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/inokone/photostorage/auth"
 	"github.com/inokone/photostorage/auth/role"
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
@@ -24,6 +25,7 @@ var (
 	photos photo.Storer
 	users  user.Storer
 	roles  role.Storer
+	auths  auth.Storer
 )
 
 func init() {
@@ -69,7 +71,7 @@ func App(port int) {
 	// Set up routes
 	v1 := r.Group("/api/v1")
 
-	web.Init(v1, photos, users, roles, *config)
+	web.Init(v1, photos, users, roles, auths, *config)
 
 	r.Run(fmt.Sprintf(":%d", port))
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
+	"github.com/inokone/photostorage/auth"
 	"github.com/inokone/photostorage/auth/role"
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/descriptor"
@@ -25,7 +26,7 @@ func Migrate() {
 		os.Exit(1)
 	}
 
-	if err := db.AutoMigrate(&photo.Photo{}, &role.Role{}, &user.User{}, &descriptor.Descriptor{}, &image.Metadata{}); err != nil {
+	if err := db.AutoMigrate(&photo.Photo{}, &role.Role{}, &user.User{}, &descriptor.Descriptor{}, &image.Metadata{}, &auth.AuthenticationState{}); err != nil {
 		log.Error().Err(err).Msg("Database migration failed. Application spinning down.")
 		os.Exit(1)
 	}

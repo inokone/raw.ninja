@@ -27,9 +27,19 @@ type ImageStoreConfig struct {
 
 // AuthConfig is a configuration of the authentication.
 type AuthConfig struct {
-	JWTSecret string `mapstructure:"JWT_SIGN_SECRET"`
-	JWTExp    int    `mapstructure:"JWT_EXPIRATION_HOURS"`
-	JWTSecure bool   `mapstructure:"JWT_COOKIE_SECURE"`
+	JWTSecret  string `mapstructure:"JWT_SIGN_SECRET"`
+	JWTExp     int    `mapstructure:"JWT_EXPIRATION_HOURS"`
+	JWTSecure  bool   `mapstructure:"JWT_COOKIE_SECURE"`
+	DomainRoot string `mapstructure:"AUTH_DOMAIN_ROOT"`
+}
+
+// MailConfig is a configuration of e-mail massaging.
+type MailConfig struct {
+	NoReplyAddress string `mapstructure:"MAIL_NO_REPLY_ADDRESS"`
+	SMTPAddress    string `mapstructure:"MAIL_SMTP_ADDRESS"`
+	SMTPUser       string `mapstructure:"MAIL_SMTP_USER"`
+	SMTPPassword   string `mapstructure:"MAIL_SMTP_PASSWORD"`
+	SMTPPort       int    `mapstructure:"MAIL_SMTP_PORT"`
 }
 
 // LogConfig is a configuration of the logging.
@@ -44,6 +54,7 @@ type AppConfig struct {
 	Store    ImageStoreConfig
 	Auth     AuthConfig
 	Log      LogConfig
+	Mail     MailConfig
 }
 
 // LoadConfig is a function loading the configuration from app.env file in the runtime directory or environment variables.
@@ -53,6 +64,7 @@ func LoadConfig() (*AppConfig, error) {
 	var is ImageStoreConfig
 	var au AuthConfig
 	var lg LogConfig
+	var ml MailConfig
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc/photostorage/")
 	viper.AddConfigPath("$HOME/.photostorage")
@@ -78,5 +90,8 @@ func LoadConfig() (*AppConfig, error) {
 	if err = viper.Unmarshal(&lg); err != nil {
 		return nil, err
 	}
-	return &AppConfig{Database: db, Store: is, Auth: au, Log: lg}, nil
+	if err = viper.Unmarshal(&ml); err != nil {
+		return nil, err
+	}
+	return &AppConfig{Database: db, Store: is, Auth: au, Log: lg, Mail: ml}, nil
 }

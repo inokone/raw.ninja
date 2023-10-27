@@ -6,21 +6,23 @@ import (
 	"github.com/inokone/photostorage/auth/role"
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
+	"github.com/inokone/photostorage/mail"
 	"github.com/inokone/photostorage/photo"
 	"github.com/inokone/photostorage/search"
 	"github.com/inokone/photostorage/stats"
 )
 
 // Init is a function to initialize handler mapping for URLs
-func Init(v1 *gin.RouterGroup, photos photo.Storer, users user.Storer, roles role.Storer, conf common.AppConfig) {
+func Init(v1 *gin.RouterGroup, photos photo.Storer, users user.Storer, roles role.Storer, auths auth.Storer, conf common.AppConfig) {
 	var (
-		p  = photo.NewController(photos, conf.Store)
-		m  = auth.NewJWTHandler(users, conf.Auth)
-		a  = auth.NewController(users, m)
-		s  = search.NewController(photos)
-		st = stats.NewController(photos, users, conf.Store)
-		u  = user.NewController(users)
-		r  = role.NewController(roles)
+		mailer = mail.NewService(conf.Mail)
+		p      = photo.NewController(photos, conf.Store)
+		m      = auth.NewJWTHandler(users, conf.Auth)
+		a      = auth.NewController(users, auths, m, mailer, conf.Auth)
+		s      = search.NewController(photos)
+		st     = stats.NewController(photos, users, conf.Store)
+		u      = user.NewController(users)
+		r      = role.NewController(roles)
 	)
 
 	v1.GET("healthcheck", common.Healthcheck)
