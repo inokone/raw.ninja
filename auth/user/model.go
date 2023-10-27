@@ -16,10 +16,21 @@ type User struct {
 	PassHash  string    `gorm:"type:varchar(100)"`
 	Phone     string    `gorm:"type:varchar(20)"`
 	Role      role.Role `gorm:"foreignKey:RoleID"`
+	Source    string    `gorm:"type:varchar(255);not null"`
 	RoleID    int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
+}
+
+type AuthenticationDetails struct {
+	UserID             uuid.UUID `gorm:"type:uuid;primary_key"`
+	FailedLoginCounter int
+	FailedLoginLock    time.Time
+	LastFailedLogin    time.Time
+	PasswordResetHash  string `gorm:"type:varchar(100)"`
+	PasswordResetTTL   time.Time
+	LastPasswordReset  time.Time
 }
 
 // NewUser is a function to create a new `User` instance, hashing the password right off the bat

@@ -10,6 +10,10 @@ const Profile = () => {
   const [stats, setStats] = React.useState(null)
 
   const formatBytes = (bytes, decimals = 2) => {
+    let negative = (bytes < 0)
+    if (negative) {
+      bytes = -bytes 
+    }
     if (!+bytes) return '0 Bytes'
 
     const k = 1024
@@ -18,7 +22,8 @@ const Profile = () => {
 
     const i = Math.floor(Math.log(bytes) / Math.log(k))
 
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+    let displayText = `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+    return negative ? "-" + displayText : displayText
   }
 
   React.useEffect(() => {
@@ -63,6 +68,10 @@ const Profile = () => {
               <Grid item xs={7}><Typography>{stats.email}</Typography></Grid>
             </Grid>
             <Grid container>
+              <Grid item xs={5}><Typography>Subscription model:</Typography></Grid>
+              <Grid item xs={7}><Typography>{stats.role}</Typography></Grid>
+            </Grid>
+            <Grid container>
               <Grid item xs={5}><Typography>Phone:</Typography></Grid>
               <Grid item xs={7}><Typography>{stats.phone}</Typography></Grid>
             </Grid>
@@ -81,6 +90,10 @@ const Profile = () => {
             <Grid container>
               <Grid item xs={5}><Typography>User space:</Typography></Grid>
               <Grid item xs={7}><Typography>{formatBytes(stats.used_space)}</Typography></Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs={5}><Typography>Available space:</Typography></Grid>
+              <Grid item xs={7}><Typography>{stats.quota <= 0 ? 'Unlimited' : formatBytes(stats.available_space)}</Typography></Grid>
             </Grid>
           </Box>
         </Box>}

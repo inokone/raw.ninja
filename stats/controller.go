@@ -46,6 +46,10 @@ func (c Controller) UserStats(g *gin.Context) {
 	stats.Photos = ps.Photos
 	stats.Favorites = ps.Favorites
 	stats.UsedSpace = ps.UsedSpace
+	stats.AvailableSpace = -1
+	if stats.Quota > 0 {
+		stats.AvailableSpace = stats.Quota - ps.UsedSpace
+	}
 	g.JSON(http.StatusOK, stats)
 }
 
