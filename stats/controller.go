@@ -37,8 +37,8 @@ func NewController(photos photo.Storer, users user.Storer, config common.ImageSt
 // @Router /statistics/user [get]
 func (c Controller) UserStats(g *gin.Context) {
 	u, _ := g.Get("user")
-	usr := u.(user.User)
-	stats := NewUserStats(usr)
+	usr := u.(*user.User)
+	stats := NewUserStats(*usr)
 	ps, err := c.photos.UserStats(usr.ID.String())
 	if err != nil {
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"})

@@ -97,6 +97,6 @@ func currentUser(g *gin.Context) (*user.User, error) {
 	if !ok {
 		return nil, errors.New("user could not be extracted from session")
 	}
-	usr := u.(user.User)
-	return &usr, nil
+	usr := u.(*user.User)
+	return usr, nil
 }

@@ -31,7 +31,7 @@ func NewController(users Storer) Controller {
 // @Router /users/profile [get]
 func (c Controller) Profile(g *gin.Context) {
 	u, _ := g.Get("user")
-	usr := u.(User)
+	usr := u.(*User)
 	g.JSON(http.StatusOK, usr.AsProfile())
 }
 
