@@ -6,7 +6,7 @@ const { REACT_APP_API_PREFIX } = process.env;
 
 const Profile = () => {
   const [error, setError] = React.useState(null)
-  const [loading, setLoading] = React.useState(true)
+  const [loading, setLoading] = React.useState(false)
   const [stats, setStats] = React.useState(null)
 
   const formatBytes = (bytes, decimals = 2) => {
@@ -26,38 +26,39 @@ const Profile = () => {
     return negative ? "-" + displayText : displayText
   }
 
-  React.useEffect(() => {
-    const loadStats = () => {
-      fetch(REACT_APP_API_PREFIX + '/api/v1/statistics/user', {
-        method: "GET",
-        mode: "cors",
-        credentials: "include"
+  const loadStats = () => {
+    fetch(REACT_APP_API_PREFIX + '/api/v1/statistics/user', {
+      method: "GET",
+      mode: "cors",
+      credentials: "include"
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(response.status + ": " + response.statusText);
+        } else {
+          response.json().then(content => {
+            setLoading(false)
+            setStats(content)
+          })
+        }
       })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(response.status + ": " + response.statusText);
-          } else {
-            response.json().then(content => {
-              setLoading(false)
-              setStats(content)
-            })
-          }
-        })
-        .catch(error => {
-          setError(error)
-          setLoading(false)
-        });
-    }
+      .catch(error => {
+        setError(error)
+        setLoading(false)
+      });
+  }
 
-    if (!stats) {
+  React.useEffect(() => {
+    if (!stats && !error && !loading) {
       loadStats()
     }
-  },)
+  }, [stats, loading, error])
 
   return (
     <>
-      {error !== null ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
-      {loading ? <ProgressDisplay /> :
+      {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+      {loading && <ProgressDisplay /> }
+      {stats &&
         <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
           <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.34)', color: 'white', mt: 10, borderRadius: '4px', width: '500px' }}>
             <Grid container>

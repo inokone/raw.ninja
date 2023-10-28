@@ -9,7 +9,7 @@ const { REACT_APP_API_PREFIX } = process.env;
 const PhotoDisplay = () => {
   const location = useLocation()
   const [error, setError] = React.useState(null)
-  const [loading, setLoading] = React.useState(true)
+  const [loading, setLoading] = React.useState(false)
   const [image, setImage] = React.useState(null)
   const path = location.pathname
 
@@ -25,8 +25,8 @@ const PhotoDisplay = () => {
             throw new Error(response.status + ": " + response.statusText);
           } else {
             response.json().then(content => {
-              setLoading(false)
               setImage(content)
+              setLoading(false)
             })
           }
         })
@@ -36,13 +36,16 @@ const PhotoDisplay = () => {
         });
     }
 
-    loadImage()
-  }, [path])
+    if(!image && !loading && !error) {
+      loadImage()
+    }
+  }, [path, image, loading, error])
 
   return (
     <>
-      {error !== null ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
-      {loading ? <ProgressDisplay /> : <DetailedPhotoCard image={image} closable={false} />}
+      {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+      {loading && <ProgressDisplay /> }
+      {image && <DetailedPhotoCard image={image} closable={false} />}
     </>
   );
 }

@@ -31,7 +31,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 const RoleTable = () => {
     const [error, setError] = React.useState(null)
-    const [loading, setLoading] = React.useState(true)
+    const [loading, setLoading] = React.useState(false)
     const [roles, setRoles] = React.useState(null)
 
     const formatBytes = (bytes, decimals = 2) => {
@@ -65,38 +65,40 @@ const RoleTable = () => {
         })
     }
 
-    React.useEffect(() => {
-        const loadRoles = () => {
-            fetch(REACT_APP_API_PREFIX + '/api/v1/roles/', {
-                method: "GET",
-                mode: "cors",
-                credentials: "include"
+    const loadRoles = () => {
+        setLoading(true)
+        fetch(REACT_APP_API_PREFIX + '/api/v1/roles/', {
+            method: "GET",
+            mode: "cors",
+            credentials: "include"
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(response.status + ": " + response.statusText);
+                } else {
+                    response.json().then(content => {
+                        setRoles(content)
+                        setLoading(false)
+                    })
+                }
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(response.status + ": " + response.statusText);
-                    } else {
-                        response.json().then(content => {
-                            setLoading(false)
-                            setRoles(content)
-                        })
-                    }
-                })
-                .catch(error => {
-                    setError(error)
-                    setLoading(false)
-                });
-        }
+            .catch(error => {
+                setError(error)
+                setLoading(false)
+            });
+    }
 
-        if (!roles) {
+    React.useEffect(() => {
+        if (!loading && !roles && !error) {
             loadRoles()
         }
-    },)
+    }, [roles, error, loading])
 
     return (
         <>
-            {error !== null ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
-            {loading ? <ProgressDisplay /> :
+            {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+            {loading && <ProgressDisplay />}
+            {roles &&
                 <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
                     <TableContainer component={Paper} style={{ width: 1200 }}>
                         <Table style={{ width: 1200 }}>
@@ -126,8 +128,7 @@ const RoleTable = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                </Box>
-            }
+                </Box>}
         </>
     );
 }

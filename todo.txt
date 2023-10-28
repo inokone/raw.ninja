@@ -16,11 +16,13 @@ Functionality:
     - Create timeout with exponential backoff for failed authentication
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
 
+    - Styling with https://github.com/codedthemes/berry-free-react-admin-template
     - Implement DDOS protection, captcha for registration and login
     - Create Free tier, display other tiers as disabled for now
     - Integrate with at least 1 online RAW editor
     - Integrate with at least 1 CDN, so it can be deployed in Cloud
     - Improve file upload. Concurrency option
+    - Generative AI based on the decisions of the user (1to5 rating) to advise a score
     - Testing (handlers and unit testing) - Backend and Frontend
     - Fix PhotoGrid selection display mechanism
     - Fix editing users and roles on admin page

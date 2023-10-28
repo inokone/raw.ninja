@@ -30,45 +30,47 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const UserTable = () => {
     const [error, setError] = React.useState(null)
-    const [loading, setLoading] = React.useState(true)
+    const [loading, setLoading] = React.useState(false)
     const [users, setUsers] = React.useState(null)
 
     const asDate = (unixTimestamp) => {
         return new Date(unixTimestamp * 1000).toLocaleDateString()
     }
 
-    React.useEffect(() => {
-        const loadUsers = () => {
-            fetch(REACT_APP_API_PREFIX + '/api/v1/users/', {
-                method: "GET",
-                mode: "cors",
-                credentials: "include"
+    const loadUsers = () => {
+        setLoading(true)
+        fetch(REACT_APP_API_PREFIX + '/api/v1/users/', {
+            method: "GET",
+            mode: "cors",
+            credentials: "include"
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(response.status + ": " + response.statusText);
+                } else {
+                    response.json().then(content => {
+                        setUsers(content)
+                        setLoading(false)
+                    })
+                }
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(response.status + ": " + response.statusText);
-                    } else {
-                        response.json().then(content => {
-                            setLoading(false)
-                            setUsers(content)
-                        })
-                    }
-                })
-                .catch(error => {
-                    setError(error)
-                    setLoading(false)
-                });
-        }
+            .catch(error => {
+                setError(error)
+                setLoading(false)
+            });
+    }
 
-        if (!users) {
+    React.useEffect(() => {
+        if (!loading && !users && !error) {
             loadUsers()
         }
-    },)
+    },[users, loading, error])
 
     return (
         <>
-            {error !== null ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
-            {loading ? <ProgressDisplay /> :
+            {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+            {loading && <ProgressDisplay />}
+            {users &&
                 <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
                     <TableContainer component={Paper} style={{ width: 1200 }}>
                         <Table style={{ width: 1200 }}>
@@ -98,8 +100,7 @@ const UserTable = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                </Box>
-            }
+                </Box>}
         </>
     );
 }

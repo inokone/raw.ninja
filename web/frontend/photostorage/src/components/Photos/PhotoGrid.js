@@ -13,7 +13,7 @@ const PhotoGrid = (props) => {
     const theme = useTheme();
     const navigate = useNavigate();
     const [error, setError] = React.useState(null)
-    const [loading, setLoading] = React.useState(true)
+    const [loading, setLoading] = React.useState(false)
     const [images, setImages] = React.useState(null)
     const [selected, setSelected] = React.useState(null)
     const {populator, data} = props
@@ -21,7 +21,6 @@ const PhotoGrid = (props) => {
     const isMdScreen = useMediaQuery(theme.breakpoints.between('sm', 'md'));
     const isLgScreen = useMediaQuery(theme.breakpoints.between('md', 'lg'));
     const isXlScreen = useMediaQuery(theme.breakpoints.up('lg'));
-
 
     React.useEffect(() => {
         const loadImages = () => {
@@ -41,8 +40,10 @@ const PhotoGrid = (props) => {
                     setLoading(false)
                 });
         }
-        loadImages()
-    }, [populator, data])
+        if (!images && !error && !loading) {
+            loadImages()
+        }
+    }, [populator, data, images, error, loading])
 
 
     const handleImageClick = (index) => {
@@ -189,9 +190,9 @@ const PhotoGrid = (props) => {
 
     return (
         <>
-            {error !== null ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
-            {loading ? <ProgressDisplay /> :
-                <Grid container spacing={1} sx={{ flexGrow: 1, pl: 2, pt: 3 }} >
+            {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+            {loading && <ProgressDisplay /> }
+            {images && <Grid container spacing={1} sx={{ flexGrow: 1, pl: 2, pt: 3 }} >
                     {images.map((image, index) => {
                         if (isPlaceForSelection(index)) {
                             return (
