@@ -13,13 +13,18 @@ type AuthenticationState struct {
 	FailedLoginCounter    int
 	FailedLoginLock       time.Time
 	LastFailedLogin       time.Time
-	EmailConfirmationHash string `gorm:"type:varchar(100)"`
+	EmailConfirmationHash string `gorm:"type:varchar(100);uniqueIndex"`
 	EmailConfirmationTTL  time.Time
-	EamilConfirmed        bool
-	PasswordResetHash     string `gorm:"type:varchar(100)"`
+	EmailConfirmed        bool
+	PasswordResetHash     string `gorm:"type:varchar(100);uniqueIndex"`
 	PasswordResetTTL      time.Time
 	LastPasswordReset     time.Time
 	CreatedAt             time.Time
 	UpdatedAt             time.Time
 	DeletedAt             gorm.DeletedAt
+}
+
+// ConfirmationResend is a struct for the message body of REST endpoint e-mail confirmation resend
+type ConfirmationResend struct {
+	Email string `json:"email"`
 }

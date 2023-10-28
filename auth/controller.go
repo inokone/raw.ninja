@@ -69,7 +69,7 @@ func (c Controller) Signup(g *gin.Context) {
 		})
 		return
 	}
-	if err = c.users.Store(*usr); err != nil {
+	if err = c.users.Store(usr); err != nil {
 		log.Err(err).Msg("can not store user")
 		g.JSON(http.StatusBadRequest, common.StatusMessage{
 			Code:    400,
@@ -78,7 +78,7 @@ func (c Controller) Signup(g *gin.Context) {
 		return
 	}
 
-	err = c.sendConfirmation(usr)
+	err = c.sendMail(usr)
 	if err != nil {
 		log.Err(err).Msg("can not send e-mail confirmation")
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{
@@ -94,18 +94,112 @@ func (c Controller) Signup(g *gin.Context) {
 	})
 }
 
-func (c Controller) sendConfirmation(usr *user.User) error {
+func (c Controller) sendMail(usr *user.User) error {
 	state := AuthenticationState{
 		UserID:                usr.ID,
 		EmailConfirmationHash: uuid.New().String(),
 		EmailConfirmationTTL:  time.Now().Add(twoWeeks),
 	}
-	if err := c.auths.Store(state); err != nil {
+	if err := c.auths.Store(&state); err != nil {
 		return err
 	}
-	url := c.config.DomainRoot + "/auth/confirmation?" + state.EmailConfirmationHash
+	url := c.config.DomainRoot + "/auth/confirm?token=" + state.EmailConfirmationHash
 	c.sender.EmailConfirmation(usr.Email, url)
 	return nil
+}
+
+// Resend is a method of `Controller`. Resends email confirmation for an email address.
+// @Summary Resends email confirmation endpoint
+// @Schemes
+// @Description Resends email confirmation for an email address.
+// @Accept json
+// @Produce json
+// @Success 200 {object} common.StatusMessage
+// @Failure 400 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
+// @Router /auth/signup [post]
+func (c Controller) Resend(g *gin.Context) {
+	var (
+		s   ConfirmationResend
+		err error
+		usr user.User
+	)
+
+	if err = g.Bind(&s); err != nil {
+		log.Err(err).Msg("invalid request")
+		g.JSON(http.StatusBadRequest, "Invalid confirmation resend data.")
+		return
+	}
+
+	usr, err = c.users.ByEmail(s.Email)
+	if err != nil {
+		log.Err(err).Msg("invalud user for confirmation")
+		g.JSON(http.StatusBadRequest, "Invalid confirmation resend e-mail.")
+		return
+	}
+
+	err = c.sendMail(&usr)
+	if err != nil {
+		log.Err(err).Msg("can not send e-mail confirmation")
+		g.JSON(http.StatusInternalServerError, common.StatusMessage{
+			Code:    500,
+			Message: "Could not send confirmation email.",
+		})
+		return
+	}
+
+	g.JSON(http.StatusOK, common.StatusMessage{
+		Code:    200,
+		Message: "Confirmation sent!",
+	})
+}
+
+// Confirm is a method of `Controller`. Confirms the email of the user for the hash provided as URL parameter.
+// @Summary Email confirmation endpoint
+// @Schemes
+// @Description Confirms the email address of the user
+// @Accept json
+// @Produce json
+// @Success 200 {object} common.StatusMessage
+// @Failure 400 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
+// @Router /auth/confirm?token=:token [get]
+func (c Controller) Confirm(g *gin.Context) {
+	var (
+		token string
+		state AuthenticationState
+		err   error
+		usr   user.User
+	)
+	token = g.Params.ByName("token")
+	state, err = c.auths.ByConfirmToken(token)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid token!"})
+		return
+	}
+	if state.EmailConfirmationTTL.Before(time.Now()) {
+		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Expired token, resend it please!"})
+		return
+	}
+	state.EmailConfirmationTTL = time.Now()
+	state.EmailConfirmationHash = ""
+	state.EmailConfirmed = true
+	if err = c.auths.Update(&state); err != nil {
+		g.JSON(http.StatusInternalServerError, statusBadRequest)
+		return
+	}
+
+	usr, err = c.users.ByID(state.UserID)
+	usr.Status = user.Confirmed
+	if err = c.users.Update(&usr); err != nil {
+		g.JSON(http.StatusInternalServerError, statusBadRequest)
+		return
+	}
+
+	g.JSON(http.StatusCreated, common.StatusMessage{
+		Code:    200,
+		Message: "E-mail is confirmed!",
+	})
 }
 
 // Login is a method of `Controller`. Authenticates the user to the application, sets a JWT token on success in the cookies.

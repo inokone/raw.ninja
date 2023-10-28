@@ -32,6 +32,8 @@ func Init(v1 *gin.RouterGroup, photos photo.Storer, users user.Storer, roles rol
 		g.POST("/login", a.Login)
 		g.GET("/logout", a.Logout)
 		g.POST("/signup", a.Signup)
+		g.GET("/confirm", a.Confirm)
+		g.POST("/resend", a.Resend)
 		g.POST("/reset", u.Reset)
 		g.GET("/profile", m.Validate, u.Profile)
 	}
