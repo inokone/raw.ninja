@@ -108,6 +108,8 @@ definitions:
     type: object
   stats.UserStats:
     properties:
+      available_space:
+        type: integer
       email:
         type: string
       favorites:
@@ -118,8 +120,12 @@ definitions:
         type: string
       photos:
         type: integer
+      quota:
+        type: integer
       registration_date:
         type: integer
+      role:
+        type: string
       used_space:
         type: integer
     type: object
@@ -150,6 +156,34 @@ info:
   title: PhotoStore API
   version: "0.1"
 paths:
+  /auth/confirm:
+    get:
+      consumes:
+      - application/json
+      description: Confirms the email address of the user
+      parameters:
+      - description: Token for the email confirmation
+        format: uuid
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Email confirmation endpoint
   /auth/login:
     post:
       consumes:
@@ -184,6 +218,27 @@ paths:
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: Logout endpoint
+  /auth/resend:
+    post:
+      consumes:
+      - application/json
+      description: Resends email confirmation for an email address.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Resends email confirmation endpoint
   /auth/signup:
     post:
       consumes:

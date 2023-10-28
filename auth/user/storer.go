@@ -15,8 +15,8 @@ type Writer interface {
 
 // Loader is the interface from loading `User` from persistence
 type Loader interface {
-	ByEmail(email string) (User, error)
-	ByID(id uuid.UUID) (User, error)
+	ByEmail(email string) (*User, error)
+	ByID(id uuid.UUID) (*User, error)
 	List() ([]User, error)
 }
 
@@ -47,17 +47,17 @@ func (s *GORMStorer) Store(user *User) error {
 }
 
 // ByEmail is a method of the `GORMStorer` struct. Takes an email as parameter to load a `User` object from persistence.
-func (s *GORMStorer) ByEmail(email string) (User, error) {
+func (s *GORMStorer) ByEmail(email string) (*User, error) {
 	var user User
 	result := s.db.Preload("Role").Where(&User{Email: email}).First(&user)
-	return user, result.Error
+	return &user, result.Error
 }
 
 // ByID is a method of the `GORMStorer` struct. Takes an UUID as parameter to load a `User` object from persistence.
-func (s *GORMStorer) ByID(id uuid.UUID) (User, error) {
+func (s *GORMStorer) ByID(id uuid.UUID) (*User, error) {
 	var user User
 	result := s.db.Preload("Role").Where(&User{ID: id}).First(&user)
-	return user, result.Error
+	return &user, result.Error
 }
 
 // List is a method of the `GORMStorer` struct. Loads all `User` objects from persistence.
@@ -77,7 +77,7 @@ func (s *GORMStorer) Delete(email string) error {
 // Patch is a method of the `GORMStorer` struct. Takes a `User` and updates settings (role) for it.
 func (s *GORMStorer) Patch(usr AdminView) error {
 	var (
-		persisted User
+		persisted *User
 		id        uuid.UUID
 		err       error
 	)

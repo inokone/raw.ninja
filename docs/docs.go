@@ -15,6 +15,48 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/confirm": {
+            "get": {
+                "description": "Confirms the email address of the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Email confirmation endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Token for the email confirmation",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "Logs in the user, sets up the JWT authorization",
@@ -60,6 +102,38 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/resend": {
+            "post": {
+                "description": "Resends email confirmation for an email address.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Resends email confirmation endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/common.StatusMessage"
                         }
@@ -905,6 +979,9 @@ const docTemplate = `{
         "stats.UserStats": {
             "type": "object",
             "properties": {
+                "available_space": {
+                    "type": "integer"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -920,8 +997,14 @@ const docTemplate = `{
                 "photos": {
                     "type": "integer"
                 },
+                "quota": {
+                    "type": "integer"
+                },
                 "registration_date": {
                     "type": "integer"
+                },
+                "role": {
+                    "type": "string"
                 },
                 "used_space": {
                     "type": "integer"

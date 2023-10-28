@@ -117,12 +117,12 @@ func (c Controller) sendMail(usr *user.User) error {
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /auth/signup [post]
+// @Router /auth/resend [post]
 func (c Controller) Resend(g *gin.Context) {
 	var (
 		s   ConfirmationResend
 		err error
-		usr user.User
+		usr *user.User
 	)
 
 	if err = g.Bind(&s); err != nil {
@@ -138,7 +138,7 @@ func (c Controller) Resend(g *gin.Context) {
 		return
 	}
 
-	err = c.sendMail(&usr)
+	err = c.sendMail(usr)
 	if err != nil {
 		log.Err(err).Msg("can not send e-mail confirmation")
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{
@@ -160,16 +160,17 @@ func (c Controller) Resend(g *gin.Context) {
 // @Description Confirms the email address of the user
 // @Accept json
 // @Produce json
+// @Param   token    query     string  true  "Token for the email confirmation"  Format(uuid)
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /auth/confirm?token=:token [get]
+// @Router /auth/confirm [get]
 func (c Controller) Confirm(g *gin.Context) {
 	var (
 		token string
 		state AuthenticationState
 		err   error
-		usr   user.User
+		usr   *user.User
 	)
 	token = g.Params.ByName("token")
 	state, err = c.auths.ByConfirmToken(token)
@@ -190,8 +191,13 @@ func (c Controller) Confirm(g *gin.Context) {
 	}
 
 	usr, err = c.users.ByID(state.UserID)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, statusBadRequest)
+		return
+	}
+
 	usr.Status = user.Confirmed
-	if err = c.users.Update(&usr); err != nil {
+	if err = c.users.Update(usr); err != nil {
 		g.JSON(http.StatusInternalServerError, statusBadRequest)
 		return
 	}

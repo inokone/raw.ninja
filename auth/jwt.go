@@ -112,5 +112,5 @@ func (h *JWTHandler) validateUser(g *gin.Context) *user.User {
 	}
 
 	g.Set("user", user)
-	return &user
+	return user
 }
