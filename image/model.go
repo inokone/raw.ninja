@@ -25,7 +25,7 @@ type Lens struct {
 // Metadata is a struct representing generic metadata on the image.
 type Metadata struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	Timestamp int64
+	Timestamp int64     `gorm:"index"`
 	Width     int
 	Height    int
 	DataSize  int64

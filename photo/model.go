@@ -14,7 +14,7 @@ import (
 type Photo struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
 	Raw       []byte    `gorm:"-"`
-	UserID    string
+	UserID    string    `gorm:"index"`
 	User      user.User `gorm:"foreignKey:UserID"`
 	DescID    string
 	Desc      descriptor.Descriptor `gorm:"foreignKey:DescID"`

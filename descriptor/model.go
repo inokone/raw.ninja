@@ -20,12 +20,12 @@ func ParseFormat(s string) Format {
 // Descriptor is a collection of metadata for a photo
 type Descriptor struct {
 	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	FileName   string    `gorm:"type:varchar(255);not null"`
-	Uploaded   time.Time
+	FileName   string    `gorm:"type:varchar(255);index;not null"`
+	Uploaded   time.Time `gorm:"index"`
 	Format     Format
-	Thumbnail  []byte   `gorm:"-"`
-	Tags       []string `gorm:"type:text[]"`
-	Favorite   bool
+	Thumbnail  []byte       `gorm:"-"`
+	Tags       []string     `gorm:"type:text[]"`
+	Favorite   bool         `gorm:"index"`
 	Metadata   img.Metadata `gorm:"foreignKey:MetadataID"`
 	MetadataID string
 	CreatedAt  time.Time
