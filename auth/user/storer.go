@@ -7,7 +7,8 @@ import (
 
 // Writer is the interface for changing `User` in persistence
 type Writer interface {
-	Store(user User) error
+	Store(user *User) error
+	Update(user *User) error
 	Patch(usr AdminView) error
 	Delete(email string) error
 }
@@ -40,8 +41,8 @@ func NewGORMStorer(db *gorm.DB) *GORMStorer {
 }
 
 // Store is a method of the `GORMStorer` struct. Takes a `User` as parameter and persists it.
-func (s *GORMStorer) Store(user User) error {
-	result := s.db.Create(&user)
+func (s *GORMStorer) Store(user *User) error {
+	result := s.db.Create(user)
 	return result.Error
 }
 
@@ -95,6 +96,12 @@ func (s *GORMStorer) Patch(usr AdminView) error {
 
 	res := s.db.Updates(persisted)
 
+	return res.Error
+}
+
+// Update is a method of the `GORMStorer` struct. Takes a `User` and updates it.
+func (s *GORMStorer) Update(usr *User) error {
+	res := s.db.Updates(usr)
 	return res.Error
 }
 

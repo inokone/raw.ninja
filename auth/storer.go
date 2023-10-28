@@ -7,13 +7,14 @@ import (
 
 // Writer is the interface for changing `AuthenticationState` in persistence
 type Writer interface {
-	Store(state AuthenticationState) error
-	Update(state AuthenticationState) error
+	Store(state *AuthenticationState) error
+	Update(state *AuthenticationState) error
 }
 
 // Loader is the interface from loading `AuthenticationState` from persistence
 type Loader interface {
 	ByUser(userID uuid.UUID) (AuthenticationState, error)
+	ByConfirmToken(token string) (AuthenticationState, error)
 }
 
 // Storer is the interface for `AuthenticationState` persistence
@@ -35,14 +36,14 @@ func NewGORMStorer(db *gorm.DB) *GORMStorer {
 }
 
 // Store is a method of the `GORMStorer` struct. Takes a `AuthenticationState` as parameter and persists it.
-func (s *GORMStorer) Store(state AuthenticationState) error {
-	result := s.db.Create(&state)
+func (s *GORMStorer) Store(state *AuthenticationState) error {
+	result := s.db.Create(state)
 	return result.Error
 }
 
 // Update is a method of the `GORMStorer` struct. Takes a `AuthenticationState` as parameter and updates it.
-func (s *GORMStorer) Update(state AuthenticationState) error {
-	result := s.db.Updates(&state)
+func (s *GORMStorer) Update(state *AuthenticationState) error {
+	result := s.db.Updates(state)
 	return result.Error
 }
 
@@ -50,5 +51,12 @@ func (s *GORMStorer) Update(state AuthenticationState) error {
 func (s *GORMStorer) ByUser(userID uuid.UUID) (AuthenticationState, error) {
 	var state AuthenticationState
 	result := s.db.Where(&AuthenticationState{UserID: userID}).First(&state)
+	return state, result.Error
+}
+
+// ByConfirmToken is a method of the `GORMStorer` struct. Takes a confirmation token as parameter to load a `AuthenticationState` object from persistence.
+func (s *GORMStorer) ByConfirmToken(token string) (AuthenticationState, error) {
+	var state AuthenticationState
+	result := s.db.Where(&AuthenticationState{EmailConfirmationHash: token}).First(&state)
 	return state, result.Error
 }

@@ -18,10 +18,23 @@ type User struct {
 	Role      role.Role `gorm:"foreignKey:RoleID"`
 	Source    string    `gorm:"type:varchar(255)"`
 	RoleID    int
+	Status    Status
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
 }
+
+// Status id the accound status of the user
+type Status string
+
+const (
+	// Registered is the status for having a registration, but not yet confirmed account
+	Registered Status = "registered"
+	// Confirmed is the status for having full access to the application
+	Confirmed Status = "confirmed"
+	// Deactivated is the status for a deleted or unregistered user
+	Deactivated Status = "deactivated"
+)
 
 // NewUser is a function to create a new `User` instance, hashing the password right off the bat
 func NewUser(email string, password string, phone string) (*User, error) {
@@ -29,6 +42,7 @@ func NewUser(email string, password string, phone string) (*User, error) {
 	u.Email = email
 	u.Phone = phone
 	u.Source = "credentials"
+	u.Status = Registered
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err

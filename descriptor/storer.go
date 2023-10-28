@@ -6,7 +6,7 @@ import (
 
 // Storer is an interface for persisting `Descriptor` entities.
 type Storer interface {
-	Store(desc Descriptor) error
+	Store(desc *Descriptor) error
 	Delete(id string) error
 }
 
@@ -16,7 +16,7 @@ type GORMStorer struct {
 }
 
 // Store is a method of `GORMStorer` for persisting the `Descriptor` object provided as a parameter.
-func (s *GORMStorer) Store(desc Descriptor) error {
+func (s *GORMStorer) Store(desc *Descriptor) error {
 	result := s.db.Create(&desc)
 	return result.Error
 }
