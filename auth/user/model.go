@@ -93,8 +93,8 @@ func (u *User) AsAdminView() AdminView {
 
 // Credentials is the JSON user representation for logging in with username and password
 type Credentials struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
 }
 
 // Profile is the JSON user representation for authenticated users
@@ -108,10 +108,10 @@ type Profile struct {
 
 // Registration is the JSON user representation for registration/signup process
 type Registration struct {
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Password  string `json:"password"`
+	Email     string `json:"email" binding:"required,email"`
+	FirstName string `json:"first_name" binding:"required"`
+	LastName  string `json:"last_name" binding:"required"`
+	Password  string `json:"password" binding:"required,len=10"`
 }
 
 // AdminView is the user representation for the admin view of the application.
@@ -120,7 +120,7 @@ type AdminView struct {
 	Email     string           `json:"email"`
 	FirstName string           `json:"first_name"`
 	LastName  string           `json:"last_name"`
-	Role      role.ProfileRole `json:"role"`
+	Role      role.ProfileRole `json:"role" binding:"required"`
 	Created   int              `json:"created"`
 	Updated   int              `json:"updated"`
 	Deleted   *int             `json:"deleted"`

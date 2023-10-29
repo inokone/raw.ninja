@@ -17,6 +17,8 @@ const Login = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
+        setError(null)
+
 
         setEmailError(email === '')
         setPasswordError(password === '')
@@ -64,7 +66,11 @@ const Login = (props) => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(response.status + ": " + response.statusText);
+                    response.json().then(content => {
+                        throw new Error(content.message);
+                    }).catch(error => {
+                        setError(error.message)
+                    });
                 } else {
                     response.json().then(content => {
                         setUser(content)
@@ -82,7 +88,10 @@ const Login = (props) => {
                     <form autoComplete="off" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff" }}>
                         <TextField
                             label="Email"
-                            onChange={e => setEmail(e.target.value)}
+                            onChange={e => {
+                                setEmail(e.target.value)
+                                setError(null)
+                            }}
                             required
                             variant="outlined"
                             color="primary"
@@ -95,7 +104,10 @@ const Login = (props) => {
                         <></>
                         <TextField
                             label="Password"
-                            onChange={e => setPassword(e.target.value)}
+                            onChange={e => {
+                                setPassword(e.target.value)
+                                setError(null)
+                            }}
                             required
                             variant="outlined"
                             color="primary"

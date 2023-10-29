@@ -14,6 +14,7 @@ const RegisterForm = () => {
 
     function handleSubmit(event) {
         event.preventDefault();
+        setError(null)
         fetch(REACT_APP_API_PREFIX + '/api/v1/auth/signup', {
             method: "POST",
             mode: "cors",
@@ -54,7 +55,10 @@ const RegisterForm = () => {
                                 variant='outlined'
                                 color='primary'
                                 label="First Name"
-                                onChange={e => setFirstName(e.target.value)}
+                                onChange={e => {
+                                    setFirstName(e.target.value)
+                                    setError(null)
+                                }}
                                 value={firstName}
                                 fullWidth
                                 required
@@ -65,7 +69,10 @@ const RegisterForm = () => {
                                 variant='outlined'
                                 color='primary'
                                 label="Last Name"
-                                onChange={e => setLastName(e.target.value)}
+                                onChange={e => {
+                                    setLastName(e.target.value)
+                                    setError(null)
+                                }}
                                 value={lastName}
                                 fullWidth
                                 required
@@ -78,7 +85,10 @@ const RegisterForm = () => {
                             color='primary'
                             label="Email"
                             error={error}
-                            onChange={e => setEmail(e.target.value)}
+                            onChange={e => {
+                                setEmail(e.target.value)
+                                setError(null)
+                            }}
                             value={email}
                             fullWidth
                             required
@@ -89,7 +99,10 @@ const RegisterForm = () => {
                             variant='outlined'
                             color='primary'
                             label="Password"
-                            onChange={e => setPassword(e.target.value)}
+                            onChange={e => {
+                                setPassword(e.target.value)
+                                setError(null)
+                            }}
                             value={password}
                             required
                             fullWidth

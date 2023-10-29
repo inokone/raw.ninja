@@ -26,5 +26,5 @@ type AuthenticationState struct {
 
 // ConfirmationResend is a struct for the message body of REST endpoint e-mail confirmation resend
 type ConfirmationResend struct {
-	Email string `json:"email"`
+	Email string `json:"email" binding:"required,email"`
 }
