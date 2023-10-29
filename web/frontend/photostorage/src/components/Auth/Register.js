@@ -62,7 +62,7 @@ const RegisterForm = () => {
                                 value={firstName}
                                 fullWidth
                                 required
-                                sx={{ backgroundColor: "#fff" }}
+                                sx={{ backgroundColor: "#fff", borderRadius: 1 }}
                             />
                             <TextField
                                 type="text"
@@ -76,7 +76,7 @@ const RegisterForm = () => {
                                 value={lastName}
                                 fullWidth
                                 required
-                                sx={{ backgroundColor: "#fff" }}
+                                sx={{ backgroundColor: "#fff", borderRadius: 1 }}
                             />
                         </Stack>
                         <TextField
@@ -92,7 +92,7 @@ const RegisterForm = () => {
                             value={email}
                             fullWidth
                             required
-                            sx={{ mb: 4, backgroundColor: "#fff" }}
+                            sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
                         />
                         <TextField
                             type="password"
@@ -106,7 +106,7 @@ const RegisterForm = () => {
                             value={password}
                             required
                             fullWidth
-                            sx={{ mb: 4, backgroundColor: "#fff" }}
+                            sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
                         />
                         {success ? <Alert sx={{ mb: 4 }} severity="success">Signed up successfully! Please <Link to="/login">log in</Link>!</Alert> : null}
                         {error ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}

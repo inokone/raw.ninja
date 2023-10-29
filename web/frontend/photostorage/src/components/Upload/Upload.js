@@ -62,13 +62,13 @@ const Upload = () => {
         }
       })
       .catch(error => {
-        setError(error)
+        setError(error.message)
         setStage(3)
       });
   }
 
   return (
-    <>
+    <React.Fragment>
       {stage === 0 ?
         <Container>
           <Box m={5}>
@@ -93,7 +93,7 @@ const Upload = () => {
       {stage === 1 ? <ProgressDisplay text="Please wait for processing the uploaded photos..." /> : null}
       {stage === 2 ? <Alert sx={{ mb: 4 }} severity="success">Upload successful!</Alert> : null}
       {stage === 3 ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
-    </>
+    </React.Fragment>
   );
 }
 

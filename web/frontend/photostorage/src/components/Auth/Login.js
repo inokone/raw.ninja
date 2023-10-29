@@ -50,7 +50,7 @@ const Login = (props) => {
                     }
                 })
                 .catch(error => {
-                    setError(error)
+                    setError(error.message)
                 });
         }
     }
@@ -96,12 +96,11 @@ const Login = (props) => {
                             variant="outlined"
                             color="primary"
                             type="email"
-                            sx={{ mb: 3, backgroundColor: "#fff" }}
+                            sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
                             fullWidth
                             value={email}
                             error={emailError}
                         />
-                        <></>
                         <TextField
                             label="Password"
                             onChange={e => {
@@ -115,7 +114,7 @@ const Login = (props) => {
                             value={password}
                             error={passwordError}
                             fullWidth
-                            sx={{ mb: 3, backgroundColor: "#fff" }}
+                            sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
                         />
                         {success ? <Alert sx={{ mb: 4 }} severity="success">Logged in successfully!</Alert> : null}
                         {error ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}

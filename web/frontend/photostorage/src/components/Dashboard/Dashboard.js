@@ -16,10 +16,10 @@ const Dashboard = () => {
   }
 
   return (
-    <>
+    <React.Fragment>
       <Typography variant='h5' sx={{ textAlign: 'left', pt: 2, pl: 2 }}>Favorite photos</Typography>
       <PhotoGrid populator={populate} data={[]}></PhotoGrid>
-    </>
+    </React.Fragment>
   )
 }
 

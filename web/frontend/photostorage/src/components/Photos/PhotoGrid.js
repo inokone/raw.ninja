@@ -36,7 +36,7 @@ const PhotoGrid = (props) => {
                     }
                 })
                 .catch(error => {
-                    setError(error)
+                    setError(error.message)
                     setLoading(false)
                 });
         }
@@ -79,7 +79,7 @@ const PhotoGrid = (props) => {
                 }
             })
             .catch(error => {
-                setError(error)
+                setError(error.message)
             });
     }
 
@@ -106,10 +106,10 @@ const PhotoGrid = (props) => {
     const cardWithHeader = (images, image, index, isSelected) => {
         if (index === 0 || dateOf(image) !== dateOf(images[index - 1])) {
             return (
-                <>
+                <React.Fragment>
                     {dateHeader(image)}
                     {card(image, index, isSelected)}
-                </>
+                </React.Fragment>
             );
         }
         return card(image, index, isSelected);
@@ -117,13 +117,13 @@ const PhotoGrid = (props) => {
 
     const selection = (image) => {
         return (
-            <>            
+            <React.Fragment>            
                 {selected !== null ?
                 <Grid item key={"selection"} xs={72} sm={48} md={24} lg={12}>
                     <DetailedPhotoCard image={image} onClose={() => setSelected(null)} setImage={setImage} closable={true} />
                 </Grid> : null
                 }
-            </>)
+            </React.Fragment>)
     }
 
     const isPlaceForSelection = (index) => {
@@ -189,7 +189,7 @@ const PhotoGrid = (props) => {
     }
 
     return (
-        <>
+        <React.Fragment>
             {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay /> }
             {images && <Grid container spacing={1} sx={{ flexGrow: 1, pl: 2, pt: 3 }} >
@@ -217,7 +217,7 @@ const PhotoGrid = (props) => {
                         )
                     })}
                 </Grid>}
-        </>
+        </React.Fragment>
     );
 }
 

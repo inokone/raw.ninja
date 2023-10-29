@@ -88,12 +88,12 @@ const DetailedPhotoCard = (props) => {
         }
       })
       .catch(error => {
-        setError(error)
+        setError(error.message)
       });
   }
 
   return (
-    <>
+    <React.Fragment>
       {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
       <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.34)', borderRadius: '4px', my: 1, mr: 1.5 }}>
         <Box
@@ -135,7 +135,7 @@ const DetailedPhotoCard = (props) => {
           </Grid>
         </Grid>
       </Box>
-    </>
+    </React.Fragment>
   );
 }
 export default DetailedPhotoCard; 

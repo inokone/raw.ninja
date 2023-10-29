@@ -55,7 +55,7 @@ const UserTable = () => {
                 }
             })
             .catch(error => {
-                setError(error)
+                setError(error.message)
                 setLoading(false)
             });
     }
@@ -67,7 +67,7 @@ const UserTable = () => {
     },[users, loading, error])
 
     return (
-        <>
+        <React.Fragment>
             {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay />}
             {users &&
@@ -101,7 +101,7 @@ const UserTable = () => {
                         </Table>
                     </TableContainer>
                 </Box>}
-        </>
+        </React.Fragment>
     );
 }
 

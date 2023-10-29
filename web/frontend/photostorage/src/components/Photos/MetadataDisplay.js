@@ -39,7 +39,7 @@ const MetadataDisplay = (props) => {
   }
 
   return (
-    <>
+    <React.Fragment>
       <Typography variant="h5">General</Typography>
       <Table size="small">
         <TableBody>
@@ -112,7 +112,7 @@ const MetadataDisplay = (props) => {
           </TableRow>
         </TableBody>
       </Table>
-    </>
+    </React.Fragment>
   );
 }
 export default MetadataDisplay; 

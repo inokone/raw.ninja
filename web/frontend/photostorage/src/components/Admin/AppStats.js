@@ -39,7 +39,7 @@ const AppStats = () => {
                 }
             })
             .catch(error => {
-                setError(error)
+                setError(error.message)
                 setLoading(false)
             });
     }
@@ -51,7 +51,7 @@ const AppStats = () => {
     }, [stats, loading, error])
 
     return (
-        <>
+        <React.Fragment>
             {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay />}
             {stats &&
@@ -84,7 +84,7 @@ const AppStats = () => {
                         </Grid>
                     </Box>
                 </Box>}
-        </>
+        </React.Fragment>
     );
 }
 

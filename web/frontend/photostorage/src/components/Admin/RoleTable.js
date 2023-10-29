@@ -83,7 +83,7 @@ const RoleTable = () => {
                 }
             })
             .catch(error => {
-                setError(error)
+                setError(error.message)
                 setLoading(false)
             });
     }
@@ -95,7 +95,7 @@ const RoleTable = () => {
     }, [roles, error, loading])
 
     return (
-        <>
+        <React.Fragment>
             {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay />}
             {roles &&
@@ -129,7 +129,7 @@ const RoleTable = () => {
                         </Table>
                     </TableContainer>
                 </Box>}
-        </>
+        </React.Fragment>
     );
 }
 

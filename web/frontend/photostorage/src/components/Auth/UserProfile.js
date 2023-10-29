@@ -43,7 +43,7 @@ const Profile = () => {
         }
       })
       .catch(error => {
-        setError(error)
+        setError(error.message)
         setLoading(false)
       });
   }
@@ -55,7 +55,7 @@ const Profile = () => {
   }, [stats, loading, error])
 
   return (
-    <>
+    <React.Fragment>
       {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
       {loading && <ProgressDisplay /> }
       {stats &&
@@ -102,7 +102,7 @@ const Profile = () => {
             </Grid>
           </Box>
         </Box>}
-    </>
+    </React.Fragment>
   );
 }
 export default Profile; 

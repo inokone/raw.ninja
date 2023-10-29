@@ -31,7 +31,7 @@ const PhotoDisplay = () => {
           }
         })
         .catch(error => {
-          setError(error)
+          setError(error.message)
           setLoading(false)
         });
     }
@@ -42,11 +42,11 @@ const PhotoDisplay = () => {
   }, [path, image, loading, error])
 
   return (
-    <>
+    <React.Fragment>
       {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
       {loading && <ProgressDisplay /> }
       {image && <DetailedPhotoCard image={image} closable={false} />}
-    </>
+    </React.Fragment>
   );
 }
 export default PhotoDisplay; 
