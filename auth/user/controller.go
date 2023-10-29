@@ -49,7 +49,6 @@ func (c Controller) Reset(g *gin.Context) {
 		Code:    501,
 		Message: "Functionality has not been implemented yet!",
 	})
-	return
 }
 
 // List lists the users of the application.
