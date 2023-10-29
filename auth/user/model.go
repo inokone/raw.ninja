@@ -14,7 +14,8 @@ type User struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
 	Email     string    `gorm:"type:varchar(255);uniqueIndex;not null"`
 	PassHash  string    `gorm:"type:varchar(100)"`
-	Phone     string    `gorm:"type:varchar(20)"`
+	FirstName string    `gorm:"type:varchar(100)"`
+	LastName  string    `gorm:"type:varchar(100)"`
 	Role      role.Role `gorm:"foreignKey:RoleID"`
 	Source    string    `gorm:"type:varchar(255)"`
 	RoleID    int
@@ -37,10 +38,11 @@ const (
 )
 
 // NewUser is a function to create a new `User` instance, hashing the password right off the bat
-func NewUser(email string, password string, phone string) (*User, error) {
+func NewUser(email string, password string, first string, last string) (*User, error) {
 	u := new(User)
 	u.Email = email
-	u.Phone = phone
+	u.FirstName = first
+	u.LastName = last
 	u.Source = "credentials"
 	u.Status = Registered
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -62,10 +64,11 @@ func (u *User) VerifyPassword(password string) bool {
 // AsProfile is a method of the `User` struct. It converts a `User` object into a `Profile` object.
 func (u *User) AsProfile() Profile {
 	return Profile{
-		ID:    u.ID.String(),
-		Email: u.Email,
-		Phone: u.Phone,
-		Role:  u.Role.AsProfileRole(),
+		ID:        u.ID.String(),
+		Email:     u.Email,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Role:      u.Role.AsProfileRole(),
 	}
 }
 
@@ -77,13 +80,14 @@ func (u *User) AsAdminView() AdminView {
 		deleted = &d
 	}
 	return AdminView{
-		ID:      u.ID.String(),
-		Email:   u.Email,
-		Phone:   u.Phone,
-		Role:    u.Role.AsProfileRole(),
-		Created: int(u.CreatedAt.Unix()),
-		Updated: int(u.UpdatedAt.Unix()),
-		Deleted: deleted,
+		ID:        u.ID.String(),
+		Email:     u.Email,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Role:      u.Role.AsProfileRole(),
+		Created:   int(u.CreatedAt.Unix()),
+		Updated:   int(u.UpdatedAt.Unix()),
+		Deleted:   deleted,
 	}
 }
 
@@ -95,28 +99,31 @@ type Credentials struct {
 
 // Profile is the JSON user representation for authenticated users
 type Profile struct {
-	ID    string           `json:"id"`
-	Email string           `json:"email"`
-	Phone string           `json:"phone"`
-	Role  role.ProfileRole `json:"role"`
+	ID        string           `json:"id"`
+	Email     string           `json:"email"`
+	FirstName string           `json:"first_name"`
+	LastName  string           `json:"last_name"`
+	Role      role.ProfileRole `json:"role"`
 }
 
 // Registration is the JSON user representation for registration/signup process
 type Registration struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Phone    string `json:"phone"`
+	Email     string `json:"email"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Password  string `json:"password"`
 }
 
 // AdminView is the user representation for the admin view of the application.
 type AdminView struct {
-	ID      string           `json:"id"`
-	Email   string           `json:"email"`
-	Phone   string           `json:"phone"`
-	Role    role.ProfileRole `json:"role"`
-	Created int              `json:"created"`
-	Updated int              `json:"updated"`
-	Deleted *int             `json:"deleted"`
+	ID        string           `json:"id"`
+	Email     string           `json:"email"`
+	FirstName string           `json:"first_name"`
+	LastName  string           `json:"last_name"`
+	Role      role.ProfileRole `json:"role"`
+	Created   int              `json:"created"`
+	Updated   int              `json:"updated"`
+	Deleted   *int             `json:"deleted"`
 }
 
 // RoleUser is aggregated data on the role, with the user count.

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -60,7 +61,7 @@ func (c Controller) Signup(g *gin.Context) {
 		g.JSON(http.StatusBadRequest, statusBadRequest)
 		return
 	}
-	usr, err := user.NewUser(s.Email, s.Password, s.Phone)
+	usr, err := user.NewUser(s.Email, s.Password, s.FirstName, s.LastName)
 	if err != nil {
 		log.Err(err).Msg("can not create new user")
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{
@@ -138,7 +139,7 @@ func (c Controller) Resend(g *gin.Context) {
 		return
 	}
 
-	err = c.sendMail(usr)
+	err = c.resendMail(usr)
 	if err != nil {
 		log.Err(err).Msg("can not send e-mail confirmation")
 		g.JSON(http.StatusInternalServerError, common.StatusMessage{
@@ -152,6 +153,21 @@ func (c Controller) Resend(g *gin.Context) {
 		Code:    200,
 		Message: "Confirmation sent!",
 	})
+}
+
+func (c Controller) resendMail(usr *user.User) error {
+	s, err := c.auths.ByUser(usr.ID)
+	if err != nil {
+		return err
+	}
+	s.EmailConfirmationHash = uuid.New().String()
+	s.EmailConfirmationTTL = time.Now().Add(twoWeeks)
+	if err := c.auths.Update(&s); err != nil {
+		return err
+	}
+	url := c.config.DomainRoot + "/auth/confirm?token=" + s.EmailConfirmationHash
+	c.sender.EmailConfirmation(usr.Email, url)
+	return nil
 }
 
 // Confirm is a method of `Controller`. Confirms the email of the user for the hash provided as URL parameter.
@@ -172,7 +188,7 @@ func (c Controller) Confirm(g *gin.Context) {
 		err   error
 		usr   *user.User
 	)
-	token = g.Params.ByName("token")
+	token = g.Query("token")
 	state, err = c.auths.ByConfirmToken(token)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid token!"})
@@ -202,7 +218,7 @@ func (c Controller) Confirm(g *gin.Context) {
 		return
 	}
 
-	g.JSON(http.StatusCreated, common.StatusMessage{
+	g.JSON(http.StatusOK, common.StatusMessage{
 		Code:    200,
 		Message: "E-mail is confirmed!",
 	})
@@ -216,34 +232,110 @@ func (c Controller) Confirm(g *gin.Context) {
 // @Produce json
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
+// @Failure 403 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
 // @Router /auth/login [post]
 func (c Controller) Login(g *gin.Context) {
-	var s user.Credentials
-	err := g.Bind(&s)
+	var (
+		s        user.Credentials
+		err      error
+		usr      *user.User
+		verified bool
+		secs     int64
+	)
+
+	err = g.Bind(&s)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, statusBadRequest)
+		log.Err(err).Msg("invalid login body")
 		return
 	}
 
-	user, err := c.users.ByEmail(s.Email)
+	usr, err = c.users.ByEmail(s.Email)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, statusInvalidCredentials)
+		log.Err(err).Msg("could not get user")
 		return
 	}
 
-	verified := user.VerifyPassword(s.Password)
+	secs, err = c.checkTimeout(usr)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, statusInvalidCredentials)
+		log.Err(err).Msg("could not get login timeout")
+		return
+	}
+	if secs > 0 {
+		g.JSON(http.StatusForbidden, fmt.Sprintf("You have been locked out for failed credentials. You have to wait %v more seconds.", secs))
+		log.Err(err).Msg("can not send e-mail confirmation")
+		return
+	}
+
+	verified = usr.VerifyPassword(s.Password)
 	if !verified {
+		log.Warn().Msg("invalid credentials")
+		err = c.increaseTimeout(usr)
+		if err != nil {
+			log.Warn().Str("user", usr.ID.String()).Msg("failed to increase timeout for user")
+		}
 		g.JSON(http.StatusBadRequest, statusInvalidCredentials)
 		return
 	}
 
-	c.jwt.Issue(g, user.ID.String())
+	c.clearTimeout(usr)
+	c.jwt.Issue(g, usr.ID.String())
 
 	g.JSON(http.StatusOK, common.StatusMessage{
 		Code:    200,
 		Message: "Logged in!",
 	})
+}
+
+func (c Controller) checkTimeout(usr *user.User) (int64, error) {
+	var (
+		s   AuthenticationState
+		err error
+	)
+	s, err = c.auths.ByUser(usr.ID)
+	if err != nil {
+		return 0, err
+	}
+	if s.FailedLoginLock.After(time.Now()) {
+		return s.FailedLoginLock.Unix() - time.Now().Unix(), nil
+	}
+	return 0, nil
+}
+
+func (c Controller) increaseTimeout(usr *user.User) error {
+	var (
+		s       AuthenticationState
+		err     error
+		timeout int
+	)
+	s, err = c.auths.ByUser(usr.ID)
+	if err != nil {
+		return err
+	}
+	s.FailedLoginCounter++
+	s.LastFailedLogin = time.Now()
+	if s.FailedLoginCounter > 2 {
+		timeout = 10 ^ (s.FailedLoginCounter - 2) // exponential backoff - 10 sec, 10 sec, 1000 sec, ...
+		s.FailedLoginLock = time.Now().Add(time.Second * time.Duration(timeout))
+	}
+	return c.auths.Update(&s)
+}
+
+func (c Controller) clearTimeout(usr *user.User) error {
+	var (
+		s   AuthenticationState
+		err error
+	)
+	s, err = c.auths.ByUser(usr.ID)
+	if err != nil {
+		return err
+	}
+	s.FailedLoginCounter = 0
+	s.FailedLoginLock = time.Now()
+	return c.auths.Update(&s)
 }
 
 // Logout is a method of `Controller`. Clears the JWT token from the cookies thus logging out the current user.

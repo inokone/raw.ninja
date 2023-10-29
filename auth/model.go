@@ -13,10 +13,10 @@ type AuthenticationState struct {
 	FailedLoginCounter    int
 	FailedLoginLock       time.Time
 	LastFailedLogin       time.Time
-	EmailConfirmationHash string `gorm:"type:varchar(100);uniqueIndex"`
+	EmailConfirmationHash string `gorm:"type:varchar(100);index"`
 	EmailConfirmationTTL  time.Time
 	EmailConfirmed        bool
-	PasswordResetHash     string `gorm:"type:varchar(100);uniqueIndex"`
+	PasswordResetHash     string `gorm:"type:varchar(100);index"`
 	PasswordResetTTL      time.Time
 	LastPasswordReset     time.Time
 	CreatedAt             time.Time

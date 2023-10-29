@@ -5,9 +5,10 @@ import "github.com/inokone/photostorage/auth/user"
 // UserStats is a JSON representation for aggregated data on a user's photos.
 type UserStats struct {
 	ID             string `json:"id"`
+	FirstName      string `json:"first_name"`
+	LastName       string `json:"last_name"`
 	Email          string `json:"email"`
 	Role           string `json:"role"`
-	Phone          string `json:"phone"`
 	Registration   int64  `json:"registration_date"`
 	Photos         int    `json:"photos"`
 	Favorites      int    `json:"favorites"`
@@ -22,7 +23,8 @@ func NewUserStats(u user.User) UserStats {
 		ID:           u.ID.String(),
 		Email:        u.Email,
 		Role:         u.Role.DisplayName,
-		Phone:        u.Phone,
+		FirstName:    u.FirstName,
+		LastName:     u.LastName,
 		Registration: u.CreatedAt.Unix(),
 		Quota:        u.Role.Quota,
 	}

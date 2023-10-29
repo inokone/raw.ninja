@@ -77,7 +77,7 @@ const UserTable = () => {
                             <TableHead>
                                 <TableRow>
                                     <StyledTableCell>E-mail</StyledTableCell>
-                                    <StyledTableCell>Phone</StyledTableCell>
+                                    <StyledTableCell>Name</StyledTableCell>
                                     <StyledTableCell>Role</StyledTableCell>
                                     <StyledTableCell>Registered</StyledTableCell>
                                     <StyledTableCell>Last Updated</StyledTableCell>
@@ -89,7 +89,7 @@ const UserTable = () => {
                                     return (
                                         <StyledTableRow key={user.id}>
                                             <StyledTableCell>{user.email}</StyledTableCell>
-                                            <StyledTableCell>{user.phone}</StyledTableCell>
+                                            <StyledTableCell>{user.first_name + " " + user.last_name}</StyledTableCell>
                                             <StyledTableCell>{user.role.name}</StyledTableCell>
                                             <StyledTableCell>{asDate(user.created)}</StyledTableCell>
                                             <StyledTableCell>{asDate(user.updated)}</StyledTableCell>

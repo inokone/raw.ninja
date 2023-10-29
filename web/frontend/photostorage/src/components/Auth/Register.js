@@ -23,7 +23,8 @@ const RegisterForm = () => {
             body: JSON.stringify({
                 "email": email,
                 "password": password,
-                "phone": "+123456789"
+                "firstname": firstName,
+                "lastname": lastName,
             })
         })
             .then(response => {
