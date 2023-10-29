@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom"
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const Login = (props) => {
+const Login = ({ setUser }) => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -12,8 +12,6 @@ const Login = (props) => {
     const [passwordError, setPasswordError] = useState(false)
     const [error, setError] = useState()
     const [success, setSuccess] = useState(false)
-    const { setUser } = props
-
 
     const handleSubmit = (event) => {
         event.preventDefault()

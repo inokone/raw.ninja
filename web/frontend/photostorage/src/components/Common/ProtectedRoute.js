@@ -1,9 +1,8 @@
 import React from 'react';
 import { Outlet, useNavigate } from "react-router-dom";
 
-const ProtectedRoute = (props) => {
+const ProtectedRoute = ({ user, target, redirect, children }) => {
   const navigate = useNavigate();
-  const { user, target, redirect, children } = props
   const adminRoleID = 0
 
   const isAdmin = (user) => {

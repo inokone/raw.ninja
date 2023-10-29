@@ -5,11 +5,10 @@ import { CircularProgress, TextField, Tooltip } from "@mui/material";
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 
 
-const EditableCell = (props) => {
+const EditableCell = ({ onCellEdit, value, formatter }) => {
     const [error, setError] = React.useState(null)
     const [working, setWorking] = React.useState(false)
     const [editing, setEditing] = React.useState(false)
-    const { onCellEdit, value, formatter } = props
 
     const handleChange = (event) => {
         setWorking(true)

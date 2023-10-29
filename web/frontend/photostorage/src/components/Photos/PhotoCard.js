@@ -15,10 +15,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PhotoCard = (props) => {
+const PhotoCard = ({ image, setImage, selected, onClick }) => {
   const classes = useStyles();
-  const { image, setImage, selected, onClick } = props
-
 
   const handleFavoriteClick = (image) => {
     const updatedImage = { ...image };

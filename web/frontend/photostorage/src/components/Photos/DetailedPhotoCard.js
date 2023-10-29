@@ -9,11 +9,9 @@ import { useNavigate } from 'react-router-dom';
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const DetailedPhotoCard = (props) => {
+const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
   const navigate = useNavigate();
   const [error, setError] = React.useState(null)
-  const { image, setImage, closable, onClose } = props
-
 
   const handleDownloadClick = () => {
     fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id + '/download', {

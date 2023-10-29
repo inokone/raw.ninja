@@ -9,14 +9,13 @@ import ProgressDisplay from '../Common/ProgressDisplay';
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const PhotoGrid = (props) => {
+const PhotoGrid = ({ populator, data }) => {
     const theme = useTheme();
     const navigate = useNavigate();
     const [error, setError] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [images, setImages] = React.useState(null)
     const [selected, setSelected] = React.useState(null)
-    const {populator, data} = props
     const isSmScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const isMdScreen = useMediaQuery(theme.breakpoints.between('sm', 'md'));
     const isLgScreen = useMediaQuery(theme.breakpoints.between('md', 'lg'));

@@ -50,11 +50,9 @@ const handleQueryChange = (event, setQuery, location, navigate) => {
   }
 }
 
-const OpeningSearchField = (props) => {
+const OpeningSearchField = ({ setQuery }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { setQuery } = props
-
 
   return (<Search>
     <SearchIconWrapper>

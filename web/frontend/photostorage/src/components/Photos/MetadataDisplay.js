@@ -13,10 +13,8 @@ const useStyles = makeStyles({
   },
 });
 
-const MetadataDisplay = (props) => {
+const MetadataDisplay = ({ metadata }) => {
   const classes = useStyles();
-  const { metadata } = props
-
 
   const formatShutterSpeed = (shutterSpeed) => {
     let validDividers = [2, 4, 8, 15, 30, 60, 125, 250, 500, 1000, 2000, 4000, 8000]

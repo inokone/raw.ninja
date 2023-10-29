@@ -24,11 +24,10 @@ const settings = {
   Logout: 'logout'
 };
 
-const ResponsiveAppBar = (props) => {
+const ResponsiveAppBar = ({ user, setQuery }) => {
   const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { user, setQuery } = props
   const adminRoleID = 0
 
   const isAdmin = (user) => {
