@@ -2,6 +2,7 @@ package auth
 
 import (
 	"fmt"
+	"math"
 	"net/http"
 	"time"
 
@@ -265,7 +266,10 @@ func (c Controller) Login(g *gin.Context) {
 		return
 	}
 	if secs > 0 {
-		g.JSON(http.StatusForbidden, fmt.Sprintf("You have been locked out for failed credentials. You have to wait %v more seconds.", secs))
+		g.JSON(http.StatusForbidden, common.StatusMessage{
+			Code:    403,
+			Message: fmt.Sprintf("You have been locked out for failed credentials. You have to wait %v more seconds.", secs),
+		})
 		log.Err(err).Msg("can not send e-mail confirmation")
 		return
 	}
@@ -318,7 +322,7 @@ func (c Controller) increaseTimeout(usr *user.User) error {
 	s.FailedLoginCounter++
 	s.LastFailedLogin = time.Now()
 	if s.FailedLoginCounter > 2 {
-		timeout = 10 ^ (s.FailedLoginCounter - 2) // exponential backoff - 10 sec, 10 sec, 1000 sec, ...
+		timeout = int(math.Pow(10, float64(s.FailedLoginCounter-2))) // exponential backoff - 10 sec, 10 sec, 1000 sec, ...
 		s.FailedLoginLock = time.Now().Add(time.Second * time.Duration(timeout))
 	}
 	return c.auths.Update(&s)
