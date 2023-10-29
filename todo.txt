@@ -13,7 +13,6 @@ Functionality:
     ----
     - Create email confirmation functionality
     - Create reset password functionality
-    - Create timeout with exponential backoff for failed authentication
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
 
     - Styling with https://github.com/codedthemes/berry-free-react-admin-template

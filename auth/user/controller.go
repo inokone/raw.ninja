@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 
 	"github.com/inokone/photostorage/common"
 )
@@ -44,10 +45,11 @@ func (c Controller) Profile(g *gin.Context) {
 // @Failure 501 {object} common.StatusMessage
 // @Router /users/reset [post]
 func (c Controller) Reset(g *gin.Context) {
-	g.JSON(http.StatusNotImplemented, common.StatusMessage{
+	g.AbortWithStatusJSON(http.StatusNotImplemented, common.StatusMessage{
 		Code:    501,
 		Message: "Functionality has not been implemented yet!",
 	})
+	return
 }
 
 // List lists the users of the application.
@@ -67,10 +69,12 @@ func (c Controller) List(g *gin.Context) {
 	)
 	users, err = c.users.List()
 	if err != nil {
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{
+		log.Err(err).Msg("Failed to list users")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{
 			Code:    500,
 			Message: "Unknown error, please contact administrator!",
 		})
+		return
 	}
 
 	res = make([]AdminView, 0)
@@ -96,12 +100,12 @@ func (c Controller) Patch(g *gin.Context) {
 		in  AdminView
 		err error
 	)
-	if err = g.Bind(&in); err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Malformed user data"})
+	if err = g.ShouldBindJSON(&in); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Malformed user data"})
 		return
 	}
 	if err = c.users.Patch(in); err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid user parameters provided!"})
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid user parameters provided!"})
 		return
 	}
 	g.JSON(http.StatusOK, common.StatusMessage{

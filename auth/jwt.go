@@ -40,7 +40,7 @@ func (h *JWTHandler) Issue(g *gin.Context, userID string) {
 	tokenString, err := token.SignedString([]byte(h.conf.JWTSecret))
 	if err != nil {
 		log.Warn().Err(err).Str("User", userID).Msg("JWT token could not be signed!")
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{
 			Code:    500,
 			Message: "Failed to sign JWT token, please contact administrator!",
 		})
@@ -63,6 +63,7 @@ func (h *JWTHandler) ValidateAdmin(g *gin.Context) {
 	user := h.validateUser(g)
 	if user.Role.RoleType != adminRole {
 		g.AbortWithStatus(http.StatusUnauthorized)
+		return
 	}
 	g.Next()
 }

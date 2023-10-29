@@ -15,6 +15,7 @@ import (
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/descriptor"
 	"github.com/inokone/photostorage/image"
+	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -67,13 +68,13 @@ func (c Controller) Upload(g *gin.Context) {
 	)
 	usr, err = currentUser(g)
 	if err != nil {
-		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
 
 	form, err = g.MultipartForm()
 	if err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Could not extract uploaded file from request!"})
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Could not extract uploaded file from request!"})
 		return
 	}
 
@@ -81,7 +82,7 @@ func (c Controller) Upload(g *gin.Context) {
 	ids = make([]string, 0)
 
 	if len(files) == 0 {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "You have to upload at least 1 file!"})
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "You have to upload at least 1 file!"})
 		return
 	}
 
@@ -94,7 +95,7 @@ func (c Controller) Upload(g *gin.Context) {
 		defer closeRequestFile(mp)
 		raw, err = io.ReadAll(mp)
 		if err != nil {
-			g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file is corrupt!"})
+			g.AbortWithStatusJSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file is corrupt!"})
 			return
 		}
 		target, err = createPhoto(
@@ -104,25 +105,28 @@ func (c Controller) Upload(g *gin.Context) {
 			raw,
 		)
 		if err != nil {
-			g.JSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: fmt.Sprintf("Uploaded file format is not supported! Cause: %v", err)})
+			log.Err(err).Msg("Failed to create photo entity!")
+			g.AbortWithStatusJSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: fmt.Sprintf("Uploaded file format is not supported! Cause: %v", err)})
 			return
 		}
 
 		quotaExceeded, err = c.exceededUserQuota(usr, target.Desc.Metadata.DataSize)
 		if quotaExceeded || err != nil {
-			g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 403, Message: "You can not upload files, you have reached your quota!"})
+			g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 403, Message: "You can not upload files, you have reached your quota!"})
 			return
 		}
 
 		quotaExceeded, err = c.exceededGlobalQuota(target.Desc.Metadata.DataSize)
 		if quotaExceeded || err != nil {
-			g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "You can not upload files, please contact an administrator!"})
+			log.Error().Msg("Global quota exceeded!")
+			g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "You can not upload files, please contact an administrator!"})
 			return
 		}
 
 		id, err = c.photos.Store(target)
 		if err != nil {
-			g.JSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
+			log.Err(err).Msg("Failed to store photo!")
+			g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
 			return
 		}
 
@@ -213,13 +217,13 @@ func createPhoto(user user.User, filename, extension string, raw []byte) (*Photo
 func (c Controller) List(g *gin.Context) {
 	user, err := currentUser(g)
 	if err != nil {
-		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
 
 	result, err := c.photos.All(user.ID.String())
 	if err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
@@ -248,12 +252,12 @@ func (c Controller) Get(g *gin.Context) {
 	id := g.Param("id")
 	result, err := c.photos.Load(id)
 	if err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	if err = authorize(g, result.UserID); err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
@@ -277,23 +281,23 @@ func (c Controller) Update(g *gin.Context) {
 	id := g.Param("id")
 	persisted, err := c.photos.Load(id)
 	if err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	if err = authorize(g, persisted.UserID); err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	var newVersion Response
-	if err := g.Bind(&newVersion); err != nil {
-		g.JSON(http.StatusBadRequest, statusMalformedPhoto)
+	if err := g.ShouldBindJSON(&newVersion); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, statusMalformedPhoto)
 		return
 	}
 
 	if err = applyChange(persisted, newVersion); err != nil {
-		g.JSON(http.StatusBadRequest, statusMalformedPhoto)
+		g.AbortWithStatusJSON(http.StatusBadRequest, statusMalformedPhoto)
 		return
 	}
 
@@ -318,17 +322,18 @@ func (c Controller) Delete(g *gin.Context) {
 	id := g.Param("id")
 	result, err := c.photos.Load(id)
 	if err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	if err = authorize(g, result.UserID); err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	if err = c.photos.Delete(id); err != nil {
-		g.JSON(http.StatusInternalServerError, statusNotFound)
+		log.Err(err).Msg("Failed to delete photo")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, statusNotFound)
 		return
 	}
 	g.JSON(http.StatusOK, common.StatusMessage{Code: 200, Message: "Photo deleted!"})
@@ -360,19 +365,19 @@ func (c Controller) Download(g *gin.Context) {
 	id := g.Param("id")
 	img, err := c.photos.Load(id)
 	if err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	if err = authorize(g, img.UserID); err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	fileName := img.Desc.FileName
 	raw, err := c.photos.Raw(id)
 	if err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
@@ -398,19 +403,19 @@ func (c Controller) Thumbnail(g *gin.Context) {
 	id := g.Param("id")
 	img, err := c.photos.Load(id)
 	if err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	if err = authorize(g, img.UserID); err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
 	fileName := img.Desc.FileName
 	thumbnail, err := c.photos.Thumbnail(id)
 	if err != nil {
-		g.JSON(http.StatusNotFound, statusNotFound)
+		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 

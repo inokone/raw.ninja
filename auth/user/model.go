@@ -109,9 +109,9 @@ type Profile struct {
 // Registration is the JSON user representation for registration/signup process
 type Registration struct {
 	Email     string `json:"email" binding:"required,email"`
-	FirstName string `json:"first_name" binding:"required"`
-	LastName  string `json:"last_name" binding:"required"`
-	Password  string `json:"password" binding:"required,len=10"`
+	FirstName string `json:"firstname" binding:"required"`
+	LastName  string `json:"lastname" binding:"required"`
+	Password  string `json:"password" binding:"required"`
 }
 
 // AdminView is the user representation for the admin view of the application.

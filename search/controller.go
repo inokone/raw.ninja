@@ -19,7 +19,7 @@ type Controller struct {
 
 // NewController is a function to create a new `Controller` instance based on the photo persistence.
 func NewController(photos photo.Storer) Controller {
-	p := bluemonday.UGCPolicy()
+	p := bluemonday.StrictPolicy()
 	return Controller{
 		photos: photos,
 		p:      *p,
@@ -40,7 +40,7 @@ func NewController(photos photo.Storer) Controller {
 func (c Controller) Search(g *gin.Context) {
 	user, err := currentUser(g)
 	if err != nil {
-		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
 
@@ -48,7 +48,7 @@ func (c Controller) Search(g *gin.Context) {
 	searchText := c.p.Sanitize(unsafeText)
 	result, err := c.photos.Search(user.ID.String(), searchText)
 	if err != nil {
-		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
+		g.AbortWithStatusJSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 		return
 	}
 
@@ -74,13 +74,13 @@ func (c Controller) Search(g *gin.Context) {
 func (c Controller) Favorites(g *gin.Context) {
 	user, err := currentUser(g)
 	if err != nil {
-		g.JSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
 
 	result, err := c.photos.Favorites(user.ID.String())
 	if err != nil {
-		g.JSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
+		g.AbortWithStatusJSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 		return
 	}
 

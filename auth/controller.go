@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/rs/zerolog/log"
 
 	"github.com/inokone/photostorage/auth/user"
@@ -22,7 +23,7 @@ const (
 
 var (
 	statusInvalidCredentials common.StatusMessage = common.StatusMessage{Code: 404, Message: "User does not exist or password does not match!"}
-	statusBadRequest         common.StatusMessage = common.StatusMessage{Code: 400, Message: "Incorrect user data provided!"}
+	statusBadRequest         common.StatusMessage = common.StatusMessage{Code: 400, Message: "Invalid user data provided!"}
 )
 
 // Controller is a struct for web handles related to authentication and authorization.
@@ -32,16 +33,19 @@ type Controller struct {
 	jwt    JWTHandler
 	sender mail.Service
 	config common.AuthConfig
+	p      bluemonday.Policy
 }
 
 // NewController creates a new `Controller`, based on the user persistence and the authentication configuration parameters.
 func NewController(users user.Storer, auths Storer, jwt JWTHandler, sender mail.Service, config common.AuthConfig) Controller {
+	p := bluemonday.StrictPolicy()
 	return Controller{
 		users:  users,
 		auths:  auths,
 		jwt:    jwt,
 		sender: sender,
 		config: config,
+		p:      *p,
 	}
 }
 
@@ -57,23 +61,24 @@ func NewController(users user.Storer, auths Storer, jwt JWTHandler, sender mail.
 // @Router /auth/signup [post]
 func (c Controller) Signup(g *gin.Context) {
 	var s user.Registration
-	if err := g.Bind(&s); err != nil {
-		log.Err(err).Msg("invalid request")
-		g.JSON(http.StatusBadRequest, statusBadRequest)
+	if err := g.ShouldBindJSON(&s); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.ValidationMessage(err))
 		return
 	}
+
 	usr, err := user.NewUser(s.Email, s.Password, s.FirstName, s.LastName)
 	if err != nil {
-		log.Err(err).Msg("can not create new user")
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{
+		log.Err(err).Msg("Could not create new user")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{
 			Code:    500,
 			Message: "Could not create user.",
 		})
 		return
 	}
+
 	if err = c.users.Store(usr); err != nil {
-		log.Err(err).Msg("can not store user")
-		g.JSON(http.StatusBadRequest, common.StatusMessage{
+		log.Err(err).Msg("Could not store user")
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{
 			Code:    400,
 			Message: "User with this email already exist.",
 		})
@@ -82,8 +87,8 @@ func (c Controller) Signup(g *gin.Context) {
 
 	err = c.sendMail(usr)
 	if err != nil {
-		log.Err(err).Msg("can not send e-mail confirmation")
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{
+		log.Err(err).Msg("Could not send e-mail confirmation")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{
 			Code:    500,
 			Message: "Could not create user.",
 		})
@@ -127,23 +132,21 @@ func (c Controller) Resend(g *gin.Context) {
 		usr *user.User
 	)
 
-	if err = g.Bind(&s); err != nil {
-		log.Err(err).Msg("invalid request")
-		g.JSON(http.StatusBadRequest, "Invalid confirmation resend data.")
+	if err = g.ShouldBindJSON(&s); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, "Invalid confirmation resend data.")
 		return
 	}
 
 	usr, err = c.users.ByEmail(s.Email)
 	if err != nil {
-		log.Err(err).Msg("invalud user for confirmation")
-		g.JSON(http.StatusBadRequest, "Invalid confirmation resend e-mail.")
+		g.AbortWithStatusJSON(http.StatusBadRequest, "Invalid confirmation resend e-mail.")
 		return
 	}
 
 	err = c.resendMail(usr)
 	if err != nil {
-		log.Err(err).Msg("can not send e-mail confirmation")
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{
+		log.Err(err).Msg("Could not send e-mail confirmation")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{
 			Code:    500,
 			Message: "Could not send confirmation email.",
 		})
@@ -192,30 +195,33 @@ func (c Controller) Confirm(g *gin.Context) {
 	token = g.Query("token")
 	state, err = c.auths.ByConfirmToken(token)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid token!"})
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid token!"})
 		return
 	}
 	if state.EmailConfirmationTTL.Before(time.Now()) {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Expired token, resend it please!"})
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Expired token, resend it please!"})
 		return
 	}
 	state.EmailConfirmationTTL = time.Now()
 	state.EmailConfirmationHash = ""
 	state.EmailConfirmed = true
 	if err = c.auths.Update(&state); err != nil {
-		g.JSON(http.StatusInternalServerError, statusBadRequest)
+		log.Err(err).Msg("Failed to update auth state.")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, statusBadRequest)
 		return
 	}
 
 	usr, err = c.users.ByID(state.UserID)
 	if err != nil {
-		g.JSON(http.StatusInternalServerError, statusBadRequest)
+		log.Err(err).Msg("Failed to collect user.")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, statusBadRequest)
 		return
 	}
 
 	usr.Status = user.Confirmed
 	if err = c.users.Update(usr); err != nil {
-		g.JSON(http.StatusInternalServerError, statusBadRequest)
+		log.Err(err).Msg("Failed to update user.")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, statusBadRequest)
 		return
 	}
 
@@ -245,43 +251,41 @@ func (c Controller) Login(g *gin.Context) {
 		secs     int64
 	)
 
-	err = g.Bind(&s)
+	err = g.ShouldBindJSON(&s)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, statusBadRequest)
-		log.Err(err).Msg("invalid login body")
+		g.AbortWithStatusJSON(http.StatusBadRequest, statusBadRequest)
 		return
 	}
+	s.Email = c.p.Sanitize(s.Email)
 
 	usr, err = c.users.ByEmail(s.Email)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, statusInvalidCredentials)
-		log.Err(err).Msg("could not get user")
+		log.Err(err).Msg("Failed to collect user.")
+		g.AbortWithStatusJSON(http.StatusBadRequest, statusInvalidCredentials)
 		return
 	}
 
 	secs, err = c.checkTimeout(usr)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, statusInvalidCredentials)
-		log.Err(err).Msg("could not get login timeout")
+		log.Err(err).Str("UserID", usr.ID.String()).Msg("Failed to collect login timeout.")
+		g.AbortWithStatusJSON(http.StatusBadRequest, statusInvalidCredentials)
 		return
 	}
 	if secs > 0 {
-		g.JSON(http.StatusForbidden, common.StatusMessage{
+		g.AbortWithStatusJSON(http.StatusForbidden, common.StatusMessage{
 			Code:    403,
 			Message: fmt.Sprintf("You have been locked out for failed credentials. You have to wait %v more seconds.", secs),
 		})
-		log.Err(err).Msg("can not send e-mail confirmation")
 		return
 	}
 
 	verified = usr.VerifyPassword(s.Password)
 	if !verified {
-		log.Warn().Msg("invalid credentials")
 		err = c.increaseTimeout(usr)
 		if err != nil {
-			log.Warn().Str("user", usr.ID.String()).Msg("failed to increase timeout for user")
+			log.Warn().Str("user", usr.ID.String()).Msg("Failed to increase timeout for user")
 		}
-		g.JSON(http.StatusBadRequest, statusInvalidCredentials)
+		g.AbortWithStatusJSON(http.StatusBadRequest, statusInvalidCredentials)
 		return
 	}
 

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 
 	"github.com/inokone/photostorage/common"
 )
@@ -37,10 +38,12 @@ func (c Controller) List(g *gin.Context) {
 	)
 	roles, err = c.roles.List()
 	if err != nil {
-		g.JSON(http.StatusInternalServerError, common.StatusMessage{
+		log.Err(err).Msg("Failed to list roles")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{
 			Code:    500,
 			Message: "Unknown error, please contact administrator!",
 		})
+		return
 	}
 
 	res = make([]ProfileRole, 0)
@@ -66,12 +69,12 @@ func (c Controller) Patch(g *gin.Context) {
 		in  ProfileRole
 		err error
 	)
-	if err = g.Bind(&in); err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Malformed role data"})
+	if err = g.ShouldBindJSON(&in); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Malformed role data"})
 		return
 	}
 	if err = c.roles.Patch(in); err != nil {
-		g.JSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid role parameters provided!"})
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid role parameters provided!"})
 		return
 	}
 	g.JSON(http.StatusOK, common.StatusMessage{
