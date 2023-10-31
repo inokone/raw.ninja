@@ -16,7 +16,7 @@ const ForgotPassword = () => {
         }
 
         setError(null)
-        fetch(REACT_APP_API_PREFIX + '/api/v1/auth/reset', {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/account/password/request', {
             method: "PUT",
             mode: "cors",
             credentials: "include",

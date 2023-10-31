@@ -24,7 +24,7 @@ const ResetPassword = () => {
             return
         }
 
-        fetch(REACT_APP_API_PREFIX + '/api/v1/auth/reset', {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/account/password/reset', {
             method: "PUT",
             mode: "cors",
             credentials: "include",
@@ -33,7 +33,7 @@ const ResetPassword = () => {
             },
             body: JSON.stringify({
                 "token": queryParameters.get("token"),
-                "pawword": newPassword
+                "password": newPassword
             })
         }).then(response => {
                 if (!response.ok) {

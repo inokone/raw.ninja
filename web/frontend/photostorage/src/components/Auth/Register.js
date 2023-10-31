@@ -15,7 +15,7 @@ const RegisterForm = () => {
     function handleSubmit(event) {
         event.preventDefault();
         setError(null)
-        fetch(REACT_APP_API_PREFIX + '/api/v1/auth/signup', {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/account/signup', {
             method: "POST",
             mode: "cors",
             headers: {

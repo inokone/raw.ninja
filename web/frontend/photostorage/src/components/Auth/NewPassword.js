@@ -19,7 +19,7 @@ const NewPassword = ({ user }) => {
         if (newPasswordError || confirmationError) {
             return 
         }
-        fetch(REACT_APP_API_PREFIX + '/api/v1/auth/password', {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/account/password', {
             method: "PUT",
             mode: "cors",
             credentials: "include",

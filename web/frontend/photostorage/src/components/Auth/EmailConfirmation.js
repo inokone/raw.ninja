@@ -12,7 +12,7 @@ const EmailConfirmation = () => {
 
     const confirmEmail = () => {
         setError(null)
-        fetch(REACT_APP_API_PREFIX + '/api/v1/auth/confirm?token=' + queryParameters.get("token"), {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/account/confirm?token=' + queryParameters.get("token"), {
             method: "GET",
             mode: "cors",
             credentials: "include",

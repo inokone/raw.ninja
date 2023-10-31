@@ -52,7 +52,7 @@ const Login = ({ setUser }) => {
     }
 
     const updateLoggedinUser = (redirectPath) => {
-        fetch(REACT_APP_API_PREFIX + '/api/v1/auth/profile', {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/account/profile', {
             method: "GET",
             mode: "cors",
             credentials: "include",

@@ -1,2 +1,2 @@
-delete from authentication_states;
-delete from users where email like 'inokone@g%';
+delete from accounts where user_id in (select id from users where email like 'imi@photostore.co%') ;
+delete from users where email like 'imi@photostore.co%';

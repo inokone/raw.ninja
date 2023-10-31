@@ -1,4 +1,4 @@
-package auth
+package account
 
 import (
 	"time"
@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// AuthenticationState is a struct to store state for authentication
-type AuthenticationState struct {
+// Account is a struct to store state for authentication
+type Account struct {
 	UserID                uuid.UUID `gorm:"type:uuid;primary_key"`
 	FailedLoginCounter    int
 	FailedLoginLock       time.Time
@@ -26,5 +26,10 @@ type AuthenticationState struct {
 
 // ConfirmationResend is a struct for the message body of REST endpoint e-mail confirmation resend
 type ConfirmationResend struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+// RequestPwdReset is a struct for the message body of REST endpoint password reset request
+type RequestPwdReset struct {
 	Email string `json:"email" binding:"required,email"`
 }

@@ -54,7 +54,7 @@ const Profile = ({user}) => {
 
   const handleResendClick = () => {
     setError(null)
-    fetch(REACT_APP_API_PREFIX + '/api/v1/auth/resend', {
+    fetch(REACT_APP_API_PREFIX + '/api/v1/account/resend', {
       method: "POST",
       mode: "cors",
       credentials: "include",

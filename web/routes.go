@@ -3,6 +3,7 @@ package web
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/inokone/photostorage/auth"
+	"github.com/inokone/photostorage/auth/account"
 	"github.com/inokone/photostorage/auth/role"
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
@@ -12,17 +13,26 @@ import (
 	"github.com/inokone/photostorage/stats"
 )
 
+// Storers is a struct to collect all `Storer` entities used by the application
+type Storers struct {
+	Photos   photo.Storer
+	Users    user.Storer
+	Roles    role.Storer
+	Accounts account.Storer
+}
+
 // Init is a function to initialize handler mapping for URLs
-func Init(v1 *gin.RouterGroup, photos photo.Storer, users user.Storer, roles role.Storer, auths auth.Storer, conf common.AppConfig) {
+func Init(v1 *gin.RouterGroup, s Storers, c common.AppConfig) {
 	var (
-		mailer = mail.NewService(conf.Mail)
-		p      = photo.NewController(photos, conf.Store)
-		m      = auth.NewJWTHandler(users, conf.Auth)
-		a      = auth.NewController(users, auths, m, mailer, conf.Auth)
-		s      = search.NewController(photos)
-		st     = stats.NewController(photos, users, conf.Store)
-		u      = user.NewController(users)
-		r      = role.NewController(roles)
+		mailer = mail.NewService(c.Mail)
+		p      = photo.NewController(s.Photos, c.Store)
+		m      = auth.NewJWTHandler(s.Users, c.Auth)
+		a      = auth.NewController(s.Users, s.Accounts, m)
+		ac     = account.NewController(s.Users, s.Accounts, mailer, c.Auth)
+		se     = search.NewController(s.Photos)
+		st     = stats.NewController(s.Photos, s.Users, c.Store)
+		u      = user.NewController(s.Users)
+		r      = role.NewController(s.Roles)
 	)
 
 	v1.GET("healthcheck", common.Healthcheck)
@@ -31,10 +41,15 @@ func Init(v1 *gin.RouterGroup, photos photo.Storer, users user.Storer, roles rol
 	{
 		g.POST("/login", a.Login)
 		g.GET("/logout", a.Logout)
-		g.POST("/signup", a.Signup)
-		g.GET("/confirm", a.Confirm)
-		g.POST("/resend", a.Resend)
-		g.POST("/reset", u.Reset)
+	}
+
+	g = v1.Group("/account")
+	{
+		g.POST("/signup", ac.Signup)
+		g.GET("/confirm", ac.Confirm)
+		g.PUT("/resend", ac.Resend)
+		g.POST("/password/request", ac.RequestReset)
+		g.POST("/password/reset", ac.Reset)
 		g.GET("/profile", m.Validate, u.Profile)
 	}
 
@@ -51,8 +66,8 @@ func Init(v1 *gin.RouterGroup, photos photo.Storer, users user.Storer, roles rol
 
 	g = v1.Group("/search", m.Validate)
 	{
-		g.GET("", s.Search)
-		g.GET("/favorites", s.Favorites)
+		g.GET("", se.Search)
+		g.GET("/favorites", se.Favorites)
 	}
 
 	g = v1.Group("/users", m.ValidateAdmin)
