@@ -22,7 +22,9 @@ const PhotoDisplay = () => {
       })
         .then(response => {
           if (!response.ok) {
-            throw new Error(response.status + ": " + response.statusText);
+            response.json().then(content => {
+              setError(content.message)
+            });
           } else {
             response.json().then(content => {
               setImage(content)

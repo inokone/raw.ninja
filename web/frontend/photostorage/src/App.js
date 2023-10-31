@@ -9,6 +9,8 @@ import Admin from './components/Admin/Admin';
 import Upload from './components/Upload/Upload';
 import PhotoList from './components/Photos/PhotoList';
 import UserProfile from './components/Auth/UserProfile';
+import ResetPassword from './components/Auth/ResetPassword';
+import EmailConfirmation from './components/Auth/EmailConfirmation';
 import PhotoDisplay from './components/Photos/PhotoDisplay';
 import RegisterForm from './components/Auth/Register';
 import Login from './components/Auth/Login';
@@ -65,7 +67,9 @@ const App = () => {
             <Routes>
               <Route path="/login" element={<Login setUser={setUser} />} />
               <Route path="/logout" element={<Logout setUser={setUser} />} />
+              <Route path="/password" element={<ResetPassword />} />
               <Route path="/register" element={<RegisterForm />} />
+              <Route path="/confirm" element={<EmailConfirmation />} />
               <Route element={<ProtectedRoute user={user} redirect="/login" />}>
                 <Route path="/" element={<Dashboard user={user} />} />
                 <Route path="/upload" element={<Upload user={user} />} />

@@ -110,7 +110,7 @@ func (c Controller) sendMail(usr *user.User) error {
 	if err := c.auths.Store(&state); err != nil {
 		return err
 	}
-	url := c.config.DomainRoot + "/auth/confirm?token=" + state.EmailConfirmationHash
+	url := c.config.FrontendRoot + "/confirm?token=" + state.EmailConfirmationHash
 	c.sender.EmailConfirmation(usr.Email, url)
 	return nil
 }
@@ -169,7 +169,7 @@ func (c Controller) resendMail(usr *user.User) error {
 	if err := c.auths.Update(&s); err != nil {
 		return err
 	}
-	url := c.config.DomainRoot + "/auth/confirm?token=" + s.EmailConfirmationHash
+	url := c.config.FrontendRoot + "/confirm?token=" + s.EmailConfirmationHash
 	c.sender.EmailConfirmation(usr.Email, url)
 	return nil
 }

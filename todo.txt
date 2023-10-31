@@ -11,11 +11,9 @@ Functionality:
     - Administrator page (app stats, users, roles and used / total quota)
     - Profile page (connection details, registration date, image count, favorite count and used quota) 
     ----
-    - Create email confirmation functionality
     - Create reset password functionality
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
 
-    - Styling with https://github.com/codedthemes/berry-free-react-admin-template
     - Implement DDOS protection, captcha for registration and login
     - Create Free tier, display other tiers as disabled for now
     - Integrate with at least 1 online RAW editor

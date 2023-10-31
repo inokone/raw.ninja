@@ -26,7 +26,9 @@ const PhotoGrid = ({ populator, data }) => {
             populator()
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(response.status + ": " + response.statusText);
+                        response.json().then(content => {
+                            setError(content.message)
+                        });
                     } else {
                         response.json().then(content => {
                             setLoading(false)
@@ -65,7 +67,9 @@ const PhotoGrid = ({ populator, data }) => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(response.status + ": " + response.statusText);
+                    response.json().then(content => {
+                        setError(content.message)
+                    });
                 } else {
                     let newImages = images.slice()
                     for (let i = 0; i < images.length; i++) {

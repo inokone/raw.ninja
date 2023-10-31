@@ -1,13 +1,15 @@
 import React from 'react';
-import { Alert, Grid, Box, Typography } from "@mui/material";
+import { Alert, Grid, Box, Typography, Button } from "@mui/material";
 import ProgressDisplay from '../Common/ProgressDisplay';
+import NewPassword from './NewPassword';
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const Profile = () => {
+const Profile = ({user}) => {
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
   const [stats, setStats] = React.useState(null)
+  const [resendSuccess, setResendSuccess] = React.useState(false)
 
   const formatBytes = (bytes, decimals = 2) => {
     let negative = (bytes < 0)
@@ -34,7 +36,9 @@ const Profile = () => {
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error(response.status + ": " + response.statusText);
+          response.json().then(content => {
+            setError(content.message)
+          });
         } else {
           response.json().then(content => {
             setLoading(false)
@@ -48,6 +52,30 @@ const Profile = () => {
       });
   }
 
+  const handleResendClick = () => {
+    setError(null)
+    fetch(REACT_APP_API_PREFIX + '/api/v1/auth/resend', {
+      method: "POST",
+      mode: "cors",
+      credentials: "include",
+      body: JSON.stringify({
+        "email": user.email
+      })
+    })
+      .then(response => {
+        if (!response.ok) {
+          response.json().then(content => {
+            setError(content.message)
+          });
+        } else {
+          setResendSuccess(true)
+        }
+      })
+      .catch(error => {
+        setError(error.message)
+      });
+  }
+
   React.useEffect(() => {
     if (!stats && !error && !loading) {
       loadStats()
@@ -58,9 +86,20 @@ const Profile = () => {
     <React.Fragment>
       {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
       {loading && <ProgressDisplay /> }
+      {user && user.status === "registered" &&
+        <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px' }}>
+          <Box sx={{ mt: 5, borderRadius: '4px', width: '500px' }}>
+            <Alert severity='warning'>Your e-mail address hasn't been confirmed yet. Some features of the application will not be available to you. 
+              <Button onClick={handleResendClick}>Resend confirmation</Button>
+            </Alert>
+            {resendSuccess && <Alert onClose={() => { setResendSuccess(null) }}>Confirmation e-mail sent.</Alert>}
+          </Box>
+        </Box>
+      }
+      
       {stats &&
         <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
-          <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.34)', color: 'white', mt: 10, borderRadius: '4px', width: '500px' }}>
+          <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.34)', color: 'white', mt: 5, borderRadius: '4px', width: '500px' }}>
             <Grid container>
               <Grid item xs={12}><Typography variant='h6' sx={{ borderRadius: '4px', bgcolor: 'rgba(0, 0, 0, 0.54)' }}>Profile</Typography></Grid>
             </Grid>
@@ -102,6 +141,11 @@ const Profile = () => {
             </Grid>
           </Box>
         </Box>}
+      
+      <Typography variant='h6'>Change Password</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
+        <NewPassword user={user}/>
+      </Box>
     </React.Fragment>
   );
 }

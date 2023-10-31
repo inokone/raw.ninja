@@ -27,10 +27,10 @@ type ImageStoreConfig struct {
 
 // AuthConfig is a configuration of the authentication.
 type AuthConfig struct {
-	JWTSecret  string `mapstructure:"JWT_SIGN_SECRET"`
-	JWTExp     int    `mapstructure:"JWT_EXPIRATION_HOURS"`
-	JWTSecure  bool   `mapstructure:"JWT_COOKIE_SECURE"`
-	DomainRoot string `mapstructure:"AUTH_DOMAIN_ROOT"`
+	JWTSecret    string `mapstructure:"JWT_SIGN_SECRET"`
+	JWTExp       int    `mapstructure:"JWT_EXPIRATION_HOURS"`
+	JWTSecure    bool   `mapstructure:"JWT_COOKIE_SECURE"`
+	FrontendRoot string `mapstructure:"FRONTEND_ROOT"`
 }
 
 // MailConfig is a configuration of e-mail massaging.

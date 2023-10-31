@@ -37,9 +37,7 @@ const Login = ({ setUser }) => {
                 .then(response => {
                     if (!response.ok) {
                         response.json().then(content => {
-                            throw new Error(content.message);
-                        }).catch(error => {
-                            setError(error.message)
+                            setError(content.message)
                         });
                     } else {
                         setError(null)
@@ -65,9 +63,7 @@ const Login = ({ setUser }) => {
             .then(response => {
                 if (!response.ok) {
                     response.json().then(content => {
-                        throw new Error(content.message);
-                    }).catch(error => {
-                        setError(error.message)
+                        setError(content.message)
                     });
                 } else {
                     response.json().then(content => {
