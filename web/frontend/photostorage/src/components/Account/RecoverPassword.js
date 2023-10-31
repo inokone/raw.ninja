@@ -1,22 +1,22 @@
 import React, { useState } from "react";
-import { TextField, Button, Alert, Box, Container } from "@mui/material";
+import { TextField, Button, Alert, Box, Container, Typography } from "@mui/material";
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const ForgotPassword = () => {
+const RecoverPassword = () => {
     const [email, setEmail] = useState("")
     const [error, setError] = useState(null)
     const [emailError, setEmailError] = useState(null)
     const [success, setSuccess] = useState(false)
 
-    const handleClick = (event) => {
+    const handleClick = () => {
         setEmailError(email === '')
         if (emailError) {
             return
         }
 
         setError(null)
-        fetch(REACT_APP_API_PREFIX + '/api/v1/account/password/request', {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/account/recover', {
             method: "PUT",
             mode: "cors",
             credentials: "include",
@@ -28,12 +28,12 @@ const ForgotPassword = () => {
             })
         })
             .then(response => {
-                if (!response.ok) {
+                if (response.status !== 202) {
                     response.json().then(content => {
                         setError(content.message)
                     })
                 } else {
-                    setError(null)
+                    console.log("SUCCESS!")
                     setSuccess(true)
                 }
             })
@@ -46,8 +46,9 @@ const ForgotPassword = () => {
         <React.Fragment>
             <Container maxWidth="sm">
                 <Box sx={{ width: 500, m: 4 }}>
+                    <Typography sx={{mb: 2}}>Please enter your email address so we can send you an email to reset your password.</Typography>
                     <TextField
-                        label="Reset Password"
+                        label="Email"
                         onChange={e => {
                             setEmail(e.target.value)
                             setError(null)
@@ -61,8 +62,8 @@ const ForgotPassword = () => {
                         value={email}
                         error={emailError}
                     />
-                    {success ? <Alert sx={{ mb: 4 }} onClose={setSuccess(null)} severity="success">Password reset email sent!</Alert> : null}
-                    {error ? <Alert sx={{ mb: 4 }} onClose={setError(null)} severity="error">{error}</Alert> : null}
+                    {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Password reset email sent, check your inbox!</Alert>}
+                    {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                     <Button sx={{ mb: 4 }} variant="contained" color="primary" onClick={handleClick}>Request Password Reset</Button>
                 </Box>
             </Container>
@@ -70,4 +71,4 @@ const ForgotPassword = () => {
     );
 }
 
-export default ForgotPassword;
+export default RecoverPassword;

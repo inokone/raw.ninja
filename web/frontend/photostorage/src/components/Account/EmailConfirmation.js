@@ -25,13 +25,12 @@ const EmailConfirmation = () => {
                     setError(content.message)
                 })
             } else {
-                setError(null)
                 setSuccess(true)
                 navigate("/")
             }
         }).catch(error => {
             setError(error.message)
-            })
+        })
     }
 
     React.useEffect(() => {
@@ -42,8 +41,8 @@ const EmailConfirmation = () => {
         <React.Fragment>
             <Container maxWidth="sm">
                 <Box sx={{ width: 500, m: 4 }}>
-                    {success ? <Alert sx={{ mb: 4 }} onClose={setSuccess(null)} severity="success">Email confirmed!</Alert> : null}
-                    {error ? <Alert sx={{ mb: 4 }} onClose={setError(null)} severity="error">{error}</Alert> : null}
+                    {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Email confirmed!</Alert>}
+                    {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                 </Box>
             </Container>
         </React.Fragment>

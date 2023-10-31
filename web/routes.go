@@ -47,9 +47,10 @@ func Init(v1 *gin.RouterGroup, s Storers, c common.AppConfig) {
 	{
 		g.POST("/signup", ac.Signup)
 		g.GET("/confirm", ac.Confirm)
-		g.PUT("/resend", ac.Resend)
-		g.POST("/password/request", ac.RequestReset)
-		g.POST("/password/reset", ac.Reset)
+		g.PUT("/resend", ac.ResendConfirmation)
+		g.PUT("/recover", ac.Recover)
+		g.PUT("/password/reset", ac.ResetPassword)
+		g.PUT("/password/change", m.Validate, ac.ChangePassword)
 		g.GET("/profile", m.Validate, u.Profile)
 	}
 

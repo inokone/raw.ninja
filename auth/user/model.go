@@ -45,12 +45,18 @@ func NewUser(email string, password string, first string, last string) (*User, e
 	u.LastName = last
 	u.Source = "credentials"
 	u.Status = Registered
+	err := u.SetPassword(password)
+	return u, err
+}
+
+// SetPassword sets the password of the target user.
+func (u *User) SetPassword(password string) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	u.PassHash = string(hash)
-	return u, nil
+	return nil
 }
 
 // VerifyPassword is a method of the `User` struct. It takes a password string as input

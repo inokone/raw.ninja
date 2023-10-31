@@ -15,6 +15,7 @@ type Writer interface {
 type Loader interface {
 	ByUser(userID uuid.UUID) (Account, error)
 	ByConfirmToken(token string) (Account, error)
+	ByRecoveryToken(token string) (Account, error)
 }
 
 // Storer is the interface for `Account` persistence
@@ -57,6 +58,13 @@ func (s *GORMStorer) ByUser(userID uuid.UUID) (Account, error) {
 // ByConfirmToken is a method of the `GORMStorer` struct. Takes a confirmation token as parameter to load a `Account` object from persistence.
 func (s *GORMStorer) ByConfirmToken(token string) (Account, error) {
 	var state Account
-	result := s.db.Where(&Account{EmailConfirmationHash: token}).First(&state)
+	result := s.db.Where(&Account{ConfirmationToken: token}).First(&state)
+	return state, result.Error
+}
+
+// ByRecoveryToken is a method of the `GORMStorer` struct. Takes a recovery token as parameter to load a `Account` object from persistence.
+func (s *GORMStorer) ByRecoveryToken(token string) (Account, error) {
+	var state Account
+	result := s.db.Where(&Account{RecoveryToken: token}).First(&state)
 	return state, result.Error
 }

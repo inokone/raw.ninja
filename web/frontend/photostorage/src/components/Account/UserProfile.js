@@ -1,7 +1,7 @@
 import React from 'react';
 import { Alert, Grid, Box, Typography, Button } from "@mui/material";
 import ProgressDisplay from '../Common/ProgressDisplay';
-import NewPassword from './NewPassword';
+import ChangePassword from './ChangePassword';
 
 const { REACT_APP_API_PREFIX } = process.env;
 
@@ -144,7 +144,7 @@ const Profile = ({user}) => {
       
       <Typography variant='h6'>Change Password</Typography>
       <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
-        <NewPassword user={user}/>
+        <ChangePassword user={user}/>
       </Box>
     </React.Fragment>
   );

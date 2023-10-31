@@ -19,6 +19,7 @@ import ProtectedRoute from './components/Common/ProtectedRoute';
 import NotFoundPage from './components/Common/NotFoundPage';
 import SearchResult from './components/Search/SearchResult';
 import ProgressDisplay from './components/Common/ProgressDisplay';
+import RecoverPassword from './components/Account/RecoverPassword';
 
 
 const { REACT_APP_API_PREFIX } = process.env;
@@ -67,7 +68,8 @@ const App = () => {
             <Routes>
               <Route path="/login" element={<Login setUser={setUser} />} />
               <Route path="/logout" element={<Logout setUser={setUser} />} />
-              <Route path="/password" element={<ResetPassword />} />
+              <Route path="/password/reset" element={<ResetPassword />} />
+              <Route path="/password/recover" element={<RecoverPassword />} />
               <Route path="/register" element={<RegisterForm />} />
               <Route path="/confirm" element={<EmailConfirmation />} />
               <Route element={<ProtectedRoute user={user} redirect="/login" />}>

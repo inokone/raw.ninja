@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button, Alert, Box, Container } from "@mui/material";
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 
 const { REACT_APP_API_PREFIX } = process.env;
 
@@ -12,6 +12,7 @@ const ResetPassword = () => {
     const [confirmationError, setConfirmationError] = useState(false)
     const [success, setSuccess] = useState(false)
     const [queryParameters] = useSearchParams()
+    const navigate = useNavigate()
 
 
     const handleClick = (event) => {
@@ -41,8 +42,8 @@ const ResetPassword = () => {
                         setError(content.message)
                     });
                 } else {
-                    setError(null)
                     setSuccess(true)
+                    navigate('/')
                 }
             })
             .catch(error => {
@@ -91,8 +92,8 @@ const ResetPassword = () => {
                         sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
                         helperText={confirmationError && "New password and confirmation must match."}
                     />
-                    {success ? <Alert sx={{ mb: 4 }} onClose={setSuccess(null)} severity="success">Password changed!</Alert> : null}
-                    {error ? <Alert sx={{ mb: 4 }} onClose={setError(null)} severity="error">{error}</Alert> : null}
+                    {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Password changed!</Alert>}
+                    {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                     <Button sx={{ mb: 4 }} variant="contained" color="primary" onClick={handleClick}>Change Password</Button>
                 </Box>
             </Container>

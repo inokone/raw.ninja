@@ -110,11 +110,11 @@ const Login = ({ setUser }) => {
                             fullWidth
                             sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
                         />
-                        {success ? <Alert sx={{ mb: 4 }} severity="success">Logged in successfully!</Alert> : null}
-                        {error ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
-                        <Button sx={{ mb: 4 }} variant="contained" color="primary" type="submit">Login</Button>
+                        {success && <Alert sx={{ mb: 4 }} severity="success">Logged in successfully!</Alert>}
+                        {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+                        <Button sx={{ mb: 2 }} variant="contained" color="primary" type="submit">Login</Button>
                     </form>
-                    <Typography>Need an account? <Link to="/register">Register here</Link></Typography>
+                    <Typography sx={{ mb: 2 }}><Link to="/password/recover">Forgot password?</Link> - <Link to="/register">Sign up</Link></Typography>
                 </Box>
             </Container>
         </React.Fragment>

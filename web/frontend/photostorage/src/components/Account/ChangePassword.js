@@ -3,7 +3,7 @@ import { TextField, Button, Alert, Box, Container } from "@mui/material";
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const NewPassword = ({ user }) => {
+const ChangePassword = ({ user }) => {
     const [oldPassword, setOldPassword] = useState("")
     const [newPassword, setNewPassword] = useState("")
     const [confirmation, setConfirmation] = useState("")
@@ -19,7 +19,7 @@ const NewPassword = ({ user }) => {
         if (newPasswordError || confirmationError) {
             return 
         }
-        fetch(REACT_APP_API_PREFIX + '/api/v1/account/password', {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/account/password/change', {
             method: "PUT",
             mode: "cors",
             credentials: "include",
@@ -37,7 +37,6 @@ const NewPassword = ({ user }) => {
                         setError(content.message)
                     });
                 } else {
-                    setError(null)
                     setSuccess(true)
                 }
             })
@@ -102,8 +101,8 @@ const NewPassword = ({ user }) => {
                             sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
                         helperText={confirmationError && "New password and confirmation must match."}
                         />
-                        {success ? <Alert sx={{ mb: 4 }} onClose={setSuccess(null)} severity="success">Password changed!</Alert> : null}
-                        {error ? <Alert sx={{ mb: 4 }} onClose={setError(null)} severity="error">{error}</Alert> : null}
+                        {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Password changed!</Alert>}
+                        {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                         <Button sx={{ mb: 4 }} variant="contained" color="primary" onClick={handleClick}>Change Password</Button>
                 </Box>
             </Container>
@@ -111,4 +110,4 @@ const NewPassword = ({ user }) => {
     );
 }
 
-export default NewPassword;
+export default ChangePassword;

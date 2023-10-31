@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	twoWeeks time.Duration = time.Hour * 24 * 14
+	aDay     time.Duration = time.Hour * 24
+	twoWeeks time.Duration = aDay * 14
 )
 
 var statusBadRequest common.StatusMessage = common.StatusMessage{Code: 400, Message: "Invalid user data provided!"}
@@ -73,7 +74,7 @@ func (c Controller) Signup(g *gin.Context) {
 		return
 	}
 
-	err = c.sendMail(usr)
+	err = c.confirmMail(usr)
 	if err != nil {
 		log.Err(err).Msg("Could not send e-mail confirmation")
 		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{
@@ -89,21 +90,21 @@ func (c Controller) Signup(g *gin.Context) {
 	})
 }
 
-func (c Controller) sendMail(usr *user.User) error {
+func (c Controller) confirmMail(usr *user.User) error {
 	state := Account{
-		UserID:                usr.ID,
-		EmailConfirmationHash: uuid.New().String(),
-		EmailConfirmationTTL:  time.Now().Add(twoWeeks),
+		UserID:            usr.ID,
+		ConfirmationToken: uuid.New().String(),
+		ConfirmationTTL:   time.Now().Add(twoWeeks),
 	}
 	if err := c.accounts.Store(&state); err != nil {
 		return err
 	}
-	url := c.config.FrontendRoot + "/confirm?token=" + state.EmailConfirmationHash
+	url := c.config.FrontendRoot + "/confirm?token=" + state.ConfirmationToken
 	c.sender.EmailConfirmation(usr.Email, url)
 	return nil
 }
 
-// Resend is a method of `Controller`. Resends email confirmation for an email address.
+// ResendConfirmation is a method of `Controller`. Resends email confirmation for an email address.
 // @Summary Resends email confirmation endpoint
 // @Schemes
 // @Description Resends email confirmation for an email address.
@@ -113,7 +114,7 @@ func (c Controller) sendMail(usr *user.User) error {
 // @Failure 400 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
 // @Router /account/resend [put]
-func (c Controller) Resend(g *gin.Context) {
+func (c Controller) ResendConfirmation(g *gin.Context) {
 	var (
 		s   ConfirmationResend
 		err error
@@ -152,12 +153,12 @@ func (c Controller) resendMail(usr *user.User) error {
 	if err != nil {
 		return err
 	}
-	s.EmailConfirmationHash = uuid.New().String()
-	s.EmailConfirmationTTL = time.Now().Add(twoWeeks)
+	s.ConfirmationToken = uuid.New().String()
+	s.ConfirmationTTL = time.Now().Add(twoWeeks)
 	if err := c.accounts.Update(&s); err != nil {
 		return err
 	}
-	url := c.config.FrontendRoot + "/confirm?token=" + s.EmailConfirmationHash
+	url := c.config.FrontendRoot + "/confirm?token=" + s.ConfirmationToken
 	c.sender.EmailConfirmation(usr.Email, url)
 	return nil
 }
@@ -175,31 +176,31 @@ func (c Controller) resendMail(usr *user.User) error {
 // @Router /account/confirm [get]
 func (c Controller) Confirm(g *gin.Context) {
 	var (
-		token string
-		state Account
-		err   error
-		usr   *user.User
+		token   string
+		account Account
+		err     error
+		usr     *user.User
 	)
 	token = g.Query("token")
-	state, err = c.accounts.ByConfirmToken(token)
+	account, err = c.accounts.ByConfirmToken(token)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid token!"})
 		return
 	}
-	if state.EmailConfirmationTTL.Before(time.Now()) {
+	if account.ConfirmationTTL.Before(time.Now()) {
 		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Expired token, resend it please!"})
 		return
 	}
-	state.EmailConfirmationTTL = time.Now()
-	state.EmailConfirmationHash = ""
-	state.EmailConfirmed = true
-	if err = c.accounts.Update(&state); err != nil {
-		log.Err(err).Msg("Failed to update auth state.")
+	account.ConfirmationTTL = time.Now()
+	account.ConfirmationToken = ""
+	account.Confirmed = true
+	if err = c.accounts.Update(&account); err != nil {
+		log.Err(err).Msg("Failed to update account.")
 		g.AbortWithStatusJSON(http.StatusInternalServerError, statusBadRequest)
 		return
 	}
 
-	usr, err = c.users.ByID(state.UserID)
+	usr, err = c.users.ByID(account.UserID)
 	if err != nil {
 		log.Err(err).Msg("Failed to collect user.")
 		g.AbortWithStatusJSON(http.StatusInternalServerError, statusBadRequest)
@@ -219,32 +220,178 @@ func (c Controller) Confirm(g *gin.Context) {
 	})
 }
 
-// RequestReset creates a reset request for a password of based on the email of a user - not implemented yet
-// @Summary Reset password endpoint
+// Recover initiates a password reset - sends an email to a user
+// @Summary Recover account endpoint
 // @Schemes
-// @Description Resets the password of the logged in user
+// @Description Send a password reset email to a user
 // @Accept json
 // @Produce json
-// @Failure 501 {object} common.StatusMessage
-// @Router /account/reset [put]
-func (c Controller) RequestReset(g *gin.Context) {
-	g.AbortWithStatusJSON(http.StatusNotImplemented, common.StatusMessage{
-		Code:    501,
-		Message: "Functionality has not been implemented yet!",
+// @Success 202 {object} common.StatusMessage
+// @Failure 400 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
+// @Router /account/recover [put]
+func (c Controller) Recover(g *gin.Context) {
+	var (
+		s   Recovery
+		err error
+		usr *user.User
+	)
+
+	if err = g.ShouldBindJSON(&s); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{
+			Code:    400,
+			Message: "Invalid recovery data.",
+		})
+		return
+	}
+
+	usr, err = c.users.ByEmail(s.Email)
+	if err == nil {
+		err = c.recoverMail(usr)
+		if err != nil {
+			log.Err(err).Msg("Could not send recovery e-mail")
+		}
+	}
+
+	g.JSON(http.StatusAccepted, common.StatusMessage{
+		Code:    202,
+		Message: "Recover request accepted!",
 	})
 }
 
-// Reset resets the password of the logged in user - not implemented yet
+func (c Controller) recoverMail(usr *user.User) error {
+	s, err := c.accounts.ByUser(usr.ID)
+	if err != nil {
+		return err
+	}
+	s.RecoveryToken = uuid.New().String()
+	s.RecoveryTTL = time.Now().Add(aDay)
+	if err := c.accounts.Update(&s); err != nil {
+		return err
+	}
+	url := c.config.FrontendRoot + "/password/reset?token=" + s.RecoveryToken
+	c.sender.PasswordReset(usr.Email, url)
+	return nil
+}
+
+// ResetPassword resets the password of the logged in user - not implemented yet
 // @Summary Reset password endpoint
 // @Schemes
 // @Description Resets the password of the logged in user
 // @Accept json
 // @Produce json
-// @Failure 501 {object} common.StatusMessage
-// @Router /account/reset [put]
-func (c Controller) Reset(g *gin.Context) {
-	g.AbortWithStatusJSON(http.StatusNotImplemented, common.StatusMessage{
-		Code:    501,
-		Message: "Functionality has not been implemented yet!",
+// @Success 200 {object} common.StatusMessage
+// @Failure 400 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
+// @Router /account/password/reset [put]
+func (c Controller) ResetPassword(g *gin.Context) {
+	var (
+		reset PasswordReset
+		state Account
+		err   error
+		usr   *user.User
+	)
+
+	if err = g.ShouldBindJSON(&reset); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{
+			Code:    400,
+			Message: "Invalid recovery data.",
+		})
+		return
+	}
+
+	state, err = c.accounts.ByRecoveryToken(reset.Token)
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid token!"})
+		return
+	}
+	if state.RecoveryTTL.Before(time.Now()) {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Expired token, please restart the recovery!"})
+		return
+	}
+	state.RecoveryToken = ""
+	state.LastRecovery = time.Now()
+	if err = c.accounts.Update(&state); err != nil {
+		log.Err(err).Msg("Failed to update account.")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, statusBadRequest)
+		return
+	}
+
+	usr, err = c.users.ByID(state.UserID)
+	if err != nil {
+		log.Err(err).Msg("Failed to collect user.")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, statusBadRequest)
+		return
+	}
+
+	if err = usr.SetPassword(reset.Password); err != nil {
+		log.Err(err).Msg("Failed to set password for the user.")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, statusBadRequest)
+		return
+	}
+
+	if err = c.users.Update(usr); err != nil {
+		log.Err(err).Msg("Failed to update user.")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, statusBadRequest)
+		return
+	}
+
+	g.JSON(http.StatusOK, common.StatusMessage{
+		Code:    200,
+		Message: "Password updated!",
+	})
+}
+
+// ChangePassword resets the password of the logged in user - not implemented yet
+// @Summary Reset password endpoint
+// @Schemes
+// @Description Resets the password of the logged in user
+// @Accept json
+// @Produce json
+// @Success 200 {object} common.StatusMessage
+// @Failure 400 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
+// @Router /account/password/change [put]
+func (c Controller) ChangePassword(g *gin.Context) {
+	var (
+		chg PasswordChange
+		err error
+		usr *user.User
+	)
+
+	u, _ := g.Get("user")
+	usr = u.(*user.User)
+
+	if err = g.ShouldBindJSON(&chg); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{
+			Code:    400,
+			Message: "Invalid change data.",
+		})
+		return
+	}
+
+	if !usr.VerifyPassword(chg.Old) {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{
+			Code:    400,
+			Message: "Incorrect old password.",
+		})
+		return
+	}
+
+	if err = usr.SetPassword(chg.New); err != nil {
+		log.Err(err).Msg("Failed to set password for the user.")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, statusBadRequest)
+		return
+	}
+
+	if err = c.users.Update(usr); err != nil {
+		log.Err(err).Msg("Failed to update user.")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, statusBadRequest)
+		return
+	}
+
+	g.JSON(http.StatusOK, common.StatusMessage{
+		Code:    200,
+		Message: "Password updated!",
 	})
 }
