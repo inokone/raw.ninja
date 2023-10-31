@@ -5,7 +5,7 @@ import { Alert, Paper, TableContainer, TableBody, Table, TableHead, TableRow, Bo
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 
 import ProgressDisplay from '../Common/ProgressDisplay';
-import EditableTableCell from './EditableTableCell';
+import EditableTableCell from '../Common/EditableTableCell';
 
 const { REACT_APP_API_PREFIX } = process.env;
 
