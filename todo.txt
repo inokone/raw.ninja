@@ -12,21 +12,28 @@ Functionality:
     - Profile page (connection details, registration date, image count, favorite count and used quota) 
     - Account: Email confirmation, account (password) recovery and password change
     ----
+    - HTTPS
+    - Create deployment in cloud (Google cloud and a CDN)
+    - Set up CloudFlare protection for the app (Implement DDOS protection, captcha for registration and login)
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
-    - Implement DDOS protection, captcha for registration and login
     - Create Free tier, display other tiers as disabled for now
     - Integrate with at least 1 online RAW editor
+      - Polarr: Polarr is a popular online photo editing platform with support for raw files. It provides advanced editing features and AI-enhanced tools.
+      - Adobe Lightroom Web: Adobe Lightroom offers a web-based version of their popular photo editing software. It's a powerful tool for editing and organizing raw images online.
+      - https://photokit.com/
+      - Pixlr X: Pixlr X is a user-friendly and free online photo editor that supports raw image editing. It offers various editing tools and filters.
     - Integrate with at least 1 CDN, so it can be deployed in Cloud
+      - Amazon S3
+      - Google CDN
     - Improve file upload. Concurrency option
-    - Generative AI based on the decisions of the user (1to5 rating) to advise a score
     - Testing (handlers and unit testing) - Backend and Frontend
     - Fix PhotoGrid selection display mechanism
     - Fix editing users and roles on admin page
-    - Create deployment in cloud (Google cloud and a CDN)
     - Create an entity in the main package for storers.
   - Next steps:
     - Add rating option for images
     - Add tags for images
+    - Generative AI based on the decisions of the user (1to5 rating) to advise a score
     - Extract constants and Status/Error variables on top of Go modules
     - Refactor with dependency injection (no framework)
     - HATEOAS - links for objects
