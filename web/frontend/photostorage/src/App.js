@@ -20,6 +20,7 @@ import NotFoundPage from './components/Common/NotFoundPage';
 import SearchResult from './components/Search/SearchResult';
 import ProgressDisplay from './components/Common/ProgressDisplay';
 import RecoverPassword from './components/Account/RecoverPassword';
+import Photopea from './components/Editor/Photopea';
 
 
 const { REACT_APP_API_PREFIX } = process.env;
@@ -76,6 +77,7 @@ const App = () => {
                 <Route path="/" element={<Dashboard user={user} />} />
                 <Route path="/upload" element={<Upload user={user} />} />
                 <Route path="/photos" element={<PhotoList user={user} />} />
+                <Route path="/editor/:photoId" element={<Photopea/>} />
                 <Route path="/photos/:photosId" element={<PhotoDisplay user={user} />} />
                 <Route path="/users/:userId" element={<Preferences user={user} />} />
                 <Route path="/profile" element={<UserProfile user={user} />} />

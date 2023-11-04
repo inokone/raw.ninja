@@ -5,6 +5,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import MetadataDisplay from './MetadataDisplay';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
+import { ReactComponent as PeaLogo } from '../../photopea.svg'
 
 
 const { REACT_APP_API_PREFIX } = process.env;
@@ -58,6 +59,10 @@ const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
         }
         navigate(0)
       });
+  }
+
+  const handleEditClick = () => {
+    navigate('/editor/' + image.id + '?format=' + image.descriptor.format)
   }
 
   const handleFavoriteClick = () => {
@@ -129,6 +134,11 @@ const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
               <Grid xs={4}>
                 <Tooltip title="Delete RAW file">
                   <Button variant='contained' color='secondary' onClick={handleDeleteClick}>Delete</Button>
+                </Tooltip>
+              </Grid>
+              <Grid xs={4}>
+                <Tooltip title="Edit RAW">
+                  <Button variant='contained' color='secondary' onClick={handleEditClick}>Edit with <PeaLogo /></Button>
                 </Tooltip>
               </Grid>
             </Grid>
