@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	thumbWidth  float64 = 200
-	thumbHeight float64 = 200
+	thumbWidth  float64 = 1000
+	thumbHeight float64 = 1000
 )
 
 // Thumbnail is a function to generate a thumbnail image of max size [`thumbWidth`, `thumbHeight`] for the image provided as a parameter.

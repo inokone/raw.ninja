@@ -14,7 +14,7 @@ import (
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/descriptor"
-	"github.com/inokone/photostorage/image"
+	"github.com/inokone/photostorage/image/importer"
 	"github.com/rs/zerolog/log"
 )
 
@@ -55,22 +55,15 @@ func NewController(photos Storer, config common.ImageStoreConfig) Controller {
 // @Router /photos/upload [post]
 func (c Controller) Upload(g *gin.Context) {
 	var (
-		usr           *user.User
-		err           error
-		form          *multipart.Form
-		files         []*multipart.FileHeader
-		ids           []string
-		mp            multipart.File
-		raw           []byte
-		target        *Photo
-		id            uuid.UUID
-		quotaExceeded bool
+		usr   *user.User
+		err   error
+		form  *multipart.Form
+		files []*multipart.FileHeader
+		ids   []string
+		mp    multipart.File
+		id    uuid.UUID
+		raw   []byte
 	)
-	usr, err = currentUser(g)
-	if err != nil {
-		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
-		return
-	}
 
 	form, err = g.MultipartForm()
 	if err != nil {
@@ -79,13 +72,19 @@ func (c Controller) Upload(g *gin.Context) {
 	}
 
 	files = form.File["files[]"]
-	ids = make([]string, 0)
 
 	if len(files) == 0 {
 		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "You have to upload at least 1 file!"})
 		return
 	}
 
+	usr, err = currentUser(g)
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
+		return
+	}
+
+	ids = make([]string, 0)
 	for _, file := range files {
 		mp, err = file.Open()
 		if err != nil {
@@ -98,38 +97,10 @@ func (c Controller) Upload(g *gin.Context) {
 			g.AbortWithStatusJSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file is corrupt!"})
 			return
 		}
-		target, err = createPhoto(
-			*usr,
-			filepath.Base(file.Filename),
-			filepath.Ext(file.Filename)[1:],
-			raw,
-		)
+		id, err = c.uploadBinary(g, usr, raw, file.Filename)
 		if err != nil {
-			log.Err(err).Msg("Failed to create photo entity!")
-			g.AbortWithStatusJSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: fmt.Sprintf("Uploaded file format is not supported! Cause: %v", err)})
 			return
 		}
-
-		quotaExceeded, err = c.exceededUserQuota(usr, target.Desc.Metadata.DataSize)
-		if quotaExceeded || err != nil {
-			g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 403, Message: "You can not upload files, you have reached your quota!"})
-			return
-		}
-
-		quotaExceeded, err = c.exceededGlobalQuota(target.Desc.Metadata.DataSize)
-		if quotaExceeded || err != nil {
-			log.Error().Msg("Global quota exceeded!")
-			g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "You can not upload files, please contact an administrator!"})
-			return
-		}
-
-		id, err = c.photos.Store(target)
-		if err != nil {
-			log.Err(err).Msg("Failed to store photo!")
-			g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
-			return
-		}
-
 		ids = append(ids, id.String())
 	}
 
@@ -137,6 +108,48 @@ func (c Controller) Upload(g *gin.Context) {
 		PhotoIDs: ids,
 		UserID:   usr.ID.String(),
 	})
+}
+
+func (c Controller) uploadBinary(g *gin.Context, usr *user.User, raw []byte, filename string) (uuid.UUID, error) {
+	var (
+		target        *Photo
+		id            uuid.UUID
+		quotaExceeded bool
+		err           error
+	)
+
+	target, err = createPhoto(
+		*usr,
+		filepath.Base(filename),
+		filepath.Ext(filename)[1:],
+		raw,
+	)
+	if err != nil {
+		log.Err(err).Msg("Failed to create photo entity!")
+		g.AbortWithStatusJSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: fmt.Sprintf("Uploaded file format is not supported! Cause: %v", err)})
+		return uuid.UUID{}, err
+	}
+
+	quotaExceeded, err = c.exceededUserQuota(usr, target.Desc.Metadata.DataSize)
+	if quotaExceeded || err != nil {
+		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 403, Message: "You can not upload files, you have reached your quota!"})
+		return uuid.UUID{}, err
+	}
+
+	quotaExceeded, err = c.exceededGlobalQuota(target.Desc.Metadata.DataSize)
+	if quotaExceeded || err != nil {
+		log.Error().Msg("Global quota exceeded!")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "You can not upload files, please contact an administrator!"})
+		return uuid.UUID{}, err
+	}
+
+	id, err = c.photos.Store(target)
+	if err != nil {
+		log.Err(err).Msg("Failed to store photo!")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
+		return uuid.UUID{}, err
+	}
+	return id, err
 }
 
 func (c Controller) exceededGlobalQuota(fileSize int64) (bool, error) {
@@ -180,7 +193,7 @@ func closeRequestFile(mp multipart.File) {
 }
 
 func createPhoto(user user.User, filename, extension string, raw []byte) (*Photo, error) {
-	i := image.NewLibrawImporter()
+	i := importer.NewImporter(string(descriptor.ParseFormat(extension)))
 	thumbnail, err := i.Thumbnail(raw)
 	if err != nil {
 		return nil, err

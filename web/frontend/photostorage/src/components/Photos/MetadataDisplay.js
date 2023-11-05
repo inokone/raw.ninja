@@ -36,6 +36,23 @@ const MetadataDisplay = ({ metadata }) => {
     }
   }
 
+  const formatBytes = (bytes, decimals = 2) => {
+    let negative = (bytes < 0)
+    if (negative) {
+      bytes = -bytes
+    }
+    if (!+bytes) return '0 Bytes'
+
+    const k = 1024
+    const dm = decimals < 0 ? 0 : decimals
+    const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+    let displayText = `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+    return negative ? "-" + displayText : displayText
+  }
+
   return (
     <React.Fragment>
       <Typography variant="h5">General</Typography>
@@ -52,6 +69,10 @@ const MetadataDisplay = ({ metadata }) => {
           <TableRow>
             <TableCell className={classes.tableDataCell}>Taken</TableCell>
             <TableCell className={classes.tableDataCell}>{new Date(metadata.metadata.timestamp).toLocaleString()}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className={classes.tableDataCell}>Size</TableCell>
+            <TableCell className={classes.tableDataCell}>{formatBytes(metadata.metadata.data_size)}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -72,7 +93,7 @@ const MetadataDisplay = ({ metadata }) => {
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Aperture</TableCell>
-            <TableCell className={classes.tableDataCell}>{Math.round((metadata.metadata.aperture + Number.EPSILON) * 100) / 100}</TableCell>
+            <TableCell className={classes.tableDataCell}>ƒ/{Math.round((metadata.metadata.aperture + Number.EPSILON) * 100) / 100}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Shutter Speed</TableCell>

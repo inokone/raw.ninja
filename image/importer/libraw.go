@@ -1,25 +1,15 @@
-package image
+package importer
 
 import (
 	"fmt"
 	"image"
 	"os"
-	"path/filepath"
 	"time"
 
-	"github.com/google/uuid"
 	raw "github.com/inokone/golibraw"
+	pi "github.com/inokone/photostorage/image"
 	"github.com/rs/zerolog/log"
 )
-
-// Importer is an interface for importing RAW camera images.
-type Importer interface {
-	Image(raw []byte) (*image.Image, error)
-
-	Describe(raw []byte) (*Metadata, error)
-
-	Thumbnail(raw []byte) ([]byte, error)
-}
 
 // LibrawImporter is an implementation of `Importer` using LibRAW library.
 type LibrawImporter struct {
@@ -35,7 +25,7 @@ func NewLibrawImporter() Importer {
 
 // Image is a method of `LibrawImporter` for importing a RAW image byte array into an `image.Image`
 func (p LibrawImporter) Image(rawBytes []byte) (*image.Image, error) {
-	path, err := p.tempFile("image", rawBytes)
+	path, err := tempFile("image", rawBytes)
 	defer removeTempFile(path)
 
 	if err != nil {
@@ -49,8 +39,8 @@ func (p LibrawImporter) Image(rawBytes []byte) (*image.Image, error) {
 }
 
 // Describe is a method of `LibrawImporter` for importing the description from the RAW image byte array.
-func (p LibrawImporter) Describe(rawBytes []byte) (*Metadata, error) {
-	path, err := p.tempFile("desc", rawBytes)
+func (p LibrawImporter) Describe(rawBytes []byte) (*pi.Metadata, error) {
+	path, err := tempFile("desc", rawBytes)
 	defer removeTempFile(path)
 
 	if err != nil {
@@ -60,17 +50,17 @@ func (p LibrawImporter) Describe(rawBytes []byte) (*Metadata, error) {
 	if err != nil {
 		return nil, fmt.Errorf("metadata extract error [%v]", err)
 	}
-	return &Metadata{
+	return &pi.Metadata{
 		Height:    metadata.Height,
 		Width:     metadata.Width,
 		Timestamp: metadata.Timestamp,
 		DataSize:  metadata.DataSize,
-		Camera: Camera{
+		Camera: pi.Camera{
 			Make:     metadata.Camera.Make,
 			Model:    metadata.Camera.Model,
 			Software: metadata.Camera.Software,
 		},
-		Lens: Lens{
+		Lens: pi.Lens{
 			Make:  metadata.Lens.Make,
 			Model: metadata.Lens.Model,
 		},
@@ -84,14 +74,14 @@ func (p LibrawImporter) Describe(rawBytes []byte) (*Metadata, error) {
 // If the RAW image does not contain a thumbnail, this function generates one from the RAW image.
 func (p LibrawImporter) Thumbnail(rawBytes []byte) ([]byte, error) {
 	start := time.Now()
-	path, err := p.tempFile("raw", rawBytes)
+	path, err := tempFile("raw", rawBytes)
 	defer removeTempFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("thumbnail extract error [%v]", err)
 	}
 	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Temp file created for raw.")
 
-	exportPath := p.tempPath("thumb")
+	exportPath := tempPath("thumb")
 	defer removeTempFile(exportPath)
 	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Temp path created for thumb.")
 
@@ -107,44 +97,12 @@ func (p LibrawImporter) Thumbnail(rawBytes []byte) ([]byte, error) {
 		return nil, err
 	}
 	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Image bytes loaded.")
-	*img, err = Thumbnail(*img)
+	*img, err = pi.Thumbnail(*img)
 	if err != nil {
 		return nil, err
 	}
 	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Thumbnail generated.")
-	res, err := ExportJpeg(*img)
+	res, err := pi.ExportJpeg(*img)
 	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("JPEG thumbnail exported.")
 	return res, err
-}
-
-func (p LibrawImporter) tempFile(target string, content []byte) (string, error) {
-	f, err := os.CreateTemp("", target+"_*")
-	if err != nil {
-		return "", err
-	}
-	defer closeTempFile(f)
-
-	_, err = f.Write(content)
-	if err != nil {
-		return "", err
-	}
-
-	return f.Name(), nil
-}
-
-func (p LibrawImporter) tempPath(target string) string {
-	tempDir := os.TempDir()
-	return filepath.Join(tempDir, target+"_"+uuid.New().String())
-}
-
-func removeTempFile(path string) {
-	if err := os.Remove(path); err != nil {
-		log.Warn().AnErr("Cause", err).Str("Path", path).Msg("Could not remove temp file.")
-	}
-}
-
-func closeTempFile(f *os.File) {
-	if err := f.Close(); err != nil {
-		log.Warn().AnErr("Cause", err).Str("Name", f.Name()).Msg("Could not close temp file.")
-	}
 }
