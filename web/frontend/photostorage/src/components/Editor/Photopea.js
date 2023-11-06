@@ -1,11 +1,13 @@
 import React from 'react';
 import { Alert } from '@mui/material';
 import ProgressDisplay from '../Common/ProgressDisplay';
-import { useLocation, useSearchParams, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const settings = (format) => {
+const format = "jpg"
+
+const settings = () => {
     return encodeURIComponent(JSON.stringify({
         files: [],
         environment: {
@@ -14,9 +16,9 @@ const settings = (format) => {
             intro: false,
             lang: "en",
             localsave: false,
-            phrases: [[1, 2], "Save As PNG"],
-            menus: [[0,0,0,0,0,1], 1, 1, 1, 1, 1, 1],
-            customIO: { save: "app.activeDocument.saveToOE(\"png\");" },
+            phrases: [[1, 2], "Save As " + format.toUpperCase()],
+            menus: [[0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0 , 0, 1], 1, 1, 1, 1, 1, 1],
+            customIO: { save: "app.activeDocument.saveToOE(\"" + format + "\");" },
         },
         server: {
             version: 1
@@ -31,13 +33,12 @@ const setEditorImage = (image) => {
         wnd.postMessage(image, "*");
     } else {
         console.log("PhotoPea is not initialized, can not set image")
-    } 
+    }
 }
 
 const Photopea = () => {
     const navigate = useNavigate()
     const location = useLocation()
-    const [searchParams, setSearchParams] = useSearchParams();
     const [image, setImage] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
@@ -48,7 +49,10 @@ const Photopea = () => {
     const saveImage = (data) => {
         setSaving(true)
         const formData = new FormData();
-        formData.append('files[]', new Blob([data], { type: 'application/octet-stream' }), "edited.png");
+        formData.append(
+            'files[]',
+            new Blob([data], { type: getMimeTypeFromArrayBuffer(data) }),
+            "edited-" + new Date().toISOString().split('T')[0] + "." + format);
         const requestOptions = {
             method: 'POST',
             mode: "cors",
@@ -66,6 +70,7 @@ const Photopea = () => {
                 }
             })
             .then(data => {
+                console.log(data)
                 setSaving(false)
                 navigate('/photos/' + data.photo_ids[0])
             })
@@ -75,12 +80,37 @@ const Photopea = () => {
             });
     }
 
+    function getMimeTypeFromArrayBuffer(arrayBuffer) {
+        const uint8arr = new Uint8Array(arrayBuffer)
+
+        const len = 4
+        if (uint8arr.length >= len) {
+            let signatureArr = new Array(len)
+            for (let i = 0; i < len; i++)
+                signatureArr[i] = (new Uint8Array(arrayBuffer))[i].toString(16)
+            const signature = signatureArr.join('').toUpperCase()
+
+            switch (signature) {
+                case '89504E47':
+                    return 'image/png'
+                case '47494638':
+                    return 'image/gif'
+                case 'FFD8FFDB':
+                case 'FFD8FFE0':
+                    return 'image/jpeg'
+                default:
+                    return null
+            }
+        }
+        return null
+    }
+
     const handleEditorMessage = (e) => {
         if (e.data.source === "react-devtools-content-script" || e.data.source === "react-devtools-bridge") {
             return
         }
         if (e.data === "done") {
-            setCounter(counter+1)
+            setCounter(counter + 1)
             if (counter === 1) {
                 setInitialzing(false)
             } else if (counter === 2) {
@@ -129,7 +159,7 @@ const Photopea = () => {
 
     React.useEffect(() => {
         window.addEventListener("message", handleEditorMessage);
-        if(!loading && !error && !image){
+        if (!loading && !error && !image) {
             loadImage()
         }
         return () => {
@@ -141,10 +171,10 @@ const Photopea = () => {
         <div className="iframe-container">
             {loading && <ProgressDisplay />}
             {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
-            {initialzing && <Alert sx={{ mb: 1 }}>Loading image...</Alert>}
-            {saving && <Alert sx={{ mb: 1 }}>Saving modifications...</Alert>}
-            <iframe title="Editor" width="100%" id="pp" src={"https://photopea.com#" + settings(searchParams.get("format"))}
-                    frameBorder="no" border="0" scrolling="no" height='800'/>
+            {initialzing && <Alert sx={{ mb: 1 }} onClose={() => { setInitialzing(false) }}>Loading image...</Alert>}
+            {saving && <Alert sx={{ mb: 1 }} onClose={() => { setSaving(false) }}>Saving modifications...</Alert>}
+            <iframe title="Editor" width="100%" id="pp" src={"https://photopea.com#" + settings()}
+                frameBorder="no" border="0" scrolling="no" height='800' />
         </div>
     );
 }

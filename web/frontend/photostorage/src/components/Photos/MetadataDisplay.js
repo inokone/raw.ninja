@@ -53,6 +53,14 @@ const MetadataDisplay = ({ metadata }) => {
     return negative ? "-" + displayText : displayText
   }
 
+  const hasCameraData = () => {
+    return metadata.metadata.camera_make || metadata.metadata.camera_model || metadata.metadata.camera_sw
+  }
+
+  const hasLensData = () => {
+    return metadata.metadata.lens_make || metadata.metadata.lens_model
+  }
+
   return (
     <React.Fragment>
       <Typography variant="h5">General</Typography>
@@ -68,7 +76,8 @@ const MetadataDisplay = ({ metadata }) => {
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Taken</TableCell>
-            <TableCell className={classes.tableDataCell}>{new Date(metadata.metadata.timestamp).toLocaleString()}</TableCell>
+            <TableCell className={classes.tableDataCell}>
+              {metadata.metadata.timestamp === 0 ? "N/A" : new Date(metadata.metadata.timestamp).toLocaleString()}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Size</TableCell>
@@ -89,48 +98,54 @@ const MetadataDisplay = ({ metadata }) => {
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>ISO</TableCell>
-            <TableCell className={classes.tableDataCell}>{metadata.metadata.ISO}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.metadata.ISO !== 0 ? metadata.metadata.ISO : "N/A"}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Aperture</TableCell>
-            <TableCell className={classes.tableDataCell}>ƒ/{Math.round((metadata.metadata.aperture + Number.EPSILON) * 100) / 100}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.metadata.aperture !== 0 ? "ƒ/" + Math.round((metadata.metadata.aperture + Number.EPSILON) * 100) / 100 : "N/A"}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className={classes.tableDataCell}>Shutter Speed</TableCell>
-            <TableCell className={classes.tableDataCell}>{formatShutterSpeed(metadata.metadata.shutter)}</TableCell>
+            <TableCell className={classes.tableDataCell}>{metadata.metadata.shutter !== 0 ? formatShutterSpeed(metadata.metadata.shutter) : "N/A"}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
+      { hasCameraData() &&
+      <React.Fragment>
       <Typography variant="h5" mt={3}>Camera</Typography>
-      <Table size="small">
-        <TableBody>
-          <TableRow>
-            <TableCell className={classes.tableDataCell}>Manufacturer</TableCell>
-            <TableCell className={classes.tableDataCell}>{metadata.metadata.camera_make}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className={classes.tableDataCell}>Model</TableCell>
-            <TableCell className={classes.tableDataCell}>{metadata.metadata.camera_model}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className={classes.tableDataCell}>Software Version</TableCell>
-            <TableCell className={classes.tableDataCell}>{metadata.metadata.camera_sw}</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      <Typography variant="h5" mt={3}>Lens</Typography>
-      <Table size="small">
-        <TableBody>
-          <TableRow>
-            <TableCell className={classes.tableDataCell}>Manufacturer</TableCell>
-            <TableCell className={classes.tableDataCell}>{metadata.metadata.lens_make}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className={classes.tableDataCell}>Model</TableCell>
-            <TableCell className={classes.tableDataCell}>{metadata.metadata.lens_model}</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+        <Table size="small">
+          <TableBody>
+            <TableRow>
+              <TableCell className={classes.tableDataCell}>Manufacturer</TableCell>
+              <TableCell className={classes.tableDataCell}>{metadata.metadata.camera_make}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className={classes.tableDataCell}>Model</TableCell>
+              <TableCell className={classes.tableDataCell}>{metadata.metadata.camera_model}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className={classes.tableDataCell}>Software Version</TableCell>
+              <TableCell className={classes.tableDataCell}>{metadata.metadata.camera_sw}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </React.Fragment> }
+      { hasLensData() &&
+      <React.Fragment>
+        <Typography variant="h5" mt={3}>Lens</Typography>
+        <Table size="small">
+          <TableBody>
+            <TableRow>
+              <TableCell className={classes.tableDataCell}>Manufacturer</TableCell>
+              <TableCell className={classes.tableDataCell}>{metadata.metadata.lens_make}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className={classes.tableDataCell}>Model</TableCell>
+              <TableCell className={classes.tableDataCell}>{metadata.metadata.lens_model}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </React.Fragment>}
     </React.Fragment>
   );
 }

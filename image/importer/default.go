@@ -3,6 +3,9 @@ package importer
 import (
 	"bytes"
 	"image"
+	"image/gif"
+	"image/jpeg"
+	"image/png"
 	"math"
 
 	img "github.com/inokone/photostorage/image"
@@ -12,6 +15,14 @@ import (
 
 // DefaultImporter is an implementation of `Importer` using Libvips anf Goexif libraries.
 type DefaultImporter struct{}
+
+// NewDefaultImporter creates a new `DefaultImporter` instance, setting up format regsitrations.
+func NewDefaultImporter() DefaultImporter {
+	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
+	image.RegisterFormat("jpeg", "jpeg", jpeg.Decode, jpeg.DecodeConfig)
+	image.RegisterFormat("gif", "gif", gif.Decode, gif.DecodeConfig)
+	return DefaultImporter{}
+}
 
 // Image is a method of `DefaultImporter` for importing an image byte array into an `image.Image`
 func (i DefaultImporter) Image(raw []byte) (*image.Image, error) {
@@ -30,7 +41,7 @@ func (i DefaultImporter) Describe(raw []byte) (*img.Metadata, error) {
 
 	m, err = exif.Decode(bytes.NewReader(raw))
 	if err != nil {
-		return nil, err
+		return i.noExif(raw)
 	}
 	b, err = m.MarshalJSON()
 	if err != nil {
@@ -38,7 +49,7 @@ func (i DefaultImporter) Describe(raw []byte) (*img.Metadata, error) {
 	}
 
 	js = string(b)
-	log.Info().Str("data", js).Msg("EXIF")
+	log.Debug().Str("data", js).Msg("EXIF")
 
 	return &img.Metadata{
 		Width:  asInt(m, exif.PixelXDimension),
@@ -57,6 +68,18 @@ func (i DefaultImporter) Describe(raw []byte) (*img.Metadata, error) {
 		ISO:       asInt(m, exif.ISOSpeedRatings),
 		DataSize:  int64(len(raw)),
 		Timestamp: asTime(m),
+	}, nil
+}
+
+func (i DefaultImporter) noExif(raw []byte) (*img.Metadata, error) {
+	im, _, err := image.DecodeConfig(bytes.NewReader(raw))
+	if err != nil {
+		return nil, err
+	}
+	return &img.Metadata{
+		Width:    im.Width,
+		Height:   im.Height,
+		DataSize: int64(len(raw)),
 	}, nil
 }
 
@@ -117,6 +140,8 @@ func asTime(m *exif.Exif) int64 {
 func (i DefaultImporter) Thumbnail(raw []byte) ([]byte, error) {
 	im, err := i.Image(raw)
 	if err != nil {
+		f, _ := tempFile("forensics", raw)
+		log.Warn().Str("path", f).Msg("Image import failed, writing forensics file.")
 		return nil, err
 	}
 	tn, err := img.Thumbnail(*im)
