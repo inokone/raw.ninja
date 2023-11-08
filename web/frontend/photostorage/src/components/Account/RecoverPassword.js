@@ -33,7 +33,6 @@ const RecoverPassword = () => {
                         setError(content.message)
                     })
                 } else {
-                    console.log("SUCCESS!")
                     setSuccess(true)
                 }
             })

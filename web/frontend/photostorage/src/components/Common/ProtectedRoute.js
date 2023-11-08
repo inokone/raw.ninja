@@ -12,6 +12,7 @@ const ProtectedRoute = ({ user, target, redirect, children }) => {
   React.useEffect(() => {
     if (user === null) {
       navigate(redirect);
+      return
     }
     if (target === "admin" && !isAdmin(user)) { 
       navigate(redirect);

@@ -1,5 +1,6 @@
 Functionality:
   - MVP:
+    - Landing page with features, subscription options and signup 
     - Auth for 2 roles - free user and administrator
     - Upload RAW files with option for multiple files with user and global quota check
     - Display file list - thumbnails
@@ -13,10 +14,9 @@ Functionality:
     - Account: Email confirmation, account (password) recovery and password change
     ----
     - HTTPS
-    - Create deployment in cloud (Google cloud and a CDN)
+    - Create deployment in cloud (AWS)
     - Set up CloudFlare protection for the app (Implement DDOS protection, captcha for registration and login)
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
-    - Create Free tier, display other tiers as disabled for now
     - Integrate with at least 1 CDN, so it can be deployed in Cloud
       - Amazon S3
       - Google CDN

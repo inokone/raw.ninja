@@ -42,7 +42,7 @@ const Login = ({ setUser }) => {
                     } else {
                         setError(null)
                         setSuccess(true)
-                        updateLoggedinUser("/")
+                        updateLoggedinUser("/home")
                     }
                 })
                 .catch(error => {

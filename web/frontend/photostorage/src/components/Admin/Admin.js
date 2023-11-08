@@ -5,15 +5,19 @@ import RoleTable from './RoleTable';
 import { Typography } from "@mui/material";
 
 
-const Admin = () => {
+const Admin = ({user}) => {
 
     return (
         <React.Fragment>
-            <AppStats />
-            <Typography variant="h4">Users</Typography>
-            <UserTable />
-            <Typography variant="h4">Roles</Typography>
-            <RoleTable />
+            {user &&
+                <React.Fragment>
+                    <AppStats />
+                    <Typography variant="h4">Users</Typography>
+                    <UserTable />
+                    <Typography variant="h4">Roles</Typography>
+                    <RoleTable />
+                </React.Fragment>
+            }
         </React.Fragment>
     )
 }

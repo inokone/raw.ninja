@@ -21,6 +21,7 @@ import SearchResult from './components/Search/SearchResult';
 import ProgressDisplay from './components/Common/ProgressDisplay';
 import RecoverPassword from './components/Account/RecoverPassword';
 import Photopea from './components/Editor/Photopea';
+import Landing from './components/Landing/Landing';
 
 
 const { REACT_APP_API_PREFIX } = process.env;
@@ -72,9 +73,10 @@ const App = () => {
               <Route path="/password/reset" element={<ResetPassword />} />
               <Route path="/password/recover" element={<RecoverPassword />} />
               <Route path="/register" element={<RegisterForm />} />
+              <Route path="/" element={<Landing />} />
               <Route path="/confirm" element={<EmailConfirmation />} />
-              <Route element={<ProtectedRoute user={user} redirect="/login" />}>
-                <Route path="/" element={<Dashboard user={user} />} />
+                  <Route element={<ProtectedRoute user={user} redirect="/" />}>
+                <Route path="/home" element={<Dashboard user={user} />} />
                 <Route path="/upload" element={<Upload user={user} />} />
                 <Route path="/photos" element={<PhotoList user={user} />} />
                 <Route path="/editor/:photoId" element={<Photopea/>} />
@@ -83,7 +85,7 @@ const App = () => {
                 <Route path="/profile" element={<UserProfile user={user} />} />
                 <Route path="/search" element={<SearchResult query={query} />} />
               </Route>
-              <Route element={<ProtectedRoute user={user} target="admin" redirect="/login" />}>
+              <Route element={<ProtectedRoute user={user} target="admin" redirect="/" />}>
                 <Route path="/admin" element={<Admin user={user} />} />
               </Route>
               <Route path="*" element={<NotFoundPage />} />

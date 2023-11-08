@@ -17,6 +17,9 @@ import OpeningSearchField from './OpeningSearchField';
 import { SvgIcon } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import stringToColor from 'string-to-color';
+import withStyles from "@mui/styles/withStyles";
+import PropTypes from "prop-types";
+
 
 const settings = {
   Profile: 'profile',
@@ -24,7 +27,29 @@ const settings = {
   Logout: 'logout'
 };
 
-const ResponsiveAppBar = ({ user, setQuery }) => {
+const styles = theme => ({
+  appBar: {
+    boxShadow: theme.shadows[6],
+    backgroundColor: theme.palette.common.white
+  },
+  toolbar: {
+    display: "flex",
+    justifyContent: "space-between"
+  },
+  menuButtonText: {
+    fontSize: theme.typography.body1.fontSize,
+    fontWeight: theme.typography.h6.fontWeight
+  },
+  brandText: {
+    fontFamily: "'Raleway', sans-serif",
+    fontWeight: 700
+  },
+  noDecoration: {
+    textDecoration: "none !important"
+  },
+});
+
+const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
   const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -63,7 +88,7 @@ const ResponsiveAppBar = ({ user, setQuery }) => {
   }
 
   const getInitials = () => {
-    return user.email
+    return user ? user.first_name + " " + user.last_name : ""
   }
 
   const handleMenuClick = (page) => {
@@ -93,25 +118,26 @@ const ResponsiveAppBar = ({ user, setQuery }) => {
 
   return (
     <AppBar position="static">
-      <Container maxWidth="xxl">
+      <Container maxWidth="xxl" sx={{ bgcolor: theme.palette.background.paper }}>
         <Toolbar disableGutters variant="dense">
-          <SvgIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} component={SvgComponent} />
+          <SvgIcon sx={{ mr: 1, color: theme.palette.primary.main }} component={SvgComponent} />
           <Typography
-            variant="h5"
-            noWrap
+            variant="h4"
+            className={classes.brandText}
+            display="inline"
+            color="primary"
             onClick={() => navigate('/')}
-            sx={{
-              mr: 2,
-              cursor: "pointer",
-              display: { xs: 'none', md: 'flex' },
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-              fontFamily: ['"Montserrat"', 'Open Sans'].join(',')
-            }}
           >
-            PhotoStore
+            Photo
+          </Typography>
+          <Typography
+            variant="h4"
+            className={classes.brandText}
+            display="inline"
+            color="secondary"
+            onClick={() => navigate('/')}
+          >
+            Store
           </Typography>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -120,7 +146,6 @@ const ResponsiveAppBar = ({ user, setQuery }) => {
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              color="inherit"
             >
               <MenuIcon />
             </IconButton>
@@ -153,45 +178,27 @@ const ResponsiveAppBar = ({ user, setQuery }) => {
             </Menu>
           </Box>
           <SvgIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} component={SvgComponent} />
-          <Typography
-            variant="h5"
-            noWrap
-            onClick={() => navigate('/')}
-            sx={{
-              mr: 2,
-              cursor: "pointer",
-              display: { xs: 'flex', md: 'none' },
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-              fontFamily: ['"Montserrat"', 'Open Sans'].join(',')
-            }}
-          >
-            PhotoStore
-          </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          {isAuthenticated() ?
-            <OpeningSearchField setQuery={setQuery} /> : null}
+          {isAuthenticated() && <OpeningSearchField setQuery={setQuery} />}
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
               key="upload"
               onClick={() => handleMenuClick("upload")}
-              sx={{ color: 'white', m: 0 }}>
+              sx={{ m: 0, color: theme.palette.secondary.main }}>
               <CloudUploadIcon />
             </Button>
             <Button
               key="photos"
               onClick={() => handleMenuClick("photos")}
-              sx={{ color: 'white', m: 0 }}>
+              sx={{ m: 0, color: theme.palette.secondary.main }}>
               <ViewModuleIcon />
             </Button>
           </Box>
-          {isAuthenticated() ?
+          {isAuthenticated && user && 
             <Box sx={{ md: 0, ml: 1 }}>
               <Tooltip title={"Open profile"}>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(user.email) }} />
+                  <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(user.first_name) }} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -216,11 +223,16 @@ const ResponsiveAppBar = ({ user, setQuery }) => {
                   </MenuItem>
                 ))}
               </Menu>
-            </Box>
-            : null}
+            </Box>}
         </Toolbar>
       </Container>
     </AppBar>
   );
 }
-export default ResponsiveAppBar;
+
+ResponsiveAppBar.propTypes = {
+  theme: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles, { withTheme: true }) (ResponsiveAppBar);

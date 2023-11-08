@@ -4,14 +4,17 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { makeStyles } from '@mui/styles';
+import { createStyles, makeStyles } from '@mui/styles';
 
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => createStyles({
   tableDataCell: {
-    color: 'white',
+    color: theme.palette.common.bluegray,
   },
-});
+  tableGroup: {
+    color: theme.palette.common.white,
+  }
+}))
 
 const MetadataDisplay = ({ metadata }) => {
   const classes = useStyles();
@@ -63,7 +66,7 @@ const MetadataDisplay = ({ metadata }) => {
 
   return (
     <React.Fragment>
-      <Typography variant="h5">General</Typography>
+      <Typography variant="h5" className={classes.tableGroup}>General</Typography>
       <Table size="small">
         <TableBody>
           <TableRow>
@@ -85,7 +88,7 @@ const MetadataDisplay = ({ metadata }) => {
           </TableRow>
         </TableBody>
       </Table>
-      <Typography variant="h5" mt={3}>Image</Typography>
+      <Typography variant="h5" className={classes.tableGroup} mt={3}>Image</Typography>
       <Table size="small">
         <TableBody>
           <TableRow>
@@ -112,7 +115,7 @@ const MetadataDisplay = ({ metadata }) => {
       </Table>
       { hasCameraData() &&
       <React.Fragment>
-      <Typography variant="h5" mt={3}>Camera</Typography>
+      <Typography variant="h5" className={classes.tableGroup} mt={3}>Camera</Typography>
         <Table size="small">
           <TableBody>
             <TableRow>
@@ -132,7 +135,7 @@ const MetadataDisplay = ({ metadata }) => {
       </React.Fragment> }
       { hasLensData() &&
       <React.Fragment>
-        <Typography variant="h5" mt={3}>Lens</Typography>
+          <Typography variant="h5" className={classes.tableGroup} mt={3}>Lens</Typography>
         <Table size="small">
           <TableBody>
             <TableRow>

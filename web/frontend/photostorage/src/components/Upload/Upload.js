@@ -1,5 +1,4 @@
 import * as React from "react";
-import "./Upload.css";
 import { DropzoneArea } from "react-mui-dropzone";
 import { Alert, Container, Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom"
@@ -13,11 +12,13 @@ const useStyles = makeStyles(theme => createStyles({
   previewChip: {
     minWidth: 160,
     maxWidth: 210,
-    borderWidth: '2px',
-    background: '#bbb',
-    color: '#0056b2',
-    fontWeight: 'bold',
   },
+  dropZone: {
+    color: theme.palette.secondary.main,
+    width: '80%',
+    minHeight: '600px',
+    boxSizing: 'border-box',
+  }
 }));
 
 const Upload = () => {
@@ -49,7 +50,6 @@ const Upload = () => {
       body: data
     })
       .then(response => {
-        console.log(response)
         if (!response.ok) {
           response.json().then(content => {
             setError(content.message)
@@ -71,15 +71,14 @@ const Upload = () => {
 
   return (
     <React.Fragment>
-      {stage === 0 ?
+      {stage === 0 &&
         <Container>
           <Box m={5}>
             <DropzoneArea 
-              m={5} 
-              variant="l" 
+              m={5}  
               filesLimit={20}
               onChange={handleChange}
-              acceptedFiles={[".dng, .arw, .cr2, .crw, .nef, .orf, .raf, .jpg, .jpeg, .png"]}
+              acceptedFiles={[".dng, .arw, .cr2, .crw, .nef, .orf, .raf, .jpg, .jpeg, .png, .gif"]}
               maxFileSize={100000000} sx={{ flexGrow: 1 }}
               showPreviews={true}
               showPreviewsInDropzone={false}
@@ -87,14 +86,16 @@ const Upload = () => {
               previewGridProps={{ container: { spacing: 1, direction: 'row' } }}
               previewChipProps={{ classes: { root: classes.previewChip } }}
               previewText=""
+              showAlerts={false}
+              dropzoneClass={classes.dropZone}
             />
           </Box>
-          {files.length > 0 ?
-          <Button onClick={handleClick} variant="contained">Upload</Button>: null}
-        </Container> : null}
-      {stage === 1 ? <ProgressDisplay text="Please wait for processing the uploaded photos..." /> : null}
-      {stage === 2 ? <Alert sx={{ mb: 4 }} severity="success">Upload successful!</Alert> : null}
-      {stage === 3 ? <Alert sx={{ mb: 4 }} severity="error">{error}</Alert> : null}
+          {files.length > 0 && <Button onClick={handleClick} variant="contained">Upload</Button>}
+        </Container>
+      }
+      {stage === 1 && <ProgressDisplay text="Please wait for processing the uploaded photos..." />}
+      {stage === 2 && <Alert sx={{ mb: 4 }} severity="success">Upload successful!</Alert>}
+      {stage === 3 && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
     </React.Fragment>
   );
 }

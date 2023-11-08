@@ -70,7 +70,6 @@ const Photopea = () => {
                 }
             })
             .then(data => {
-                console.log(data)
                 setSaving(false)
                 navigate('/photos/' + data.photo_ids[0])
             })
@@ -123,7 +122,6 @@ const Photopea = () => {
             let size = e.data.byteLength
             if (!saving && size) {
                 setSaving(true)
-                console.log("Saving file of size " + size) // e.data is an arrayBuffer, we need to save it
                 saveImage(e.data)
             }
         }

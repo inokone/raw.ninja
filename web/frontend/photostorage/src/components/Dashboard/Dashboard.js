@@ -5,9 +5,14 @@ import { Typography } from '@mui/material';
 
 const { REACT_APP_API_PREFIX } = process.env;
 
-const Dashboard = () => {
+const Dashboard = ({user}) => {
 
   const populate = () => {
+    if (!user) {
+      return new Promise((resolve, reject) => {
+        reject("User not set!")
+      })
+    }
     return fetch(REACT_APP_API_PREFIX + '/api/v1/search/favorites', {
       method: "GET",
       mode: "cors",

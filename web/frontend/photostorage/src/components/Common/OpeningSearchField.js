@@ -23,21 +23,22 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  color: theme.palette.secondary.main
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
+    color: theme.palette.secondary.main,
     [theme.breakpoints.up('sm')]: {
       width: '0ch',
       cursor: 'pointer',
       '&:focus': {
         width: '20ch',
-        backgroundColor: alpha(theme.palette.common.white, 0.15),
+        backgroundColor: alpha(theme.palette.common.black, 0.15),
       },
     },
   },
@@ -60,7 +61,6 @@ const OpeningSearchField = ({ setQuery }) => {
     </SearchIconWrapper>
     <StyledInputBase
       placeholder="Search…"
-      sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}
       inputProps={{ 'aria-label': 'search' }}
       onChange={e => handleQueryChange(e, setQuery, location, navigate)}
     />

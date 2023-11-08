@@ -120,7 +120,7 @@ const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
           </Grid>
           <Grid xs={3}>
             <MetadataDisplay metadata={image.descriptor} />
-            <Grid container spacing={1} padding={1}>
+            <Grid container mt={4} spacing={1} padding={1}>
               <Grid xs={4}>
                 <Tooltip title="Download RAW file">
                   <Button variant='contained' color='primary' onClick={handleDownloadClick}>Download</Button>
