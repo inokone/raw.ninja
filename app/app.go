@@ -32,7 +32,7 @@ func init() {
 	log.Info().Msg("Photostorage app starting up...")
 }
 
-// App executes the PhotoStore web application.
+// App executes the RAW.Ninja web application.
 func App(port int) {
 	var err error
 	if err = initDb(config.Database); err != nil {

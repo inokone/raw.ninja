@@ -1,10 +1,13 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { Grid, Typography, Card, Button, Box } from "@mui/material";
+import { Grid, Typography, Card, Button, Box, SvgIcon } from "@mui/material";
 import { Link } from "react-router-dom"
 import withStyles from "@mui/styles/withStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import Logo from '../Common/Logo'
+import { height } from "@mui/system";
+
 
 const styles = (theme) => ({
     extraLargeButton: {
@@ -18,10 +21,7 @@ const styles = (theme) => ({
             paddingTop: theme.spacing(2),
             paddingBottom: theme.spacing(2),
         },
-        fontSize: theme.typography.h3.fontSize,
-        [theme.breakpoints.up("sm")]: {
-            fontSize: theme.typography.h6.fontSize,
-        },
+        fontSize: theme.typography.h6.fontSize,
     },
     card: {
         boxShadow: theme.shadows[4],
@@ -64,6 +64,10 @@ const styles = (theme) => ({
         borderRadius: theme.shape.borderRadius,
         boxShadow: theme.shadows[4],
     },
+    brandText: {
+        fontFamily: "Orbitron",
+        fontWeight: 600
+    },
     container: {
         marginTop: theme.spacing(6),
         marginBottom: theme.spacing(12),
@@ -81,6 +85,11 @@ const styles = (theme) => ({
         [theme.breakpoints.up("md")]: {
             maxWidth: "none !important",
         },
+    },
+    mainLogo: {
+        marginRight: 5,
+        color: theme.palette.primary.main,
+        fontSize: theme.typography.h3.fontSize
     },
 });
 
@@ -108,8 +117,18 @@ function HeadSection(props) {
                                             height="100%"
                                         >
                                             <Box mb={4}>
-                                                <Typography variant={isWidthUpLg ? "h3" : "h4"}>
-                                                    PhotoStore
+                                                <SvgIcon className={classes.mainLogo} component={Logo} />
+                                                <Typography variant="h3" 
+                                                    className={classes.brandText}
+                                                    display="inline"
+                                                    color="primary">
+                                                    RAW
+                                                </Typography>
+                                                <Typography variant="h3"
+                                                    className={classes.brandText}
+                                                    display="inline"
+                                                    color="secondary">
+                                                    Ninja
                                                 </Typography>
                                             </Box>
                                             <div>

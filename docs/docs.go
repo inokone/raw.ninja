@@ -1052,7 +1052,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "PhotoStore API",
+	Title:            "RAW.Ninja API",
 	Description:      "Photostorage is an application to store RAW image files.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

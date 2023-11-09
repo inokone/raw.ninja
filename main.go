@@ -26,9 +26,9 @@ import (
 	"github.com/inokone/photostorage/app"
 )
 
-// @title                     PhotoStore API
+// @title                     RAW.Ninja API
 // @version                   0.1
-// @description               Photostorage is an application to store RAW image files.
+// @description               RAW.Ninja is an application to store RAW image files.
 // @BasePath                  /api/v1
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/

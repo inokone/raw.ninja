@@ -38,7 +38,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
       cursor: 'pointer',
       '&:focus': {
         width: '20ch',
-        backgroundColor: alpha(theme.palette.common.black, 0.15),
+        backgroundColor: alpha(theme.palette.common.white, 0.15),
       },
     },
   },

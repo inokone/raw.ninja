@@ -79,7 +79,7 @@ const infos = [
     },
     {
         icon: <MailIcon />,
-        description: "support@inokworkz.com",
+        description: "support@raw.ninja",
     },
 ];
 
@@ -205,7 +205,7 @@ function Footer(props) {
                             About the Company
                         </Typography>
                         <Typography style={{ color: "#8f9296" }} paragraph>
-                            InokWorkz is the most innovative photo-informatics company. Its mission is to make secure photo storage affordable to everyone.
+                            RAWNinja LLC. is an innovative photo-informatics company. Our mission is to make secure photo storage affordable to everyone.
                         </Typography>
                         <Box display="flex">
                             {socialIcons.map((socialIcon, index) => (

@@ -26,7 +26,7 @@ const features = [
     {
         color: "#6200EA",
         headline: "Wide support for RAW formats",
-        text: "PhotoStore supports most camera RAW fromats including iPhone, Canon, Nikon, Sony, Fuji, Olympus and DJI cameras.",
+        text: "RAW.Ninja supports most camera RAW fromats including iPhone, Canon, Nikon, Sony, Fuji, Olympus and DJI cameras.",
         icon: <CodeIcon style={{ fontSize: iconSize }} />,
         mdDelay: "200",
         smDelay: "200",
