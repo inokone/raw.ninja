@@ -14,12 +14,12 @@ Functionality:
     - Account: Email confirmation, account (password) recovery and password change
     - Cloudflare proxy with cool domain name and e-mail forwarding
     ----
-    - fic backend database connection issue
+    - make sure https connection between BE and FE works fine
     - docker for Backend with SSL/TLS as params (https)
     - docker for Frontend with SSL/TLS as params (https)
     - make sure registration and login looks fine on mobile
     - Deploy in AWS
-    - Whitelist only CloudFalre domain !!!
+    - Whitelist only CloudFlare domain !!!
     - Document "how to deploy on ec2"
     - Captcha for registration and login
   - V1.0:

@@ -60,7 +60,20 @@ air                       # Start the web application with hot-reload for develo
 docker-compose down       # Stop running Postgres database 
 ```
 
-For production deployment please use `GIN_MODE=release` env variable.
+#### Production environment
+
+In production we need SSL/TLS set up, for that we need a certificate and a private key
+The `app.env` file needs to contain the keys pointing to the certificate. The application will automatically pick it up.
+Also the database certification should be set up. e.g. for AWS RDS on eu-central-1 region:
+
+``` sh
+DB_SSL_CERT=eu-central-1-bundle.pem 
+DB_SSL_MODE=verify-full
+```
+
+``` sh
+GIN_MODE=release go run main.go
+```
 
 #### API doc
 
@@ -84,9 +97,20 @@ Install "React Developer Tools" browser extension.
 Standard build mechanism with Node for frontend
 
 ``` sh
-npm install    # Download frontend dependencies 
+npm install           # Download frontend dependencies 
+npm start             # Run the app in dev mode
+HTTPS=true npm start  # Run the app in dev mode with self signed certification over https
+```
+
+#### Production environment
+
+In production we need SSL/TLS set up, for that we need a certificate and a private key. These can be used with the following command to run the application:
+
+``` sh
 npm run build  # Build frontend for production
-npm start      # Run the app in dev mode
+
+serve -s build --p 443 --ssl-cert "/etc/ssl/certs/mycert.crt" --ssl-key "/etc/ssl/private/mykey.key"
+
 ```
 
 ## CI

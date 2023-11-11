@@ -16,6 +16,8 @@ type RDBConfig struct {
 	MaxIdleConns    int           `mapstructure:"DB_MAX_IDLE_CONN"`
 	MaxOpenConns    int           `mapstructure:"DB_MAX_OPEN_CONN"`
 	ConnMaxLifetime time.Duration `mapstructure:"DB_CONN_LIFETIME"`
+	SSLMode         string        `mapstructure:"DB_SSL_MODE"`
+	SSLCert         string        `mapstructure:"DB_SSL_CERT"`
 }
 
 // ImageStoreConfig is a configuration of the image store.
@@ -30,7 +32,10 @@ type AuthConfig struct {
 	JWTSecret    string `mapstructure:"JWT_SIGN_SECRET"`
 	JWTExp       int    `mapstructure:"JWT_EXPIRATION_HOURS"`
 	JWTSecure    bool   `mapstructure:"JWT_COOKIE_SECURE"`
+	TLSCert      string `mapstructure:"TLS_CERT_PATH"`
+	TLSKey       string `mapstructure:"TLS_KEY_PATH"`
 	FrontendRoot string `mapstructure:"FRONTEND_ROOT"`
+	BackendRoot  string `mapstructure:"BACKEND_ROOT"`
 }
 
 // MailConfig is a configuration of e-mail massaging.
@@ -72,6 +77,7 @@ func LoadConfig() (*AppConfig, error) {
 	viper.SetConfigName("app")
 	viper.SetDefault("JWT_COOKIE_SECURE", true)
 	viper.SetDefault("JWT_EXPIRATION_HOURS", 24)
+	viper.SetDefault("DB_SSL_MODE", "disable")
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()

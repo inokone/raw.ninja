@@ -23,7 +23,12 @@ import (
 var db *gorm.DB
 
 func initDb(c common.RDBConfig) error {
-	cs := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", c.Host, c.Username, c.Password, c.Database, c.Port)
+	cs := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v ", c.Host, c.Username, c.Password, c.Database, c.Port)
+	if c.SSLMode == "disable" {
+		cs += "sslmode=disable"
+	} else {
+		cs += fmt.Sprintf("sslrootcert=%v sslmode=%v", c.SSLCert, c.SSLMode)
+	}
 	gormDb, err := gorm.Open(postgres.Open(cs), &gorm.Config{})
 	if err != nil {
 		return err

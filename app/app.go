@@ -49,7 +49,7 @@ func App(port int) {
 	// Setup middleware
 	r.Use(gin.Recovery())
 	cc := cors.DefaultConfig()
-	cc.AllowOrigins = []string{"http://127.0.0.1:3000", "http://localhost:3000"}
+	cc.AllowOrigins = []string{config.Auth.FrontendRoot}
 	cc.AllowHeaders = []string{"Authorization", "Origin", "Content-Length", "Content-Type"}
 	cc.AllowCredentials = true
 	r.Use(cors.New(cc))
@@ -66,5 +66,10 @@ func App(port int) {
 
 	web.Init(v1, storers, *config)
 
-	r.Run(fmt.Sprintf(":%d", port))
+	p := fmt.Sprintf(":%d", port)
+	if len(config.Auth.TLSCert) > 0 {
+		r.RunTLS(p, config.Auth.TLSCert, config.Auth.TLSKey)
+	} else {
+		r.Run(p)
+	}
 }
