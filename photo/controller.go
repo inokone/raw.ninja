@@ -240,9 +240,14 @@ func (c Controller) List(g *gin.Context) {
 		return
 	}
 
+	protocol := "http"
+	if g.Request.TLS != nil {
+		protocol = "https"
+	}
+
 	images := make([]Response, len(result))
 	for i, photo := range result {
-		images[i] = photo.AsResp("http://" + g.Request.Host + g.Request.URL.Path + photo.ID.String())
+		images[i] = photo.AsResp(protocol + "://" + g.Request.Host + g.Request.URL.Path + photo.ID.String())
 	}
 
 	g.JSON(http.StatusOK, images)
@@ -274,7 +279,12 @@ func (c Controller) Get(g *gin.Context) {
 		return
 	}
 
-	g.JSON(http.StatusOK, result.AsResp("http://"+g.Request.Host+g.Request.URL.Path))
+	protocol := "http"
+	if g.Request.TLS != nil {
+		protocol = "https"
+	}
+
+	g.JSON(http.StatusOK, result.AsResp(protocol+"://"+g.Request.Host+g.Request.URL.Path))
 }
 
 // Update is a method of `Controller`. Handles requests for updating a single photo or RAW file of the authenticated user.

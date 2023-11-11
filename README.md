@@ -109,7 +109,7 @@ In production we need SSL/TLS set up, for that we need a certificate and a priva
 ``` sh
 npm run build  # Build frontend for production
 
-serve -s build --p 443 --ssl-cert "/etc/ssl/certs/mycert.crt" --ssl-key "/etc/ssl/private/mykey.key"
+serve -s build -p 443 --ssl-cert "/etc/ssl/certs/mycert.crt" --ssl-key "/etc/ssl/private/mykey.key"
 
 ```
 

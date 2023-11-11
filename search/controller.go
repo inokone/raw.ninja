@@ -52,9 +52,14 @@ func (c Controller) Search(g *gin.Context) {
 		return
 	}
 
+	protocol := "http"
+	if g.Request.TLS != nil {
+		protocol = "https"
+	}
+
 	images := make([]photo.Response, len(result))
 	for i, photo := range result {
-		images[i] = photo.AsResp("http://" + g.Request.Host + "/api/v1/photos/" + photo.ID.String())
+		images[i] = photo.AsResp(protocol + "://" + g.Request.Host + "/api/v1/photos/" + photo.ID.String())
 	}
 
 	g.JSON(http.StatusOK, images)
@@ -84,9 +89,14 @@ func (c Controller) Favorites(g *gin.Context) {
 		return
 	}
 
+	protocol := "http"
+	if g.Request.TLS != nil {
+		protocol = "https"
+	}
+
 	images := make([]photo.Response, len(result))
 	for i, photo := range result {
-		images[i] = photo.AsResp("http://" + g.Request.Host + "/api/v1/photos/" + photo.ID.String())
+		images[i] = photo.AsResp(protocol + "://" + g.Request.Host + "/api/v1/photos/" + photo.ID.String())
 	}
 
 	g.JSON(http.StatusOK, images)
