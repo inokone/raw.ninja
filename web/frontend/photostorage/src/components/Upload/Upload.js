@@ -3,6 +3,7 @@ import { DropzoneArea } from "react-mui-dropzone";
 import { Alert, Container, Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom"
 import { createStyles, makeStyles } from '@mui/styles';
+import CloudCircleIcon from '@mui/icons-material/CloudCircle'
 import ProgressDisplay from "../Common/ProgressDisplay";
 
 
@@ -18,8 +19,13 @@ const useStyles = makeStyles(theme => createStyles({
     width: '80%',
     minHeight: '600px',
     boxSizing: 'border-box',
+  },
+  uploadIcon: {
+    color: theme.palette.secondary.main,
   }
 }));
+
+
 
 const Upload = () => {
   const navigate = useNavigate()
@@ -87,7 +93,7 @@ const Upload = () => {
               previewChipProps={{ classes: { root: classes.previewChip } }}
               previewText=""
               showAlerts={false}
-              dropzoneClass={classes.dropZone}
+              Icon={CloudCircleIcon}
             />
           </Box>
           {files.length > 0 && <Button onClick={handleClick} variant="contained">Upload</Button>}

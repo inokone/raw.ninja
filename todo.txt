@@ -12,19 +12,23 @@ Functionality:
     - Administrator page (app stats, users, roles and used / total quota)
     - Profile page (connection details, registration date, image count, favorite count and used quota) 
     - Account: Email confirmation, account (password) recovery and password change
+    - Cloudflare proxy with cool domain name and e-mail forwarding
     ----
-    - HTTPS
-    - Create deployment in cloud (AWS)
-    - Set up CloudFlare protection for the app (Implement DDOS protection, captcha for registration and login)
+    - fic backend database connection issue
+    - docker for Backend with SSL/TLS as params (https)
+    - docker for Frontend with SSL/TLS as params (https)
+    - make sure registration and login looks fine on mobile
+    - Deploy in AWS
+    - Whitelist only CloudFalre domain !!!
+    - Document "how to deploy on ec2"
+    - Captcha for registration and login
+  - V1.0:
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
-    - Integrate with at least 1 CDN, so it can be deployed in Cloud
-      - Amazon S3
-      - Google CDN
+    - Integrate with at least 1 CDN: Amazon S3
     - Improve file upload. Concurrency option
     - Testing (handlers and unit testing) - Backend and Frontend
     - Fix PhotoGrid selection display mechanism
     - Fix editing users and roles on admin page
-    - Create an entity in the main package for storers.
   - Next steps:
     - Add rating option for images
     - Add tags for images
@@ -46,18 +50,13 @@ Functionality:
       - needs user preferences & CRONs
     - Implement advanced search (fulltext search with ES)
 
-Frontend:
-- Refactor React metadata view to use cards instead of tables (https://mui.com/material-ui/react-card/)
-
 Backend:
 - Add CSRF - https://www.stackhawk.com/blog/react-csrf-protection-guide-examples-and-how-to-enable-it/
 - Move out GORM, use plain SQL instead
     - rewrite to plain SQL
     - create migration mechanism
 - Think about integration tests
-- Add AWS and GCP image storage implementation (S3, G CDN)
 - Create microservices architecture
 - Kubernetes IaC for microservices
-
 - Free database: Elephantsql or Planetscale
 - Free edge location: Vercel
