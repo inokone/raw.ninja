@@ -1,0 +1,11 @@
+FROM node:21-alpine
+COPY web/frontend/photostorage/public /app/public
+COPY web/frontend/photostorage/src /app/src
+COPY web/frontend/photostorage/package.json /app/
+COPY web/frontend/photostorage/package-lock.json /app/
+WORKDIR /app
+RUN npm i --force
+RUN npm install -g serve
+RUN npm run build
+CMD ["serve", "-s", "build", "-p", "3000", "--ssl-cert", "/etc/rawninja/certificates/origin.pem", "--ssl-key", "/etc/rawninja/certificates/private.pem"]
+EXPOSE 3000

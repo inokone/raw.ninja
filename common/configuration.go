@@ -71,8 +71,8 @@ func LoadConfig() (*AppConfig, error) {
 	var lg LogConfig
 	var ml MailConfig
 	viper.AddConfigPath(".")
-	viper.AddConfigPath("/etc/photostorage/")
-	viper.AddConfigPath("$HOME/.photostorage")
+	viper.AddConfigPath("/etc/rawninja/")
+	viper.AddConfigPath("$HOME/.rawninja")
 	viper.SetConfigType("env")
 	viper.SetConfigName("app")
 	viper.SetDefault("JWT_COOKIE_SECURE", true)

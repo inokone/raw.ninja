@@ -1,4 +1,4 @@
-# photostorage
+# RAW.Ninja
 
 Cheap photo storage for professional purposes. A personal project to learn Go language.
 The target is a web application capable of handling reltively large image files (>50Mb), generating thumbnails.
@@ -17,41 +17,56 @@ The target is a web application capable of handling reltively large image files 
 
 ### Backend
 
-Created using Golang in the base folder of the repository of the repository.
+Created using Golang in the base folder of the repository. The RAW processing is based on Libraw. The application uses 2 databases:
 
-#### Prerequisites
+- **File storage:** either local storage or a CDN used for storing image blobs and thumbnail blobs
+- **Postgres:** relational database - storing all data except blob
+
+Configuration of the backend is environment variables or env file. Here is a [sample](/envfiles/local.env) env file.
+The backend also uses the following set of external files and folders:
+
+- **tmp:** The system temp folder is used by Libraw to store temporary files while processing RAW images.
+- **local storage folder:** If local storage is used a folder need to be set up for it and configured for the application using `IMG_STORE_PATH` env variable.
+- **web ssl:** If https is the target for the application (must for a prod deployment) it can be set using `TLS_CERT_PATH` and `TLS_KEY_PATH`
+- **database ssl:** Database access can be encrypted too, can be set using `DB_SSL_MODE` and `DB_SSL_CERT` env variables.
+
+#### Development Prerequisites
+
+Before starting backend development the following need to be set up:
 
 ``` sh
-brew install go                                                # Install Go
-brew install libraw                                            # RAW processing library on OSX, or
-sudo apt-get install libraw-dev                                # on Ubuntu
+brew install go                                    # Install Go
+brew install libraw                                # Install RAW processing library on OSX, or
+sudo apt-get install libraw-dev                    # on Ubuntu
 
-go install github.com/cosmtrek/air@latest                      # Hot-reload for Gin server
-go install github.com/swaggo/swag/cmd/swag@latest              # OpenAPI spec generator
+go install github.com/cosmtrek/air@latest          # Hot-reload for Gin server
+go install github.com/swaggo/swag/cmd/swag@latest  # OpenAPI spec generator
 
-brew tap golangci/tap                                          # Setting source for brew, then
-brew install golangci/tap/golangci-lint                        # Static code anlanysis for Go
+brew tap golangci/tap                              # Setting source for brew, then
+brew install golangci/tap/golangci-lint            # Static code anlanysis for Go
 ```
 
 Note: on M1/M2 OSX you need to manually install Libraw based on the [official doc](https://www.libraw.org/docs/Install-LibRaw-eng.html).
 
-#### Build
+#### Build and Development
+
+Building the application is not explicitly required for development. The following commands can be used:
 
 ``` sh
 go mod download    # Download Go dependencies
-swag i             # Generate OpenAPI spec files
+swag i    # Generate OpenAPI spec files
 go build main.go   # Build app
 
 go test -v ./...   # Run unit tests
 golangci-lint run  # Run static code analysis
 ```
 
-On OSX if `swag` and `gocritic` are not working you might have to add `~/go/bin` to your PATH.
+On OSX if `swag` is not working you might have to add `~/go/bin` to your PATH.
 
 #### Run
 
 ``` sh
-docker-compose up -d      # Initialize Postgres database
+docker-compose up -d      # Initialize Postgres database, or use your own
 
 go run main.go --migrate  # Migrate the database and launch app, or
 go run main.go            # Start the web-application, or
@@ -59,6 +74,10 @@ air                       # Start the web application with hot-reload for develo
 
 docker-compose down       # Stop running Postgres database 
 ```
+
+#### API doc
+
+When the application is running, the OpenAPI documentation is available with [Swagger](http://localhost:8080/swagger/doc.json).
 
 #### Production environment
 
@@ -75,15 +94,11 @@ DB_SSL_MODE=verify-full
 GIN_MODE=release go run main.go
 ```
 
-#### API doc
-
-When the application is running, the OpenAPI documentation is available with [Swagger](http://localhost:8080/swagger/doc.json).
-
 ### Frontend
 
 Created using React.js with `npx create-react-app` in the [frontend](/web/frontend/photostorage) folder.
 
-#### Prerequisites
+#### Before Development
 
 ``` sh
 brew install node                          # Install Node.js
@@ -92,7 +107,7 @@ npm install react@latest react-dom@latest  # Fix react version
 
 Install "React Developer Tools" browser extension.
 
-#### Build
+#### Development
 
 Standard build mechanism with Node for frontend
 
@@ -102,15 +117,48 @@ npm start             # Run the app in dev mode
 HTTPS=true npm start  # Run the app in dev mode with self signed certification over https
 ```
 
-#### Production environment
+#### Production
 
 In production we need SSL/TLS set up, for that we need a certificate and a private key. These can be used with the following command to run the application:
 
 ``` sh
 npm run build  # Build frontend for production
 
-serve -s build -p 443 --ssl-cert "/etc/ssl/certs/mycert.crt" --ssl-key "/etc/ssl/private/mykey.key"
+serve -s build -p 443 --ssl-cert "/etc/rawninja/certificates/mycert.crt" --ssl-key "/etc/rawninja/certificates/mykey.key"
+```
 
+## Docker
+
+First version of containerization result is 2 docker images. One for the frontend and one for the backend.
+
+### Build
+
+The following commands can be used for building the docker images:
+
+``` sh
+docker build -t rawninja-frontend:1 -f Dockerfile-frontend . 
+docker build -t rawninja-backend:1 -f Dockerfile-backend . 
+```
+
+### Run
+Running the application
+
+The following commands can be used for running the docker images:
+
+``` sh
+docker run \
+      -p 8080:8080 \ 
+      -p 3000:3000 \ 
+      -e REACT_APP_API_PREFIX=https://raw.ninja:8080 \
+      -v /Users/inokone/git/photostorage:/etc/rawninja \
+      rawninja-frontend:1
+
+docker run \
+      -p 8080:8080 \
+      -p 5432:5432 \
+      -v /Users/inokone/git/photostorage:/etc/rawninja \
+      --mount type=tmpfs,destination=/tmp,tmpfs-size=4096 \
+      rawninja-backend:5
 ```
 
 ## CI
@@ -118,9 +166,8 @@ serve -s build -p 443 --ssl-cert "/etc/ssl/certs/mycert.crt" --ssl-key "/etc/ssl
 The project has Github actions set up for every push.
 Steps included
 
-- Backend
+- [Backend](.github/workflows/build.yaml)
   - OpenAPI re-generation
   - Build
   - Run unit tests
-  - Static code analysis
-- Frontend
+- [Backend Static code analysis](.github/workflows/golangci-lint.yml)

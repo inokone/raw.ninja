@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "description": "Photostorage is an application to store RAW image files.",
-        "title": "PhotoStore API",
+        "title": "Raw.Ninja API",
         "contact": {},
         "version": "0.1"
     },
