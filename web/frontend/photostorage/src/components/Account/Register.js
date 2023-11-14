@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Stack, Alert, Typography, Container, Box } from '@mui/material';
 import { Link } from "react-router-dom"
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 
 const RegisterForm = () => {

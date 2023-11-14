@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom"
 import DetailedPhotoCard from './DetailedPhotoCard';
 import ProgressDisplay from '../Common/ProgressDisplay';
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const PhotoDisplay = () => {
   const location = useLocation()

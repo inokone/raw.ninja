@@ -6,7 +6,7 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 
 import ProgressDisplay from '../Common/ProgressDisplay';
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {

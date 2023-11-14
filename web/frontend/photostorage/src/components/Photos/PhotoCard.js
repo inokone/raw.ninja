@@ -4,7 +4,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Card, CardMedia, Box, CardActions, CardActionArea, IconButton, Tooltip } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const useStyles = makeStyles((theme) => ({
   favorite: {

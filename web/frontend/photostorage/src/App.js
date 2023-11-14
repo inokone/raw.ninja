@@ -24,7 +24,7 @@ import Photopea from './components/Editor/Photopea';
 import Landing from './components/Landing/Landing';
 
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const App = () => {
   const [user, setUser] = useState(null);

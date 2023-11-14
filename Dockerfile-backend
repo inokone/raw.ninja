@@ -1,0 +1,23 @@
+FROM golang:1.21.4-bullseye
+RUN apt-get update && apt-get install -y libraw-dev
+COPY app /app/app
+COPY auth /app/auth
+COPY common /app/common
+COPY descriptor /app/descriptor
+COPY docs /app/docs
+COPY image /app/image
+COPY mail /app/mail
+COPY photo /app/photo
+COPY search /app/search
+COPY stats /app/stats
+COPY web/logging.go /app/web/
+COPY web/routes.go /app/web/
+COPY main.go /app/
+COPY go.mod /app/
+COPY go.sum /app/
+WORKDIR /app
+
+RUN go build -v -o /usr/local/bin/app main.go
+
+CMD ["go", "run", "main.go"]
+EXPOSE 8080

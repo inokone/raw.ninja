@@ -146,19 +146,9 @@ Running the application
 The following commands can be used for running the docker images:
 
 ``` sh
-docker run \
-      -p 8080:8080 \ 
-      -p 3000:3000 \ 
-      -e REACT_APP_API_PREFIX=https://raw.ninja:8080 \
-      -v /Users/inokone/git/photostorage:/etc/rawninja \
-      rawninja-frontend:1
+docker run -p 3000:443 -v /Users/inokone/git/photostorage/certificates:/etc/rawninja/certificates rawninja-frontend
 
-docker run \
-      -p 8080:8080 \
-      -p 5432:5432 \
-      -v /Users/inokone/git/photostorage:/etc/rawninja \
-      --mount type=tmpfs,destination=/tmp,tmpfs-size=4096 \
-      rawninja-backend:5
+docker run -p 8080:8080 -v /Users/inokone/git/photostorage:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 rawninja-backend
 ```
 
 ## CI

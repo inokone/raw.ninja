@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Button, Alert, Box, Container, Typography } from "@mui/material";
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const RecoverPassword = () => {
     const [email, setEmail] = useState("")

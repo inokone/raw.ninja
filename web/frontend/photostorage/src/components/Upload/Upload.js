@@ -7,7 +7,7 @@ import CloudCircleIcon from '@mui/icons-material/CloudCircle'
 import ProgressDisplay from "../Common/ProgressDisplay";
 
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const useStyles = makeStyles(theme => createStyles({
   previewChip: {

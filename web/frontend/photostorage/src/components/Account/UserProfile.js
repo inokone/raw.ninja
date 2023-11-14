@@ -3,7 +3,7 @@ import { Alert, Grid, Box, Typography, Button } from "@mui/material";
 import ProgressDisplay from '../Common/ProgressDisplay';
 import ChangePassword from './ChangePassword';
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const Profile = ({user}) => {
   const [error, setError] = React.useState(null)

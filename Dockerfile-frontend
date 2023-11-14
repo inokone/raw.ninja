@@ -1,11 +1,16 @@
-FROM node:21-alpine
+FROM node:lts as builder
 COPY web/frontend/photostorage/public /app/public
 COPY web/frontend/photostorage/src /app/src
 COPY web/frontend/photostorage/package.json /app/
 COPY web/frontend/photostorage/package-lock.json /app/
+ENV NODE_ENV production
+ENV REACT_APP_API_PREFIX https://localhost:8080
 WORKDIR /app
-RUN npm i --force
-RUN npm install -g serve
+RUN npm ci --force
 RUN npm run build
-CMD ["serve", "-s", "build", "-p", "3000", "--ssl-cert", "/etc/rawninja/certificates/origin.pem", "--ssl-key", "/etc/rawninja/certificates/private.pem"]
-EXPOSE 3000
+
+FROM nginx:1.25.3-alpine
+COPY web/frontend/photostorage/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/build /usr/share/nginx/html
+EXPOSE 443
+CMD ["nginx", "-g", "daemon off;"]

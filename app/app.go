@@ -66,10 +66,16 @@ func App(port int) {
 
 	web.Init(v1, storers, *config)
 
-	p := fmt.Sprintf(":%d", port)
+	p := fmt.Sprintf("0.0.0.0:%d", port)
 	if len(config.Auth.TLSCert) > 0 {
-		r.RunTLS(p, config.Auth.TLSCert, config.Auth.TLSKey)
+		err = r.RunTLS(p, config.Auth.TLSCert, config.Auth.TLSKey)
+		if err != nil {
+			log.Err(err).Msg("Failed to start the application")
+		}
 	} else {
-		r.Run(p)
+		err = r.Run(p)
+		if err != nil {
+			log.Err(err).Msg("Failed to start the application")
+		}
 	}
 }

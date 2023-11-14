@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import ProgressDisplay from '../Common/ProgressDisplay';
 
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const Logout = ({ setUser }) => {
     const navigate = useNavigate();

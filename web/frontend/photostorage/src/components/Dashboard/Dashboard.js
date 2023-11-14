@@ -3,7 +3,7 @@ import PhotoGrid from '../Photos/PhotoGrid';
 import { Typography } from '@mui/material';
 
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const Dashboard = ({user}) => {
 

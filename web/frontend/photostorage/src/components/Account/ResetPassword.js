@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TextField, Button, Alert, Box, Container } from "@mui/material";
 import { useSearchParams, useNavigate } from 'react-router-dom'
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const ResetPassword = () => {
     const [newPassword, setNewPassword] = useState("")

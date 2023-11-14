@@ -3,7 +3,7 @@ import { Alert } from '@mui/material';
 import ProgressDisplay from '../Common/ProgressDisplay';
 import { useLocation, useNavigate } from "react-router-dom"
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const format = "jpg"
 

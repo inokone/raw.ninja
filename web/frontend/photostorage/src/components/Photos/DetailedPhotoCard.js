@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { ReactComponent as PeaLogo } from '../../photopea.svg'
 
 
-const { REACT_APP_API_PREFIX } = process.env;
+const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
   const navigate = useNavigate();
