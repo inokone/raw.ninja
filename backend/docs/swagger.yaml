@@ -1,0 +1,684 @@
+basePath: /api/v1
+definitions:
+  common.Health:
+    properties:
+      status:
+        type: string
+      version:
+        type: string
+    type: object
+  common.StatusMessage:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  descriptor.Response:
+    properties:
+      favorite:
+        type: boolean
+      filename:
+        type: string
+      format:
+        type: string
+      id:
+        type: string
+      metadata:
+        $ref: '#/definitions/image.Response'
+      tags:
+        items:
+          type: string
+        type: array
+      thumbnail:
+        type: string
+      uploaded:
+        type: string
+    type: object
+  image.Response:
+    properties:
+      ISO:
+        type: integer
+      aperture:
+        type: number
+      camera_make:
+        type: string
+      camera_model:
+        type: string
+      camera_sw:
+        type: string
+      colors:
+        type: integer
+      data_size:
+        type: integer
+      height:
+        type: integer
+      lens_make:
+        type: string
+      lens_model:
+        type: string
+      shutter:
+        type: number
+      timestamp:
+        type: string
+      width:
+        type: integer
+    type: object
+  photo.Response:
+    properties:
+      descriptor:
+        $ref: '#/definitions/descriptor.Response'
+      id:
+        type: string
+    type: object
+  photo.UploadSuccess:
+    properties:
+      photo_ids:
+        items:
+          type: string
+        type: array
+      user_id:
+        type: string
+    type: object
+  role.ProfileRole:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      quota:
+        type: integer
+    type: object
+  stats.AppStats:
+    properties:
+      favorites:
+        type: integer
+      photos:
+        type: integer
+      quota:
+        type: integer
+      total_users:
+        type: integer
+      used_space:
+        type: integer
+      user_distribution:
+        items:
+          $ref: '#/definitions/user.RoleUser'
+        type: array
+    type: object
+  stats.UserStats:
+    properties:
+      available_space:
+        type: integer
+      email:
+        type: string
+      favorites:
+        type: integer
+      id:
+        type: string
+      phone:
+        type: string
+      photos:
+        type: integer
+      quota:
+        type: integer
+      registration_date:
+        type: integer
+      role:
+        type: string
+      used_space:
+        type: integer
+    type: object
+  user.Profile:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      role:
+        $ref: '#/definitions/role.ProfileRole'
+    type: object
+  user.RoleUser:
+    properties:
+      role:
+        type: string
+      users:
+        type: integer
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+info:
+  contact: {}
+  description: Photostorage is an application to store RAW image files.
+  title: RAW.Ninja API
+  version: "0.1"
+paths:
+  /auth/confirm:
+    get:
+      consumes:
+      - application/json
+      description: Confirms the email address of the user
+      parameters:
+      - description: Token for the email confirmation
+        format: uuid
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Email confirmation endpoint
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in the user, sets up the JWT authorization
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User login endpoint
+  /auth/logout:
+    get:
+      consumes:
+      - application/json
+      description: Logs out of the application, deletes the JWT token uased for authorization
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Logout endpoint
+  /auth/resend:
+    post:
+      consumes:
+      - application/json
+      description: Resends email confirmation for an email address.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Resends email confirmation endpoint
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Signs the user up for the application
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User registration endpoint
+  /healthcheck:
+    get:
+      consumes:
+      - application/json
+      description: Returns the status and version of the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.Health'
+      summary: Health check endpoint of the Photostorage app
+  /photos:
+    get:
+      consumes:
+      - application/json
+      description: Returns all photo descriptors for the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/photo.Response'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: List user's photo descriptors endpoint
+      tags:
+      - photos
+  /photos/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the photo with the provided ID
+      parameters:
+      - description: ID of the photo to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/photo.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Delete photo endpoint
+      tags:
+      - photos
+    get:
+      consumes:
+      - application/json
+      description: Returns the photo descriptor with the provided ID
+      parameters:
+      - description: ID of the photo information to collect
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/photo.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Get photo endpoint
+      tags:
+      - photos
+    put:
+      consumes:
+      - application/json
+      description: Updates tags and favorite setting for RAW file
+      parameters:
+      - description: ID of the photo information to collect
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Update photo endpoint for tags and favorite setting
+      tags:
+      - photos
+  /photos/:id/download:
+    get:
+      consumes:
+      - application/json
+      description: Returns the RAW file for the provided ID
+      parameters:
+      - description: ID of the RAW photo to download
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Download RAW file endpoint
+      tags:
+      - photos
+  /photos/:id/thumbnail:
+    get:
+      consumes:
+      - application/json
+      description: Returns the thumbnail for the provided ID
+      parameters:
+      - description: ID of the thumbnail to download
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Thumbnail image endpoint
+      tags:
+      - photos
+  /photos/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload RAW files to store
+      parameters:
+      - description: Photos to store
+        in: formData
+        name: files[]
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/photo.UploadSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "415":
+          description: Unsupported Media Type
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Photo upload endpoint
+      tags:
+      - photos
+  /roles/:
+    get:
+      consumes:
+      - application/json
+      description: Lists all roles of the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Role list endpoint
+  /roles/:id:
+    patch:
+      consumes:
+      - application/json
+      description: Updates the settings of a role
+      parameters:
+      - description: ID of the role information to patch
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Role update endpoint
+  /search/favorites:
+    get:
+      consumes:
+      - application/json
+      description: Returns favorite photo descriptors for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/photo.Response'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Search user's favorite photo descriptors endpoint
+      tags:
+      - photos
+  /search/quick:
+    get:
+      consumes:
+      - application/json
+      description: Returns all photo descriptors matching the provided search text
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/photo.Response'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Quick search user's photo descriptors endpoint, case sensitive prefix
+        search
+      tags:
+      - photos
+  /statistics/app:
+    get:
+      consumes:
+      - application/json
+      description: Returns the app statistics on stored photos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/stats.AppStats'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: App statistics endpoint
+  /statistics/user:
+    get:
+      consumes:
+      - application/json
+      description: Returns the user statistics on stored photos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/stats.UserStats'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User statistics endpoint
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Lists the users of the application.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: List users endpoint
+  /users/:id:
+    patch:
+      consumes:
+      - application/json
+      description: Updates the target user
+      parameters:
+      - description: ID of the user information to patch
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User update endpoint
+  /users/profile:
+    get:
+      consumes:
+      - application/json
+      description: Gets the current logged in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.Profile'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Get user profile endpoint
+  /users/reset:
+    post:
+      consumes:
+      - application/json
+      description: Resets the password of the logged in user
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Reset password endpoint
+swagger: "2.0"

@@ -1,0 +1,11 @@
+FROM golang:1.21.4-bullseye as build
+RUN apt-get update && apt-get install -y libraw-dev
+WORKDIR /app
+COPY . .
+RUN go build -v -o rawninja main.go
+
+FROM debian:11.8-slim
+RUN apt-get update && apt-get install -y libraw-dev
+COPY --from=build /app/rawninja /usr/local/bin/rawninja
+CMD [ "/usr/local/bin/rawninja" ] 
+EXPOSE 8080

@@ -17,12 +17,12 @@ The target is a web application capable of handling reltively large image files 
 
 ### Backend
 
-Created using Golang in the base folder of the repository. The RAW processing is based on Libraw. The application uses 2 databases:
+Created using Golang in the [backend](/backend) folder. The RAW processing is based on Libraw. The application uses 2 databases:
 
 - **File storage:** either local storage or a CDN used for storing image blobs and thumbnail blobs
 - **Postgres:** relational database - storing all data except blob
 
-Configuration of the backend is environment variables or env file. Here is a [sample](/envfiles/local.env) env file.
+Configuration of the backend is environment variables or env file. Here is a [sample](/environments/local.env) env file.
 The backend also uses the following set of external files and folders:
 
 - **tmp:** The system temp folder is used by Libraw to store temporary files while processing RAW images.
@@ -96,7 +96,7 @@ GIN_MODE=release go run main.go
 
 ### Frontend
 
-Created using React.js with `npx create-react-app` in the [frontend](/web/frontend/photostorage) folder.
+Created using React.js with `npx create-react-app` in the [frontend](/frontend) folder.
 
 #### Before Development
 
@@ -136,19 +136,23 @@ First version of containerization result is 2 docker images. One for the fronten
 The following commands can be used for building the docker images:
 
 ``` sh
-docker build -t rawninja-frontend:1 -f Dockerfile-frontend . 
-docker build -t rawninja-backend:1 -f Dockerfile-backend . 
+cd frontend
+docker build -t rawninja-frontend:1 -f Dockerfile . 
+
+cd backend
+docker build -t rawninja-backend:1 -f Dockerfile . 
 ```
 
 ### Run
+
 Running the application
 
 The following commands can be used for running the docker images:
 
 ``` sh
-docker run -p 3000:443 -v /Users/inokone/git/photostorage/certificates:/etc/rawninja/certificates rawninja-frontend
+docker run -p 3000:443 -v /Users/inokone/git/photostorage/environments/local/certificates:/etc/rawninja/certificates rawninja-frontend
 
-docker run -p 8080:8080 -v /Users/inokone/git/photostorage:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 rawninja-backend
+docker run -p 8080:8080 -v /Users/inokone/git/photostorage/environments/local:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 rawninja-backend
 ```
 
 ## CI
