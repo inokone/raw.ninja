@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
-import { TextField, Button, Stack, Alert, Typography, Container, Box } from '@mui/material';
+import { TextField, Button, Alert, Typography, Container, Box } from '@mui/material';
 import { Link } from "react-router-dom"
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 
 const RegisterForm = () => {
-    const [firstName, setFirstName] = useState('')
-    const [firstNameError, setFirstNameError] = useState(false)
-    const [lastName, setLastName] = useState('')
-    const [lastNameError, setLastNameError] = useState(false)
     const [email, setEmail] = useState('')
     const [emailError, setEmailError] = useState(false)
     const [password, setPassword] = useState('')
     const [passwordError, setPasswordError] = useState(false)
+    const [confirmation, setConfirmation] = useState("")
+    const [confirmationError, setConfirmationError] = useState(false)
     const [error, setError] = useState()
     const [success, setSuccess] = useState(false)
 
     function handleSubmit(event) {
         event.preventDefault();
-        if (emailError || firstNameError || lastNameError || passwordError) {
+        if (emailError || passwordError || confirmationError) {
             return
         }
         setError(null)
@@ -31,8 +29,6 @@ const RegisterForm = () => {
             body: JSON.stringify({
                 "email": email,
                 "password": password,
-                "firstname": firstName,
-                "lastname": lastName,
             })
         })
             .then(response => {
@@ -50,43 +46,9 @@ const RegisterForm = () => {
     return (
         <React.Fragment>
             <Container maxWidth="sm">
-                <Box sx={{ width: 500, m: 4 }}>
+                <Box style={{ flex: 1 }} sx={{ m: 4 }}>
                     <Typography pb={3} variant='h4'>Registration</Typography>
                     <form onSubmit={handleSubmit} action={<Link to="/login" />}>
-                        <Stack spacing={2} direction="row" sx={{ marginBottom: 4 }}>
-                            <TextField
-                                type="text"
-                                variant='outlined'
-                                color='primary'
-                                label="First Name"
-                                onChange={e => {
-                                    setFirstNameError(firstName === '')
-                                    setFirstName(e.target.value)
-                                    setError(null)
-                                }}
-                                error={firstNameError}
-                                value={firstName}
-                                fullWidth
-                                required
-                                sx={{ backgroundColor: "#fff", borderRadius: 1 }}
-                            />
-                            <TextField
-                                type="text"
-                                variant='outlined'
-                                color='primary'
-                                label="Last Name"
-                                onChange={e => {
-                                    setLastNameError(lastName === '')
-                                    setLastName(e.target.value)
-                                    setError(null)
-                                }}
-                                error={lastNameError}
-                                value={lastName}
-                                fullWidth
-                                required
-                                sx={{ backgroundColor: "#fff", borderRadius: 1 }}
-                            />
-                        </Stack>
                         <TextField
                             type="email"
                             variant='outlined'
@@ -117,6 +79,24 @@ const RegisterForm = () => {
                             required
                             fullWidth
                             sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
+                        />
+                        <TextField
+                            label="Confirm Password"
+                            onChange={e => {
+                                let conf = e.target.value
+                                setConfirmation(conf)
+                                setConfirmationError(password.length > 0 && conf !== password)
+                                setError(null)
+                            }}
+                            required
+                            variant="outlined"
+                            color="primary"
+                            type="password"
+                            value={confirmation}
+                            error={confirmationError}
+                            fullWidth
+                            sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
+                            helperText={confirmationError && "New password and confirmation must match."}
                         />
                         {success && <Alert sx={{ mb: 4 }} severity="success">Signed up successfully! Please <Link to="/login">log in</Link>!</Alert>}
                         {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}

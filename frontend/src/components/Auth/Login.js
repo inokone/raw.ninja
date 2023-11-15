@@ -78,7 +78,7 @@ const Login = ({ setUser }) => {
     return (
         <React.Fragment>
             <Container maxWidth="sm">
-                <Box sx={{ width: 500, m: 4 }}>
+                <Box style={{ flex: 1 }} sx={{ m: 4 }}>
                     <form autoComplete="off" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff" }}>
                         <TextField
                             label="Email"

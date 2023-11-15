@@ -66,13 +66,8 @@ On OSX if `swag` is not working you might have to add `~/go/bin` to your PATH.
 #### Run
 
 ``` sh
-docker-compose up -d      # Initialize Postgres database, or use your own
-
-go run main.go --migrate  # Migrate the database and launch app, or
-go run main.go            # Start the web-application, or
-air                       # Start the web application with hot-reload for development
-
-docker-compose down       # Stop running Postgres database 
+go run main.go --migrate --config ../environments/development  # Migrate the database and launch app
+air                                                            # Start the web application with hot-reload for development
 ```
 
 #### API doc

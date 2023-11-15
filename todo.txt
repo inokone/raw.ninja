@@ -17,8 +17,9 @@ Functionality:
     - Docker containers for backend and frontend 
     - Docker compose for running everything locally
     ----
-    - make sure registration and login looks fine on mobile
     - Deploy in AWS
+    - Cookies display - acceptance
+    - License agreement - no warranty!
     - Whitelist only CloudFlare domain !!!
     - Document "how to deploy on ec2"
     - Captcha for registration and login

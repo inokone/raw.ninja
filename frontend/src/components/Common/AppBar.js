@@ -127,6 +127,22 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
           >
             Ninja
           </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          {isAuthenticated() && <OpeningSearchField setQuery={setQuery} />}
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Button
+              key="upload"
+              onClick={() => handleMenuClick("upload")}
+              sx={{ m: 0, color: theme.palette.secondary.main }}>
+              <CloudUploadIcon />
+            </Button>
+            <Button
+              key="photos"
+              onClick={() => handleMenuClick("photos")}
+              sx={{ m: 0, color: theme.palette.secondary.main }}>
+              <ViewModuleIcon />
+            </Button>
+          </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -135,7 +151,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
             >
-              <MenuIcon />
+              <MenuIcon sx={{color: theme.palette.secondary.main}}/>
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -164,22 +180,6 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
                 <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Photos</Typography>
               </MenuItem>
             </Menu>
-          </Box>
-          <Box sx={{ flexGrow: 1 }} />
-          {isAuthenticated() && <OpeningSearchField setQuery={setQuery} />}
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Button
-              key="upload"
-              onClick={() => handleMenuClick("upload")}
-              sx={{ m: 0, color: theme.palette.secondary.main }}>
-              <CloudUploadIcon />
-            </Button>
-            <Button
-              key="photos"
-              onClick={() => handleMenuClick("photos")}
-              sx={{ m: 0, color: theme.palette.secondary.main }}>
-              <ViewModuleIcon />
-            </Button>
           </Box>
           {isAuthenticated && user && 
             <Box sx={{ md: 0, ml: 1 }}>
