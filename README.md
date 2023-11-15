@@ -156,6 +156,32 @@ Also if we just want to spin the application up with local database:
 docker compose up
 ```
 
+## Deploying to EC2
+
+From dev machine:
+
+``` sh
+docker save -o backend.tar rawninja-backend
+docker save -o frontend.tar rawninja-frontend
+
+scp -i imi-mbp.pem ../git/raw.ninja/frontend.tar ubuntu@3.79.244.81:~/
+scp -i imi-mbp.pem ../git/raw.ninja/backend.tar ubuntu@3.79.244.81:~/
+scp -i imi-mbp.pem ../git/raw.ninja/environment/production ubuntu@3.79.244.81:~/
+
+```
+
+SSH into EC2:
+
+``` sh
+
+docker load -i backend.tar
+docker load -i frontend.tar
+
+docker run ... frontend
+docker run ... backend
+
+```
+
 ## CI
 
 The project has Github actions set up for every push.

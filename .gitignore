@@ -20,7 +20,7 @@ app.env
 tmp
 /photos
 /photos/*
-/main
+backend/main
 /photostorage
 /business-model.md
 
