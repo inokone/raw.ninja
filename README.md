@@ -145,14 +145,20 @@ docker build -t rawninja-backend:1 -f Dockerfile .
 
 ### Run
 
-Running the application
+There are multiple options for running the application locally.
 
-The following commands can be used for running the docker images:
+The following commands can be used for running the individual docker images:
 
 ``` sh
-docker run -p 3000:443 -v /Users/inokone/git/photostorage/environments/local/certificates:/etc/rawninja/certificates rawninja-frontend
+docker run -p 3000:443 -v /Users/inokone/git/raw.ninja/environments/local/certificates:/etc/rawninja/certificates rawninja-frontend
 
-docker run -p 8080:8080 -v /Users/inokone/git/photostorage/environments/local:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 rawninja-backend
+docker run -p 8080:8080 -v /Users/inokone/git/raw.ninja/environments/local:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 rawninja-backend
+```
+
+Also if we just want to spin the application up with local database:
+
+``` sh
+docker compose up
 ```
 
 ## CI

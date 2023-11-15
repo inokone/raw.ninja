@@ -15,8 +15,9 @@ The flags are:
 	    --application [=true/false]
 	        Starts the web application for the photostorage. Default value
 			is true.
-	    --port [=0-65535]
-	        The TCP port for the web application. Default value is 8080.
+	    --config [path]
+		    Path of the configuration folder where the app.env config file
+			is present. Default value is "."
 */
 package main
 
@@ -36,14 +37,14 @@ func main() {
 	var (
 		isMigration = flag.Bool("migrate", false, "Start migration of the database. Default: [false]")
 		application = flag.Bool("application", true, "Start the web application on the provided port. Default: [true].")
-		port        = flag.Int("port", 8080, "Port of the webapplication. Default: [8080]")
+		config      = flag.String("config", ".", "Path of the configuration folder where the app.env file is. Default: [.]")
 	)
 	flag.Parse()
 
 	if *isMigration {
-		app.Migrate()
+		app.Migrate(*config)
 	}
 	if *application {
-		app.App(*port)
+		app.App(*config)
 	}
 }

@@ -6,6 +6,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+// WebConfig is a configuration of the web application.
+type WebConfig struct {
+	Port int `mapstructure:"PORT"`
+}
+
 // RDBConfig is a configuration of the relational database.
 type RDBConfig struct {
 	Host            string        `mapstructure:"DB_HOST"`
@@ -60,16 +65,19 @@ type AppConfig struct {
 	Auth     AuthConfig
 	Log      LogConfig
 	Mail     MailConfig
+	Web      WebConfig
 }
 
 // LoadConfig is a function loading the configuration from app.env file in the runtime directory or environment variables.
 // As a fallback `$HOME/.photostorage` directory also can be used for the .evn file.
-func LoadConfig() (*AppConfig, error) {
+func LoadConfig(path string) (*AppConfig, error) {
 	var db RDBConfig
 	var is ImageStoreConfig
 	var au AuthConfig
 	var lg LogConfig
 	var ml MailConfig
+	var wb WebConfig
+	viper.AddConfigPath(path)
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc/rawninja/")
 	viper.AddConfigPath("$HOME/.rawninja")
@@ -78,10 +86,14 @@ func LoadConfig() (*AppConfig, error) {
 	viper.SetDefault("JWT_COOKIE_SECURE", true)
 	viper.SetDefault("JWT_EXPIRATION_HOURS", 24)
 	viper.SetDefault("DB_SSL_MODE", "disable")
+	viper.SetDefault("PORT", 8080)
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()
 	if err != nil {
+		return nil, err
+	}
+	if err = viper.Unmarshal(&wb); err != nil {
 		return nil, err
 	}
 	if err = viper.Unmarshal(&db); err != nil {
@@ -99,5 +111,5 @@ func LoadConfig() (*AppConfig, error) {
 	if err = viper.Unmarshal(&ml); err != nil {
 		return nil, err
 	}
-	return &AppConfig{Database: db, Store: is, Auth: au, Log: lg, Mail: ml}, nil
+	return &AppConfig{Database: db, Store: is, Auth: au, Log: lg, Mail: ml, Web: wb}, nil
 }

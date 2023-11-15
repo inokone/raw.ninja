@@ -13,9 +13,10 @@ Functionality:
     - Profile page (connection details, registration date, image count, favorite count and used quota) 
     - Account: Email confirmation, account (password) recovery and password change
     - Cloudflare proxy with cool domain name and e-mail forwarding
+    - Support HTTPS and database encryption
+    - Docker containers for backend and frontend 
+    - Docker compose for running everything locally
     ----
-    - docker for Backend with SSL/TLS as params (https)
-    - docker for Frontend with SSL/TLS as params (https)
     - make sure registration and login looks fine on mobile
     - Deploy in AWS
     - Whitelist only CloudFlare domain !!!

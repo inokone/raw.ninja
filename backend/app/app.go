@@ -21,20 +21,13 @@ var (
 	storers web.Storers
 )
 
-func init() {
-	conf, err := common.LoadConfig()
-	if err != nil {
+// App executes the RAW.Ninja web application.
+func App(path string) {
+	var err error
+	if err = initConf(path); err != nil {
 		log.Error().Err(err).Msg("Failed to load application configuration.")
 		os.Exit(1)
 	}
-	config = conf
-	initLog()
-	log.Info().Msg("Photostorage app starting up...")
-}
-
-// App executes the RAW.Ninja web application.
-func App(port int) {
-	var err error
 	if err = initDb(config.Database); err != nil {
 		log.Error().AnErr("DatabaseError", err).Msg("Failed to set up connection to database. Application spinning down.")
 		os.Exit(1)
@@ -66,7 +59,7 @@ func App(port int) {
 
 	web.Init(v1, storers, *config)
 
-	p := fmt.Sprintf("0.0.0.0:%d", port)
+	p := fmt.Sprintf("0.0.0.0:%d", config.Web.Port)
 	if len(config.Auth.TLSCert) > 0 {
 		err = r.RunTLS(p, config.Auth.TLSCert, config.Auth.TLSKey)
 		if err != nil {

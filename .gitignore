@@ -47,6 +47,9 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
 
+environments/*/postgres/*
+
+
 # Go workspace file
 go.work
 

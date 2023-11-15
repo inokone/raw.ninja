@@ -22,6 +22,17 @@ import (
 
 var db *gorm.DB
 
+func initConf(s string) error {
+	conf, err := common.LoadConfig(s)
+	if err != nil {
+		return err
+	}
+	config = conf
+	initLog()
+	log.Info().Msg("Photostorage app starting up...")
+	return nil
+}
+
 func initDb(c common.RDBConfig) error {
 	cs := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v ", c.Host, c.Username, c.Password, c.Database, c.Port)
 	if c.SSLMode == "disable" {

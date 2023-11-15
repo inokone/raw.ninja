@@ -1,32 +1,53 @@
 services:
   postgres:
     image: postgres
+    restart: always
     container_name: postgres
-    env_file:
-      - envfiles/postgres.env
+    environment:
+      - POSTGRES_HOST=host.docker.internal
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=photostorage
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password123
     ports:
       - 5432:5432
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - ./environments/local/postgres:/var/lib/postgresql/data
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   backend:
     image: rawninja-backend
+    restart: always
     container_name: backend
     env_file:
-      - envfiles/local.env
+      - ./environments/local/app.env
     ports:
       - 8080:8080
     links:
       - postgres
     volumes:
-      - .:/etc/rawninja
+      - ./environments/local:/etc/rawninja
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - public
   frontend:
     image: rawninja-frontend
+    restart: always
     container_name: frontend
-    env_file:
-      - web/frontend/.env
     ports:
       - 3000:443
-    links:
-      - backend
     volumes:
-      - ./certificates:/etc/rawninja/certificates
+      - ./environments/local/certificates:/etc/rawninja/certificates
+    networks:
+      - public
+
+networks:
+  public:
+    driver: bridge
