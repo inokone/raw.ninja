@@ -24,7 +24,6 @@ import Logo from './Logo';
 
 const settings = {
   Profile: 'profile',
-  Account: 'account',
   Logout: 'logout'
 };
 
