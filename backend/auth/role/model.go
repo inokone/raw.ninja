@@ -16,9 +16,9 @@ type Role struct {
 
 // ProfileRole is astruct, the JSON representation of the `Role` entity for profile and admin views.
 type ProfileRole struct {
-	ID    int    `json:"id" binding:"required"`
-	Quota int64  `json:"quota" binding:"required"`
-	Name  string `json:"name" binding:"required,len=3"`
+	ID    int    `json:"id"`
+	Quota int64  `json:"quota"`
+	Name  string `json:"name"`
 }
 
 // AsProfileRole is a method of the `Role` struct. It converts a `Role` object into a `ProfileRole` object.

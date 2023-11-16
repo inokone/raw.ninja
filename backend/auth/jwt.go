@@ -15,6 +15,8 @@ import (
 
 const adminRole = 0 // O is the RoleType for admin by default (#iota)
 
+var unatuhorized = common.StatusMessage{Code: 401, Message: "Unauthorized!"}
+
 // JWTHandler is a struct for issuing and validating JWT tokens.
 type JWTHandler struct {
 	conf  common.AuthConfig
@@ -62,7 +64,7 @@ func (h *JWTHandler) Validate(g *gin.Context) {
 func (h *JWTHandler) ValidateAdmin(g *gin.Context) {
 	user := h.validateUser(g)
 	if user.Role.RoleType != adminRole {
-		g.AbortWithStatus(http.StatusUnauthorized)
+		g.AbortWithStatusJSON(http.StatusUnauthorized, unatuhorized)
 		return
 	}
 	g.Next()
@@ -72,7 +74,7 @@ func (h *JWTHandler) validateUser(g *gin.Context) *user.User {
 	log.Debug().Msg("Validating JWT token...")
 	tokenString, err := g.Cookie(jwtTokenKey)
 	if err != nil {
-		g.AbortWithStatus(http.StatusUnauthorized)
+		g.AbortWithStatusJSON(http.StatusUnauthorized, unatuhorized)
 		return nil
 	}
 
@@ -83,32 +85,32 @@ func (h *JWTHandler) validateUser(g *gin.Context) *user.User {
 		return []byte(h.conf.JWTSecret), nil
 	})
 	if err != nil {
-		g.AbortWithStatus(http.StatusUnauthorized)
+		g.AbortWithStatusJSON(http.StatusUnauthorized, unatuhorized)
 		return nil
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		g.AbortWithStatus(http.StatusUnauthorized)
+		g.AbortWithStatusJSON(http.StatusUnauthorized, unatuhorized)
 		return nil
 	}
 
 	expired := float64(time.Now().Unix()) > claims["exp"].(float64)
 	if expired {
-		g.AbortWithStatus(http.StatusUnauthorized)
+		g.AbortWithStatusJSON(http.StatusUnauthorized, unatuhorized)
 		return nil
 	}
 
 	userID := claims["sub"]
 	uuid, err := uuid.Parse(userID.(string))
 	if err != nil {
-		g.AbortWithStatus(http.StatusUnauthorized)
+		g.AbortWithStatusJSON(http.StatusUnauthorized, unatuhorized)
 		return nil
 	}
 
 	user, err := h.users.ByID(uuid)
 	if err != nil || user.Email == "" {
-		g.AbortWithStatus(http.StatusUnauthorized)
+		g.AbortWithStatusJSON(http.StatusUnauthorized, unatuhorized)
 		return nil
 	}
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Alert, Grid, Box, Typography, Button } from "@mui/material";
 import ProgressDisplay from '../Common/ProgressDisplay';
 import ChangePassword from './ChangePassword';
+import UserDetails from './UserDetails';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -104,14 +105,6 @@ const Profile = ({user}) => {
               <Grid item xs={12}><Typography variant='h6' sx={{ borderRadius: '4px', bgcolor: 'rgba(0, 0, 0, 0.54)' }}>Profile</Typography></Grid>
             </Grid>
             <Grid container>
-              <Grid item xs={5}><Typography>Firstname:</Typography></Grid>
-              <Grid item xs={7}><Typography>{stats.first_name}</Typography></Grid>
-            </Grid>
-            <Grid container>
-              <Grid item xs={5}><Typography>Lastname:</Typography></Grid>
-              <Grid item xs={7}><Typography>{stats.last_name}</Typography></Grid>
-            </Grid>
-            <Grid container>
               <Grid item xs={5}><Typography>E-mail:</Typography></Grid>
               <Grid item xs={7}><Typography>{stats.email}</Typography></Grid>
             </Grid>
@@ -141,6 +134,11 @@ const Profile = ({user}) => {
             </Grid>
           </Box>
         </Box>}
+
+      <Typography variant='h6'>User details</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
+        <UserDetails user={user}/>
+      </Box>
       
       <Typography variant='h6'>Change Password</Typography>
       <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>

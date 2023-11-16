@@ -118,7 +118,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
             className={classes.brandText}
             display="inline"
             color="primary"
-            onClick={() => navigate('/')}
+            onClick={() => navigate(user ? '/home' : '/')}
           >
             RAW
           </Typography>
@@ -127,7 +127,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
             className={classes.brandText}
             display="inline"
             color="secondary"
-            onClick={() => navigate('/')}
+            onClick={() => navigate(user ? '/home' : '/')}
           >
             Ninja
           </Typography>
