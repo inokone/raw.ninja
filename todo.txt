@@ -16,13 +16,13 @@ Functionality:
     - Support HTTPS and database encryption
     - Docker containers for backend and frontend 
     - Docker compose for running everything locally
+    - Terms of use for registration
+    - Cookie warning for EU countries
     ----
+    - Captcha for registration and login
     - Deploy in AWS
-    - Cookies display - acceptance
-    - License agreement - no warranty!
     - Whitelist only CloudFlare domain !!!
     - Document "how to deploy on ec2"
-    - Captcha for registration and login
   - V1.0:
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
     - Integrate with at least 1 CDN: Amazon S3

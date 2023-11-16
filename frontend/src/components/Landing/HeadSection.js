@@ -144,7 +144,7 @@ function HeadSection(props) {
                                                     color="primary"
                                                     fullWidth
                                                     className={classes.extraLargeButton}
-                                                    href="/register"
+                                                    href="/signup"
                                                 >
                                                     Sign up for FREE
                                                 </Button>

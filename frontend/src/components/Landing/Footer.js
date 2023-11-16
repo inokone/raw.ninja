@@ -11,7 +11,7 @@ import {
 import withStyles from "@mui/styles/withStyles";
 import PhoneIcon from "@mui/icons-material/Phone";
 import MailIcon from "@mui/icons-material/Mail";
-import ColoredButton from "./ColoredButton";
+import ColoredButton from "../Common/ColoredButton";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 const styles = (theme) => ({

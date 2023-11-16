@@ -114,7 +114,7 @@ const Login = ({ setUser }) => {
                         {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
                         <Button sx={{ mb: 2 }} variant="contained" color="primary" type="submit">Login</Button>
                     </form>
-                    <Typography sx={{ mb: 2 }}><Link to="/password/recover">Forgot password?</Link> - <Link to="/register">Sign up</Link></Typography>
+                    <Typography sx={{ mb: 2 }}><Link to="/password/recover">Forgot password?</Link> - <Link to="/signup">Sign up</Link></Typography>
                 </Box>
             </Container>
         </React.Fragment>

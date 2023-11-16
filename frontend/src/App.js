@@ -12,7 +12,7 @@ import UserProfile from './components/Account/UserProfile';
 import ResetPassword from './components/Account/ResetPassword';
 import EmailConfirmation from './components/Account/EmailConfirmation';
 import PhotoDisplay from './components/Photos/PhotoDisplay';
-import RegisterForm from './components/Account/Register';
+import SignupForm from './components/Account/Signup';
 import Login from './components/Auth/Login';
 import Logout from './components/Auth/Logout';
 import ProtectedRoute from './components/Common/ProtectedRoute';
@@ -22,7 +22,9 @@ import ProgressDisplay from './components/Common/ProgressDisplay';
 import RecoverPassword from './components/Account/RecoverPassword';
 import Photopea from './components/Editor/Photopea';
 import Landing from './components/Landing/Landing';
-
+import TermsOfUse from './components/Common/TermsOfUse';
+import CookieConsent from './components/Common/CookieConsent';
+import CookieRulesDialog from './components/Common/CookieRulesDialog';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -30,6 +32,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [query, setQuery] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCookieRulesDialogOpen, setIsCookieRulesDialogOpen] = useState(false);
 
   useEffect(() => {
     fetch(REACT_APP_API_PREFIX + '/api/v1/account/profile', {
@@ -54,6 +57,14 @@ const App = () => {
       });
   }, [])
 
+  const handleCookieRulesDialogOpen = React.useCallback(() => {
+    setIsCookieRulesDialogOpen(true);
+  }, [setIsCookieRulesDialogOpen]);
+
+  const handleCookieRulesDialogClose = React.useCallback(() => {
+    setIsCookieRulesDialogOpen(false);
+  }, [setIsCookieRulesDialogOpen]);
+
   return (
     <div className="App">
       {isLoading ? (
@@ -64,6 +75,15 @@ const App = () => {
         </header>
       ) : (
       <BrowserRouter>
+        {!isCookieRulesDialogOpen && (
+          <CookieConsent
+            handleCookieRulesDialogOpen={handleCookieRulesDialogOpen}
+          />
+        )}
+        <CookieRulesDialog
+          open={isCookieRulesDialogOpen}
+          onClose={handleCookieRulesDialogClose}
+        />
         <ResponsiveAppBar user={user} setQuery={setQuery} />
         <header className="App-header">
           <div className="wrapper">
@@ -72,7 +92,8 @@ const App = () => {
               <Route path="/logout" element={<Logout setUser={setUser} />} />
               <Route path="/password/reset" element={<ResetPassword />} />
               <Route path="/password/recover" element={<RecoverPassword />} />
-              <Route path="/register" element={<RegisterForm />} />
+              <Route path="/signup" element={<SignupForm />} />
+              <Route path="/terms" element={<TermsOfUse />} />
               <Route path="/" element={<Landing />} />
               <Route path="/confirm" element={<EmailConfirmation />} />
                   <Route element={<ProtectedRoute user={user} redirect="/" />}>

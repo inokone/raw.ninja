@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { TextField, Button, Alert, Typography, Container, Box } from '@mui/material';
+import { TextField, Button, Alert, Typography, Container, Box, Checkbox, FormControlLabel } from '@mui/material';
 import { Link } from "react-router-dom"
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 
-const RegisterForm = () => {
+const SignupForm = () => {
     const [email, setEmail] = useState('')
     const [emailError, setEmailError] = useState(false)
     const [password, setPassword] = useState('')
@@ -13,6 +13,7 @@ const RegisterForm = () => {
     const [confirmationError, setConfirmationError] = useState(false)
     const [error, setError] = useState()
     const [success, setSuccess] = useState(false)
+    const [accepted, setAccepted] = useState(false)
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -98,9 +99,11 @@ const RegisterForm = () => {
                             sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
                             helperText={confirmationError && "New password and confirmation must match."}
                         />
+                        <FormControlLabel sx={{ mb: 4 }} control={<Checkbox onChange={(event) => setAccepted(event.target.checked)} />} label={<Typography>I have read and accept the <Link to="/terms">terms and conditions</Link>.</Typography>} />
+
                         {success && <Alert sx={{ mb: 4 }} severity="success">Signed up successfully! Please <Link to="/login">log in</Link>!</Alert>}
                         {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
-                        <Button sx={{ mb: 4 }} variant="contained" color="primary" type="submit">Register</Button>
+                        <Button sx={{ mb: 4 }} variant="contained" color="primary" type="submit" disabled={!accepted}>Sign up</Button>
                     </form>
                     {!success && <Typography>Already have an account? <Link to="/login">Login Here</Link></Typography>}
                 </Box>
@@ -109,4 +112,4 @@ const RegisterForm = () => {
     )
 }
 
-export default RegisterForm;
+export default SignupForm;

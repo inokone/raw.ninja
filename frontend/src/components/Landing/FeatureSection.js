@@ -50,7 +50,7 @@ const features = [
     {
         color: "#DD2C00",
         headline: "Automate lifecycle",
-        text: "Set your own lifecycle rules for your images. You can automate achiving and disposing unnecessary images.",
+        text: "Set your own lifecycle rules for your images. You can automate archiving and disposing unnecessary images.",
         icon: <BuildIcon style={{ fontSize: iconSize }} />,
         mdDelay: "200",
         smDelay: "0",

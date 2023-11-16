@@ -1,0 +1,28 @@
+p {
+    margin-bottom: 15px;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+ol {
+    margin-bottom: 15px;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+ul {
+    margin: 15px;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.8em;
+    color: #666;
+}
