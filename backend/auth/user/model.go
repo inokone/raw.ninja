@@ -38,11 +38,9 @@ const (
 )
 
 // NewUser is a function to create a new `User` instance, hashing the password right off the bat
-func NewUser(email string, password string, first string, last string) (*User, error) {
+func NewUser(email string, password string) (*User, error) {
 	u := new(User)
 	u.Email = email
-	u.FirstName = first
-	u.LastName = last
 	u.Source = "credentials"
 	u.Status = Registered
 	err := u.SetPassword(password)
@@ -117,8 +115,8 @@ type Profile struct {
 // Registration is the JSON user representation for registration/signup process
 type Registration struct {
 	Email     string `json:"email" binding:"required,email"`
-	FirstName string `json:"firstname" binding:"required"`
-	LastName  string `json:"lastname" binding:"required"`
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
 	Password  string `json:"password" binding:"required"`
 }
 

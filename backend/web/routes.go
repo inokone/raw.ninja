@@ -74,6 +74,7 @@ func Init(v1 *gin.RouterGroup, s Storers, c common.AppConfig) {
 	g = v1.Group("/users", m.ValidateAdmin)
 	{
 		g.GET("/", u.List)
+		g.PUT("/:id", u.Update)
 		g.PATCH("/:id", u.Patch)
 	}
 

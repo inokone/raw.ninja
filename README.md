@@ -173,13 +173,16 @@ scp -i imi-mbp.pem ../git/raw.ninja/environment/production ubuntu@3.79.244.81:~/
 SSH into EC2:
 
 ``` sh
-
 docker load -i backend.tar
 docker load -i frontend.tar
 
 docker run ... frontend
 docker run ... backend
+```
 
+or just the frontend:
+``` sh
+sdo nohup serve -p 80 -s build
 ```
 
 ## CI

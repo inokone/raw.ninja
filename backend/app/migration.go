@@ -51,7 +51,7 @@ func Migrate(path string) {
 		os.Exit(1)
 	}
 
-	res = db.Exec("INSERT INTO roles (role_type, quota, display_name) VALUES (1, 500000000, 'Free Tier')") // 500 Mb limit for free tier
+	res = db.Exec("INSERT INTO roles (role_type, quota, display_name) VALUES (1, 524288000, 'Free Tier')") // 500 Mb limit for free tier
 	if res.Error != nil {
 		log.Error().Err(res.Error).Msg("Database migration failed. Application spinning down.")
 		os.Exit(1)

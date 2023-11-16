@@ -112,3 +112,40 @@ func (c Controller) Patch(g *gin.Context) {
 		Message: "User patched!",
 	})
 }
+
+// Update details (firstname and lastname) for a user.
+// @Summary User update endpoint
+// @Schemes
+// @Description Updates the target user
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the user information to patch"
+// @Success 200 {object} common.StatusMessage
+// @Failure 400 {object} common.StatusMessage
+// @Router /users/:id [put]
+func (c Controller) Update(g *gin.Context) {
+	var (
+		in  Profile
+		err error
+	)
+
+	u, _ := g.Get("user")
+	usr := u.(*User)
+
+	if err = g.ShouldBindJSON(&in); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Malformed user data"})
+		return
+	}
+
+	usr.FirstName = in.FirstName
+	usr.LastName = in.LastName
+
+	if err = c.users.Update(usr); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid user parameters provided!"})
+		return
+	}
+	g.JSON(http.StatusOK, common.StatusMessage{
+		Code:    200,
+		Message: "User patched!",
+	})
+}

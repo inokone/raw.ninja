@@ -89,7 +89,11 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
   }
 
   const getInitials = () => {
-    return user ? user.first_name + " " + user.last_name : ""
+    if (!isAuthenticated())
+      return ""
+    if (user.first_name)
+      return user.first_name + " " + user.last_name
+    return user.email
   }
 
   const handleMenuClick = (page) => {
@@ -185,7 +189,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
             <Box sx={{ md: 0, ml: 1 }}>
               <Tooltip title={"Open profile"}>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(user.first_name) }} />
+                  <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(getInitials()) }} />
                 </IconButton>
               </Tooltip>
               <Menu
