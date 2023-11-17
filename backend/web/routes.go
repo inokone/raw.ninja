@@ -27,7 +27,7 @@ func Init(v1 *gin.RouterGroup, s Storers, c common.AppConfig) {
 		mailer = mail.NewService(c.Mail)
 		p      = photo.NewController(s.Photos, c.Store)
 		m      = auth.NewJWTHandler(s.Users, c.Auth)
-		a      = auth.NewController(s.Users, s.Accounts, m)
+		a      = auth.NewController(s.Users, s.Accounts, m, c.Auth)
 		ac     = account.NewController(s.Users, s.Accounts, mailer, c.Auth)
 		se     = search.NewController(s.Photos)
 		st     = stats.NewController(s.Photos, s.Users, c.Store)

@@ -26,6 +26,7 @@ type Controller struct {
 	accounts Storer
 	sender   mail.Service
 	config   common.AuthConfig
+	captcha  common.RecaptchaValidator
 }
 
 // NewController creates a new `Controller`, based on the user persistence and the authentication configuration parameters.
@@ -35,6 +36,7 @@ func NewController(users user.Storer, accounts Storer, sender mail.Service, conf
 		accounts: accounts,
 		sender:   sender,
 		config:   config,
+		captcha:  common.NewRecaptchaValidator(config.RecaptchaSecret),
 	}
 }
 
@@ -52,6 +54,16 @@ func (c Controller) Signup(g *gin.Context) {
 	var s user.Registration
 	if err := g.ShouldBindJSON(&s); err != nil {
 		g.AbortWithStatusJSON(http.StatusBadRequest, common.ValidationMessage(err))
+		return
+	}
+
+	isValid, err := c.captcha.Verify(s.Captcha)
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.ValidationMessage(err))
+		return
+	}
+	if !isValid {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Captcha verification failed!"})
 		return
 	}
 

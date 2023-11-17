@@ -23,6 +23,8 @@ tmp
 backend/main
 /photostorage
 /business-model.md
+raw
+thumbnail.jpg
 
 # Built binaries
 ./main

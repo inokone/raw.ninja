@@ -26,20 +26,22 @@ var (
 
 // Controller is a struct for web handles related to authentication and authorization.
 type Controller struct {
-	users user.Storer
-	auths account.Storer
-	jwt   JWTHandler
-	p     bluemonday.Policy
+	users   user.Storer
+	auths   account.Storer
+	jwt     JWTHandler
+	p       bluemonday.Policy
+	captcha common.RecaptchaValidator
 }
 
 // NewController creates a new `Controller`, based on the user persistence.
-func NewController(users user.Storer, auths account.Storer, jwt JWTHandler) Controller {
+func NewController(users user.Storer, auths account.Storer, jwt JWTHandler, c common.AuthConfig) Controller {
 	p := bluemonday.StrictPolicy()
 	return Controller{
-		users: users,
-		auths: auths,
-		jwt:   jwt,
-		p:     *p,
+		users:   users,
+		auths:   auths,
+		jwt:     jwt,
+		p:       *p,
+		captcha: common.NewRecaptchaValidator(c.RecaptchaSecret),
 	}
 }
 
@@ -68,6 +70,17 @@ func (c Controller) Login(g *gin.Context) {
 		g.AbortWithStatusJSON(http.StatusBadRequest, statusBadRequest)
 		return
 	}
+
+	isValid, err := c.captcha.Verify(s.Captcha)
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.ValidationMessage(err))
+		return
+	}
+	if !isValid {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Captcha verification failed!"})
+		return
+	}
+
 	s.Email = c.p.Sanitize(s.Email)
 
 	usr, err = c.users.ByEmail(s.Email)

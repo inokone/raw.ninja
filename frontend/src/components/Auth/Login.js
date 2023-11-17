@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { TextField, Button, Alert, Box, Container, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom"
+import ReCAPTCHA from "react-google-recaptcha"
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -12,12 +13,19 @@ const Login = ({ setUser }) => {
     const [passwordError, setPasswordError] = useState(false)
     const [error, setError] = useState()
     const [success, setSuccess] = useState(false)
+    const captchaRef = useRef(null)
 
     const handleSubmit = (event) => {
         event.preventDefault()
+        const token = captchaRef.current.getValue();
+        if (!token) {
+            setError("You have to solve the captcha")
+            return
+        }
+
+        captchaRef.current.reset();
+
         setError(null)
-
-
         setEmailError(email === '')
         setPasswordError(password === '')
 
@@ -31,7 +39,8 @@ const Login = ({ setUser }) => {
                 },
                 body: JSON.stringify({
                     "email": email,
-                    "password": password
+                    "password": password,
+                    "captcha_token": token,
                 })
             })
                 .then(response => {
@@ -110,6 +119,12 @@ const Login = ({ setUser }) => {
                             fullWidth
                             sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
                         />
+                        <Box sx={{ mb: 4, placeContent: 'center', display: 'flex' }}>
+                            <ReCAPTCHA
+                                ref={captchaRef}
+                                sitekey="6Let2RIpAAAAANGXcsSJ9aOQEaQmwKqsaZB7IAaQ"
+                            />
+                        </Box>
                         {success && <Alert sx={{ mb: 4 }} severity="success">Logged in successfully!</Alert>}
                         {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
                         <Button sx={{ mb: 2 }} variant="contained" color="primary" type="submit">Login</Button>

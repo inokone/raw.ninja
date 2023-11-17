@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { TextField, Button, Alert, Typography, Container, Box, Checkbox, FormControlLabel } from '@mui/material';
 import { Link } from "react-router-dom"
+import ReCAPTCHA from "react-google-recaptcha"
+
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 
@@ -14,9 +16,17 @@ const SignupForm = () => {
     const [error, setError] = useState()
     const [success, setSuccess] = useState(false)
     const [accepted, setAccepted] = useState(false)
+    const captchaRef = useRef(null)
 
-    function handleSubmit(event) {
+    const handleSubmit = (event) => {
         event.preventDefault();
+        const token = captchaRef.current.getValue();
+        if (!token) {
+            setError("You have to solve the captcha")
+            return
+        }
+        
+        captchaRef.current.reset();
         if (emailError || passwordError || confirmationError) {
             return
         }
@@ -30,6 +40,7 @@ const SignupForm = () => {
             body: JSON.stringify({
                 "email": email,
                 "password": password,
+                "captcha_token": token,
             })
         })
             .then(response => {
@@ -101,6 +112,12 @@ const SignupForm = () => {
                         />
                         <FormControlLabel sx={{ mb: 4 }} control={<Checkbox onChange={(event) => setAccepted(event.target.checked)} />} label={<Typography>I have read and accept the <Link to="/terms">terms and conditions</Link>.</Typography>} />
 
+                        <Box sx={{ mb: 4, placeContent: 'center', display: 'flex' }}>
+                            <ReCAPTCHA 
+                                ref={captchaRef}
+                                sitekey="6Let2RIpAAAAANGXcsSJ9aOQEaQmwKqsaZB7IAaQ"
+                            />  
+                        </Box>
                         {success && <Alert sx={{ mb: 4 }} severity="success">Signed up successfully! Please <Link to="/login">log in</Link>!</Alert>}
                         {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
                         <Button sx={{ mb: 4 }} variant="contained" color="primary" type="submit" disabled={!accepted}>Sign up</Button>

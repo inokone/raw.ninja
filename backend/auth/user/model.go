@@ -100,6 +100,7 @@ func (u *User) AsAdminView() AdminView {
 type Credentials struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
+	Captcha  string `json:"captcha_token" binding:"required"`
 }
 
 // Profile is the JSON user representation for authenticated users
@@ -118,6 +119,7 @@ type Registration struct {
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
 	Password  string `json:"password" binding:"required"`
+	Captcha   string `json:"captcha_token" binding:"required"`
 }
 
 // AdminView is the user representation for the admin view of the application.

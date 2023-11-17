@@ -1,7 +1,7 @@
 Functionality:
   - MVP:
     - Landing page with features, subscription options and signup 
-    - Auth for 2 roles - free user and administrator
+    - Auth for 2 roles - free user and administrator with captcha
     - Upload RAW files with option for multiple files with user and global quota check
     - Display file list - thumbnails
     - Display image with details and download option
@@ -19,7 +19,6 @@ Functionality:
     - Terms of use for registration
     - Cookie warning for EU countries
     ----
-    - Captcha for registration and login
     - Deploy in AWS
     - Whitelist only CloudFlare domain !!!
     - Document "how to deploy on ec2"
