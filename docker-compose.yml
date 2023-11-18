@@ -42,7 +42,7 @@ services:
     restart: always
     container_name: frontend
     ports:
-      - 3000:443
+      - 80:80
     volumes:
       - ./environments/local/certificates:/etc/rawninja/certificates
     networks:

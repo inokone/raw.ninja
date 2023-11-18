@@ -145,7 +145,7 @@ There are multiple options for running the application locally.
 The following commands can be used for running the individual docker images:
 
 ``` sh
-docker run -p 3000:443 -v /Users/inokone/git/raw.ninja/environments/local/certificates:/etc/rawninja/certificates rawninja-frontend
+docker run -p 80:80 -v /Users/inokone/git/raw.ninja/environments/local/certificates:/etc/rawninja/certificates rawninja-frontend
 
 docker run -p 8080:8080 -v /Users/inokone/git/raw.ninja/environments/local:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 rawninja-backend
 ```
@@ -164,25 +164,34 @@ From dev machine:
 docker save -o backend.tar rawninja-backend
 docker save -o frontend.tar rawninja-frontend
 
-scp -i imi-mbp.pem ../git/raw.ninja/frontend.tar ubuntu@3.79.244.81:~/
-scp -i imi-mbp.pem ../git/raw.ninja/backend.tar ubuntu@3.79.244.81:~/
-scp -i imi-mbp.pem ../git/raw.ninja/environment/production ubuntu@3.79.244.81:~/
+scp -i rawninja-ec2-kp.pem frontend.tar ec2-user@3.123.42.65:~/
+scp -i rawninja-ec2-kp.pem backend.tar ec2-user@3.123.42.65:~/
+scp -r -i rawninja-ec2-kp.pem ../git/raw.ninja/environments/production ec2-user@3.123.42.65:~/
 
 ```
 
 SSH into EC2:
 
+Test database access:
+
+``` sh
+psql -h rawninja-rds.c9xvfg3kuua1.eu-central-1.rds.amazonaws.com -p 5432 -U postgres -d postgres
+```
+
+Start up the containers for the service:
+
 ``` sh
 docker load -i backend.tar
 docker load -i frontend.tar
 
-docker run ... frontend
-docker run ... backend
+docker run -p 80:80 -v /Users/inokone/git/raw.ninja/environments/local/certificates:/etc/rawninja/certificates rawninja-frontend
+docker run -p 8443:8443 -v /Users/inokone/git/raw.ninja/environments/local:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 rawninja-backend
 ```
 
 or just the frontend:
+
 ``` sh
-sdo nohup serve -p 80 -s build
+sudo nohup serve -p 80 -s build
 ```
 
 ## CI
