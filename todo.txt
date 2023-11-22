@@ -18,13 +18,18 @@ Functionality:
     - Docker compose for running everything locally
     - Terms of use for registration
     - Cookie warning for EU countries
+    - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Deploy in AWS
+    - Fix layout issues for mobile 
+      - search bar on small screen (turn off)
+      - search input change force refresh navigated page
+      - profile page text inputs
+    - Create opening dialog for new registration - this is BETA, everything can be wiped anytime
+    - Maybe bisable photopea on size s and smaller
     - Whitelist only CloudFlare domain !!!
-    - Document "how to deploy on ec2"
+    - Integrate with at least 1 CDN: Amazon S3
   - V1.0:
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
-    - Integrate with at least 1 CDN: Amazon S3
     - Improve file upload. Concurrency option
     - Testing (handlers and unit testing) - Backend and Frontend
     - Fix PhotoGrid selection display mechanism

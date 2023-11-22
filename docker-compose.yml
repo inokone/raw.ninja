@@ -43,8 +43,6 @@ services:
     container_name: frontend
     ports:
       - 80:80
-    volumes:
-      - ./environments/local/certificates:/etc/rawninja/certificates
     networks:
       - public
 

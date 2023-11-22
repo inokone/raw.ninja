@@ -59,7 +59,7 @@ func (c Controller) Signup(g *gin.Context) {
 
 	isValid, err := c.captcha.Verify(s.Captcha)
 	if err != nil {
-		g.AbortWithStatusJSON(http.StatusBadRequest, common.ValidationMessage(err))
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Capthca verification failed!"})
 		return
 	}
 	if !isValid {

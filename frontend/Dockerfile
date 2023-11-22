@@ -1,10 +1,13 @@
 FROM node:lts as builder
+ARG PRODUCTION
 COPY public /app/public
 COPY src /app/src
 COPY package.json /app/
 COPY package-lock.json /app/
-ENV NODE_ENV production
-ENV REACT_APP_API_PREFIX http://localhost:8080
+ENV NODE_ENV=production
+ENV REACT_APP_API_PREFIX=${PRODUCTION:+https://raw.ninja:8443}
+ENV REACT_APP_API_PREFIX=${REACT_APP_API_PREFIX:-http://localhost:8080}
+RUN echo "Building fronted with backend URL: $REACT_APP_API_PREFIX"
 WORKDIR /app
 RUN npm ci --force
 RUN npm run build

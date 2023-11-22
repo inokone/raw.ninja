@@ -42,7 +42,7 @@ func App(path string) {
 	// Setup middleware
 	r.Use(gin.Recovery())
 	cc := cors.DefaultConfig()
-	cc.AllowOrigins = []string{config.Auth.FrontendRoot}
+	cc.AllowOrigins = []string{"https://raw.ninja", "https://rawninja.net", config.Auth.FrontendRoot}
 	cc.AllowHeaders = []string{"Authorization", "Origin", "Content-Length", "Content-Type"}
 	cc.AllowCredentials = true
 	r.Use(cors.New(cc))

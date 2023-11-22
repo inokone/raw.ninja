@@ -76,7 +76,7 @@ When the application is running, the OpenAPI documentation is available with [Sw
 
 #### Production environment
 
-In production we need SSL/TLS set up, for that we need a certificate and a private key
+In production we need SSL/TLS set up - if we do not have a reverse proxy set up. For that we need a certificate and a private key
 The `app.env` file needs to contain the keys pointing to the certificate. The application will automatically pick it up.
 Also the database certification should be set up. e.g. for AWS RDS on eu-central-1 region:
 
@@ -128,14 +128,14 @@ First version of containerization result is 2 docker images. One for the fronten
 
 ### Build
 
-The following commands can be used for building the docker images:
+The following commands can be used for building the docker images for developmen:
 
 ``` sh
 cd frontend
-docker build -t rawninja-frontend:1 -f Dockerfile . 
+docker build -t rawninja-frontend -f Dockerfile . # for production build use the --build-arg PRODUCTION=1 flag
 
 cd backend
-docker build -t rawninja-backend:1 -f Dockerfile . 
+docker build -t rawninja-backend -f Dockerfile . 
 ```
 
 ### Run
@@ -158,9 +158,19 @@ docker compose up
 
 ## Deploying to EC2
 
+Build:
+
+``` sh
+cd frontend
+docker build --build-arg PRODUCTION=1 -t rawninja-frontend -f Dockerfile .
+cd backend
+docker build -t rawninja-backend -f Dockerfile . 
+```
+
 From dev machine:
 
 ``` sh
+cd ~/Downloads
 docker save -o backend.tar rawninja-backend
 docker save -o frontend.tar rawninja-frontend
 
@@ -181,11 +191,11 @@ psql -h rawninja-rds.c9xvfg3kuua1.eu-central-1.rds.amazonaws.com -p 5432 -U post
 Start up the containers for the service:
 
 ``` sh
-docker load -i backend.tar
-docker load -i frontend.tar
+sudo docker load -i backend.tar
+sudo docker load -i frontend.tar
 
-docker run -p 80:80 -v /Users/inokone/git/raw.ninja/environments/local/certificates:/etc/rawninja/certificates rawninja-frontend
-docker run -p 8443:8443 -v /Users/inokone/git/raw.ninja/environments/local:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 rawninja-backend
+sudo docker run -d --restart always -p 80:80 rawninja-frontend &
+sudo docker run -d --restart always -p 8080:8080 -v ~/production:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 --mount type=bind,source=/etc/ssl/certs,target=/etc/ssl/certs rawninja-backend &
 ```
 
 or just the frontend:
