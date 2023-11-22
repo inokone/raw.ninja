@@ -74,8 +74,8 @@ const UserTable = () => {
             {loading && <ProgressDisplay />}
             {users &&
                 <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
-                    <TableContainer component={Paper} style={{ width: 1200 }}>
-                        <Table style={{ width: 1200 }}>
+                    <TableContainer component={Paper} style={{ flex: 0.85 }}>
+                        <Table style={{ flex: 0.85 }}>
                             <TableHead>
                                 <TableRow>
                                     <StyledTableCell>E-mail</StyledTableCell>

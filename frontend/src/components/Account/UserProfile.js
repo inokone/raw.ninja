@@ -90,7 +90,7 @@ const Profile = ({user}) => {
       {user && user.status === "registered" &&
         <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px' }}>
           <Box sx={{ mt: 5, borderRadius: '4px', width: '500px' }}>
-            <Alert severity='warning'>Your e-mail address hasn't been confirmed yet. Some features of the application will not be available to you. 
+            <Alert severity='warning' variant="filled">Your e-mail address hasn't been confirmed yet. Some features of the application will not be available to you. 
               <Button onClick={handleResendClick}>Resend confirmation</Button>
             </Alert>
             {resendSuccess && <Alert onClose={() => { setResendSuccess(null) }}>Confirmation e-mail sent.</Alert>}

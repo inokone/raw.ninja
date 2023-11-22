@@ -44,7 +44,7 @@ const PhotoGrid = ({ populator, data }) => {
         if (!images && !error && !loading) {
             loadImages()
         }
-    }, [populator, data, images, error, loading])
+    }, [data, populator, images, error, loading])
 
 
     const handleImageClick = (index) => {

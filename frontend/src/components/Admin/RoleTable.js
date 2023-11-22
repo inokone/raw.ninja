@@ -102,8 +102,8 @@ const RoleTable = () => {
             {loading && <ProgressDisplay />}
             {roles &&
                 <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
-                    <TableContainer component={Paper} style={{ width: 1200 }}>
-                        <Table style={{ width: 1200 }}>
+                    <TableContainer component={Paper} style={{ flex: 0.5 }}>
+                        <Table style={{ flex: 1 }}>
                             <TableHead>
                                 <TableRow>
                                     <StyledTableCell>Name</StyledTableCell>

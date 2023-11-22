@@ -105,8 +105,6 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
     navigate('/' + page);
   };
 
-
-
   return (
     <AppBar position="static">
       <Container maxWidth="xxl" sx={{ bgcolor: theme.palette.common.black }}>
@@ -131,7 +129,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
             Ninja
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          {isAuthenticated() && <OpeningSearchField setQuery={setQuery} />}
+          {isAuthenticated() && <Box sx={{ display: { xs: 'none', md: 'flex' } }}><OpeningSearchField setQuery={setQuery} /></Box>}
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
               key="upload"

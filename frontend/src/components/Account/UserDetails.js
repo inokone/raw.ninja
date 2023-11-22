@@ -46,48 +46,48 @@ const UserDetails = ({ user }) => {
 
     return (
         <React.Fragment>
-            { user &&
-            <Container maxWidth="sm">
-                <Box sx={{ width: 500, m: 4 }}>
-                    <TextField
-                        label="Firstname"
-                        onChange={e => {
-                            let name = e.target.value
-                            setFirstName(name)
-                            setFirstNameError(name.length === 0)
-                            setError(null)
-                        }}
-                        variant="outlined"
-                        color="primary"
-                        type="text"
-                        value={firstName}
-                        error={firstNameError}
-                        fullWidth
-                        sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
-                        helperText={firstNameError && "Firstname can not be empty"}
-                    />
-                    <TextField
-                        label="Lastname"
-                        onChange={e => {
-                            let name = e.target.value
-                            setLastName(name)
-                            setLastNameError(name.length === 0)
-                            setError(null)
-                        }}
-                        variant="outlined"
-                        color="primary"
-                        type="text"
-                        sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
-                        fullWidth
-                        value={lastName}
-                        error={lastNameError}
-                        helperText={lastNameError && "Lastname can not be empty"}
-                    />
-                    {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">User details changed!</Alert>}
-                    {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
-                    <Button sx={{ mb: 4 }} variant="contained" color="primary" onClick={handleClick}>Save</Button>
-                </Box>
-            </Container>
+            {user &&
+                <Container maxWidth="sm">
+                    <Box style={{ flex: 1 }} sx={{ m: 4 }}>
+                        <TextField
+                            label="Firstname"
+                            onChange={e => {
+                                let name = e.target.value
+                                setFirstName(name)
+                                setFirstNameError(name.length === 0)
+                                setError(null)
+                            }}
+                            variant="outlined"
+                            color="primary"
+                            type="text"
+                            value={firstName}
+                            error={firstNameError}
+                            fullWidth
+                            sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
+                            helperText={firstNameError && "Firstname can not be empty"}
+                        />
+                        <TextField
+                            label="Lastname"
+                            onChange={e => {
+                                let name = e.target.value
+                                setLastName(name)
+                                setLastNameError(name.length === 0)
+                                setError(null)
+                            }}
+                            variant="outlined"
+                            color="primary"
+                            type="text"
+                            sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
+                            fullWidth
+                            value={lastName}
+                            error={lastNameError}
+                            helperText={lastNameError && "Lastname can not be empty"}
+                        />
+                        {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">User details changed!</Alert>}
+                        {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
+                        <Button sx={{ mb: 4 }} variant="contained" color="primary" onClick={handleClick}>Save</Button>
+                    </Box>
+                </Container>
             }
         </React.Fragment>
     );
