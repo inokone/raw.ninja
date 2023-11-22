@@ -158,7 +158,7 @@ docker compose up
 
 ## Deploying to EC2
 
-Build:
+### Build
 
 ``` sh
 cd frontend
@@ -167,7 +167,7 @@ cd backend
 docker build -t rawninja-backend -f Dockerfile . 
 ```
 
-From dev machine:
+### Uploading artifacts
 
 ``` sh
 cd ~/Downloads
@@ -177,18 +177,24 @@ docker save -o frontend.tar rawninja-frontend
 scp -i rawninja-ec2-kp.pem frontend.tar ec2-user@3.123.42.65:~/
 scp -i rawninja-ec2-kp.pem backend.tar ec2-user@3.123.42.65:~/
 scp -r -i rawninja-ec2-kp.pem ../git/raw.ninja/environments/production ec2-user@3.123.42.65:~/
-
 ```
 
-SSH into EC2:
+### Setting up ALB
 
-Test database access:
+ALB should be created to handle HTTPS certificates. The APL can use the following URLS for healthcheck:
+
+- Backend:  `http://localhost:8080/api/v1/healthcheck`
+- Frontend: `http://localhost:80/health`
+
+### Setting up services on EC2
+
+#### Test database access
 
 ``` sh
 psql -h rawninja-rds.c9xvfg3kuua1.eu-central-1.rds.amazonaws.com -p 5432 -U postgres -d postgres
 ```
 
-Start up the containers for the service:
+#### Start up the containers
 
 ``` sh
 sudo docker load -i backend.tar
