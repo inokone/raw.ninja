@@ -101,8 +101,7 @@ const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
     <React.Fragment>
       {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
       <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.34)', borderRadius: '4px', my: 1, mr: 1.5 }}>
-        <Box
-          sx={{ bgcolor: 'rgba(0, 0, 0, 0.54)', color: 'white', padding: '4px', borderRadius: '4px' }}>
+        <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.54)', color: 'white', padding: '4px', borderRadius: '4px'}}>
           <Grid container>
             <Grid xs={11}><Typography variant="h5" >{image.descriptor.filename}</Typography></Grid>
             <Grid xs={1} sx={{ position: 'relative' }}>
@@ -115,10 +114,10 @@ const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
           </Grid>
         </Box>
         <Grid container spacing={2} padding={3}>
-          <Grid xs={9}>
+          <Grid sm={12} md={9}>
             <Image src={image.descriptor.thumbnail} height="80vh" />
           </Grid>
-          <Grid xs={3}>
+          <Grid sm={12} md={3}>
             <MetadataDisplay metadata={image.descriptor} />
             <Grid container mt={4} spacing={1} padding={1}>
               <Grid xs={4}>
@@ -136,7 +135,7 @@ const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
                   <Button variant='contained' color='secondary' onClick={handleDeleteClick}>Delete</Button>
                 </Tooltip>
               </Grid>
-              <Grid xs={4}>
+              <Grid xs={4} sx={{display: { xs: 'none', md: 'flex' }}}>
                 <Tooltip title="Edit RAW">
                   <Button variant='contained' color='secondary' onClick={handleEditClick}>Edit with <PeaLogo /></Button>
                 </Tooltip>
