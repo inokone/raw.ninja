@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material";
+import { Link } from "react-router-dom"
 import withStyles from '@mui/styles/withStyles';
 import ColoredButton from "./ColoredButton";
 
@@ -41,7 +42,7 @@ function FairWarningDialog(props) {
                 <Typography paragraph>
                     We can <strong>wipe all data</strong> from the application at any given time without
                     any prior notice. We can not take any responsibility for your loss
-                    as stated in the terms of use.
+                    as stated in the <Link to="/terms">terms of use</Link>.
                     Also, the current environment has rather strict limitations on 
                     computation and reliability, so the application can be slow or
                     unavailable for various reasons.
