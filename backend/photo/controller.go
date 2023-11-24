@@ -2,19 +2,14 @@ package photo
 
 import (
 	"errors"
-	"fmt"
-	"io"
 	"mime/multipart"
 	"net/http"
-	"path/filepath"
-	"time"
+	"sync"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
-	"github.com/inokone/photostorage/descriptor"
-	"github.com/inokone/photostorage/image/importer"
+
 	"github.com/rs/zerolog/log"
 )
 
@@ -28,14 +23,16 @@ var (
 // Controller is a struct for all REST handlers related to photos in the application.
 type Controller struct {
 	photos Storer
-	config common.ImageStoreConfig
+	cfg    common.ImageStoreConfig
+	s      service
 }
 
 // NewController creates a new `Controller` instance based on the photo persistence provided in the parameter.
-func NewController(photos Storer, config common.ImageStoreConfig) Controller {
+func NewController(photos Storer, cfg common.ImageStoreConfig) Controller {
 	return Controller{
 		photos: photos,
-		config: config,
+		cfg:    cfg,
+		s:      *newService(photos, cfg),
 	}
 }
 
@@ -60,9 +57,8 @@ func (c Controller) Upload(g *gin.Context) {
 		form  *multipart.Form
 		files []*multipart.FileHeader
 		ids   []string
-		mp    multipart.File
-		id    uuid.UUID
-		raw   []byte
+		ch    chan uploadResult
+		wg    *sync.WaitGroup
 	)
 
 	form, err = g.MultipartForm()
@@ -84,136 +80,25 @@ func (c Controller) Upload(g *gin.Context) {
 		return
 	}
 
-	ids = make([]string, 0)
+	ch = make(chan uploadResult, len(files))
+	wg = new(sync.WaitGroup)
 	for _, file := range files {
-		mp, err = file.Open()
-		if err != nil {
-			g.Error(err)
-			return
+		wg.Add(1)
+		go c.s.upload(usr, file, ch, wg)
+	}
+	wg.Wait()
+	close(ch)
+	for result := range ch {
+		if result.err != nil {
+			g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Uploaded file is corrupt!"})
 		}
-		defer closeRequestFile(mp)
-		raw, err = io.ReadAll(mp)
-		if err != nil {
-			g.AbortWithStatusJSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: "Uploaded file is corrupt!"})
-			return
-		}
-		id, err = c.uploadBinary(g, usr, raw, file.Filename)
-		if err != nil {
-			return
-		}
-		ids = append(ids, id.String())
+		ids = append(ids, result.id.String())
 	}
 
 	g.JSON(http.StatusCreated, UploadSuccess{
 		PhotoIDs: ids,
 		UserID:   usr.ID.String(),
 	})
-}
-
-func (c Controller) uploadBinary(g *gin.Context, usr *user.User, raw []byte, filename string) (uuid.UUID, error) {
-	var (
-		target        *Photo
-		id            uuid.UUID
-		quotaExceeded bool
-		err           error
-	)
-
-	target, err = createPhoto(
-		*usr,
-		filepath.Base(filename),
-		filepath.Ext(filename)[1:],
-		raw,
-	)
-	if err != nil {
-		log.Err(err).Msg("Failed to create photo entity!")
-		g.AbortWithStatusJSON(http.StatusUnsupportedMediaType, common.StatusMessage{Code: 415, Message: fmt.Sprintf("Uploaded file format is not supported! Cause: %v", err)})
-		return uuid.UUID{}, err
-	}
-
-	quotaExceeded, err = c.exceededUserQuota(usr, target.Desc.Metadata.DataSize)
-	if quotaExceeded || err != nil {
-		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 403, Message: "You can not upload files, you have reached your quota!"})
-		return uuid.UUID{}, err
-	}
-
-	quotaExceeded, err = c.exceededGlobalQuota(target.Desc.Metadata.DataSize)
-	if quotaExceeded || err != nil {
-		log.Error().Msg("Global quota exceeded!")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "You can not upload files, please contact an administrator!"})
-		return uuid.UUID{}, err
-	}
-
-	id, err = c.photos.Store(target)
-	if err != nil {
-		log.Err(err).Msg("Failed to store photo!")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Uploaded file could not be stored!"})
-		return uuid.UUID{}, err
-	}
-	return id, err
-}
-
-func (c Controller) exceededGlobalQuota(fileSize int64) (bool, error) {
-	var (
-		quota int64
-		stats Stats
-		err   error
-	)
-
-	quota = c.config.Quota
-	if quota <= 0 {
-		return false, nil
-	}
-
-	stats, err = c.photos.Stats()
-	if err != nil {
-		return false, err
-	}
-	return stats.UsedSpace+fileSize > quota, nil
-}
-
-func (c Controller) exceededUserQuota(usr *user.User, fileSize int64) (bool, error) {
-	var (
-		stats UserStats
-		err   error
-	)
-
-	if usr.Role.Quota <= 0 {
-		return false, nil
-	}
-
-	stats, err = c.photos.UserStats(usr.ID.String())
-	if err != nil {
-		return false, err
-	}
-	return stats.UsedSpace+fileSize > usr.Role.Quota, nil
-}
-
-func closeRequestFile(mp multipart.File) {
-	mp.Close()
-}
-
-func createPhoto(user user.User, filename, extension string, raw []byte) (*Photo, error) {
-	i := importer.NewImporter(string(descriptor.ParseFormat(extension)))
-	thumbnail, err := i.Thumbnail(raw)
-	if err != nil {
-		return nil, err
-	}
-	metadata, err := i.Describe(raw)
-	if err != nil {
-		return nil, err
-	}
-	res := &Photo{
-		Desc: descriptor.Descriptor{
-			FileName:  filename,
-			Format:    descriptor.ParseFormat(extension),
-			Uploaded:  time.Now(),
-			Thumbnail: thumbnail,
-			Metadata:  *metadata,
-		},
-		User: user,
-		Raw:  raw,
-	}
-	return res, nil
 }
 
 // List is a method of `Controller`. Handles listing all photos and RAW files of the authenticated user.

@@ -22,13 +22,15 @@ Functionality:
     ----
     - Whitelist only CloudFlare domain !!!
     - Integrate with at least 1 CDN: Amazon S3
-  - V1.0:
+    - Add history/audit - with SNS a DynamoDB
+    - Add lifecycle rules - with eventbridge trigger and lambdas
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
-    - Improve file upload. Concurrency option
     - Testing (handlers and unit testing) - Backend and Frontend
     - Fix PhotoGrid selection display mechanism
     - Fix editing users and roles on admin page
+    - Fix search filter page reload
   - Next steps:
+    - Advanced concurrency for file upload
     - Add rating option for images
     - Add tags for images
     - Generative AI based on the decisions of the user (1to5 rating) to advise a score
@@ -40,7 +42,6 @@ Functionality:
     - Have a "rows" type of view for photos - photo with details next to it, potentially dwonload and favorite buttons
     - Add filtering, ordering and pagination for images
     - Add grouping for images
-    - Add history/audit
     - Add batch uploading files
     - Add personal lifecycle rules
       - archive files after Y days
