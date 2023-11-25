@@ -150,8 +150,9 @@ func createPhoto(user user.User, filename, extension string, raw []byte) (*Photo
 			Thumbnail: thumbnail,
 			Metadata:  *metadata,
 		},
-		User: user,
-		Raw:  raw,
+		User:      user,
+		Raw:       raw,
+		UsedSpace: len(raw) + len(thumbnail),
 	}
 	return res, nil
 }

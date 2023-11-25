@@ -124,8 +124,16 @@ func (s *GORMStorer) Thumbnail(id string) ([]byte, error) {
 
 // UserStats is a method of `GORMStorer` for collecting aggregated data on the photos of the user specified by the ID in the parameter.
 func (s *GORMStorer) UserStats(userID string) (UserStats, error) {
-	var photos, favorites int
+	var (
+		photos, favorites int
+		usedSpace         int64
+	)
 	res := s.db.Raw("SELECT count(id) FROM photos WHERE user_id = ?", userID).Scan(&photos)
+	if res.Error != nil {
+		return UserStats{}, res.Error
+	}
+
+	res = s.db.Raw("SELECT sum(coalesce(used_space, 0)) FROM photos WHERE user_id = ?", userID).Scan(&usedSpace)
 	if res.Error != nil {
 		return UserStats{}, res.Error
 	}
@@ -145,11 +153,6 @@ func (s *GORMStorer) UserStats(userID string) (UserStats, error) {
 		photoIDs[idx] = photo.ID.String()
 	}
 
-	usedSpace, err := s.ir.UsedSpace(photoIDs)
-	if err != nil {
-		return UserStats{}, err
-	}
-
 	return UserStats{
 		Photos:    photos,
 		Favorites: favorites,
@@ -159,8 +162,17 @@ func (s *GORMStorer) UserStats(userID string) (UserStats, error) {
 
 // Stats is a method of `GORMStorer` for collecting aggregated data on the storer.
 func (s *GORMStorer) Stats() (Stats, error) {
-	var photos, favorites int
+	var (
+		photos, favorites int
+		usedSpace         int64
+	)
+
 	res := s.db.Raw("SELECT count(id) FROM photos").Scan(&photos)
+	if res.Error != nil {
+		return Stats{}, res.Error
+	}
+
+	res = s.db.Raw("SELECT sum(coalesce(used_space, 0)) FROM photos").Scan(&usedSpace)
 	if res.Error != nil {
 		return Stats{}, res.Error
 	}
@@ -168,11 +180,6 @@ func (s *GORMStorer) Stats() (Stats, error) {
 	res = s.db.Raw("SELECT count(id) FROM descriptors WHERE favorite = true").Scan(&favorites)
 	if res.Error != nil {
 		return Stats{}, res.Error
-	}
-
-	usedSpace, err := s.ir.TotalSpace()
-	if err != nil {
-		return Stats{}, err
 	}
 
 	return Stats{

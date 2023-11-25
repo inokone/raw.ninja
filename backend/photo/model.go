@@ -18,6 +18,7 @@ type Photo struct {
 	User      user.User `gorm:"foreignKey:UserID"`
 	DescID    string
 	Desc      descriptor.Descriptor `gorm:"foreignKey:DescID"`
+	UsedSpace int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
