@@ -3,6 +3,7 @@ Functionality:
     - Landing page with features, subscription options and signup 
     - Auth for 2 roles - free user and administrator with captcha
     - Upload RAW files with option for multiple files with user and global quota check
+    - Images store: filesystem or AWS S3
     - Display file list - thumbnails
     - Display image with details and download option
     - Quick search by file names
@@ -21,9 +22,9 @@ Functionality:
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
     - Whitelist only CloudFlare domain !!!
-    - Integrate with at least 1 CDN: Amazon S3
     - Add history/audit - with SNS a DynamoDB
     - Add lifecycle rules - with eventbridge trigger and lambdas
+    - Investigate compression options for storage
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
     - Testing (handlers and unit testing) - Backend and Frontend
     - Fix PhotoGrid selection display mechanism

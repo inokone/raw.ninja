@@ -133,7 +133,7 @@ func (s *GORMStorer) UserStats(userID string) (UserStats, error) {
 		return UserStats{}, res.Error
 	}
 
-	res = s.db.Raw("SELECT sum(coalesce(used_space, 0)) FROM photos WHERE user_id = ?", userID).Scan(&usedSpace)
+	res = s.db.Raw("SELECT coalesce(sum(coalesce(used_space, 0)),0) FROM photos WHERE user_id = ?", userID).Scan(&usedSpace)
 	if res.Error != nil {
 		return UserStats{}, res.Error
 	}

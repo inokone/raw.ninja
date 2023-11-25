@@ -55,25 +55,12 @@ func initDb(c common.RDBConfig) error {
 	return nil
 }
 
-func initStore(c common.ImageStoreConfig) error {
-	var (
-		is  image.Storer
-		err error
-	)
-
-	if c.Type == "file" {
-		is, err = image.NewLocalStorer(c.Path)
-		if err != nil {
-			return err
-		}
-	} else {
-		return gorm.ErrNotImplemented
-	}
+func initStore(c common.ImageStoreConfig) {
+	var is image.Storer = image.NewStorer(c)
 	storers.Photos = photo.NewGORMStorer(db, is)
 	storers.Users = user.NewGORMStorer(db)
 	storers.Roles = role.NewGORMStorer(db)
 	storers.Accounts = account.NewGORMStorer(db)
-	return nil
 }
 
 func initLog() {

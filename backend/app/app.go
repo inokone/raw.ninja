@@ -32,10 +32,7 @@ func App(path string) {
 		log.Error().AnErr("DatabaseError", err).Msg("Failed to set up connection to database. Application spinning down.")
 		os.Exit(1)
 	}
-	if err = initStore(config.Store); err != nil {
-		log.Error().AnErr("ConfigError", err).Msg("Failed to set up image store. Application spinning down.")
-		os.Exit(1)
-	}
+	initStore(config.Store)
 
 	r := gin.New()
 
