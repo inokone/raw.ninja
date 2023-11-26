@@ -25,7 +25,7 @@ const PhotoCard = ({ image, setImage, selected, onClick }) => {
   }
 
   const handleDownloadClick = (image) => {
-    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id + '/download', {
+    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id + '/raw', {
       method: "GET",
       mode: "cors",
       credentials: "include"
@@ -55,7 +55,7 @@ const PhotoCard = ({ image, setImage, selected, onClick }) => {
         <CardMedia
           component="img"
           height="200px"
-          image={image.descriptor.thumbnail}
+          image={image.thumbnail.url}
           loading="lazy"
           alt={image.descriptor.filename}
           onClick={() => handleClick(image.id)}

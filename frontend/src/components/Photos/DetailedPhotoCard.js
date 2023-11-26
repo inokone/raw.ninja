@@ -15,7 +15,7 @@ const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
   const [error, setError] = React.useState(null)
 
   const handleDownloadClick = () => {
-    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id + '/download', {
+    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id + '/raw', {
       method: "GET",
       mode: "cors",
       credentials: "include"
@@ -115,7 +115,7 @@ const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
         </Box>
         <Grid container spacing={2} padding={3}>
           <Grid sm={12} md={9}>
-            <Image src={image.descriptor.thumbnail} height="80vh" />
+            <Image src={image.thumbnail.url} height="80vh" />
           </Grid>
           <Grid sm={12} md={3}>
             <MetadataDisplay metadata={image.descriptor} />

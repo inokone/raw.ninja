@@ -71,3 +71,18 @@ func (s *LocalStorer) LoadThumbnail(id string) ([]byte, error) {
 	path := filepath.Join(s.path, imageFolder, id, thumbnailName)
 	return os.ReadFile(path)
 }
+
+// SupportsPresign indicates whether the store supports presign
+func (s *LocalStorer) SupportsPresign() bool {
+	return false
+}
+
+// PresignThumbnail makes a presigned request that can be used to get a thumbnail.
+func (s *LocalStorer) PresignThumbnail(id string) (*PresignedRequest, error) { // nolint:revive
+	panic("Unsupported operation!")
+}
+
+// PresignImage makes a presigned request that can be used to get a raw image.
+func (s *LocalStorer) PresignImage(id string) (*PresignedRequest, error) { // nolint:revive
+	panic("Unsupported operation!")
+}

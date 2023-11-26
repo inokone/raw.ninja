@@ -383,7 +383,7 @@ paths:
       summary: Update photo endpoint for tags and favorite setting
       tags:
       - photos
-  /photos/:id/download:
+  /photos/:id/raw:
     get:
       consumes:
       - application/json

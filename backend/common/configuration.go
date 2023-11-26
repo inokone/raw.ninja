@@ -27,13 +27,15 @@ type RDBConfig struct {
 
 // ImageStoreConfig is a configuration of the image store.
 type ImageStoreConfig struct {
-	Type        string `mapstructure:"IMG_STORE_TYPE"`
-	Path        string `mapstructure:"IMG_STORE_PATH"`
-	Quota       int64  `mapstructure:"IMG_STORE_QUOTA"`
-	RawBucket   string `mapstructure:"IMG_STORE_RAW_BUCKET"`
-	ThumbBucket string `mapstructure:"IMG_STORE_THUMB_BUCKET"`
-	AwsKey      string `mapstructure:"IMG_STORE_AWS_KEY"`
-	AwsSecret   string `mapstructure:"IMG_STORE_AWS_SECRET"`
+	Type         string `mapstructure:"IMG_STORE_TYPE"`
+	Path         string `mapstructure:"IMG_STORE_PATH"`
+	Quota        int64  `mapstructure:"IMG_STORE_QUOTA"`
+	RawBucket    string `mapstructure:"IMG_STORE_RAW_BUCKET"`
+	ThumbBucket  string `mapstructure:"IMG_STORE_THUMB_BUCKET"`
+	AwsKey       string `mapstructure:"IMG_STORE_AWS_KEY"`
+	AwsSecret    string `mapstructure:"IMG_STORE_AWS_SECRET"`
+	UsePresigned bool   `mapstructure:"IMG_STORE_USE_PRESIGNED"`
+	PresignedTTL int64  `mapstructure:"IMG_STORE_PRESIGNED_TTL"`
 }
 
 // AuthConfig is a configuration of the authentication.
@@ -92,6 +94,8 @@ func LoadConfig(path string) (*AppConfig, error) {
 	viper.SetDefault("JWT_EXPIRATION_HOURS", 24)
 	viper.SetDefault("DB_SSL_MODE", "disable")
 	viper.SetDefault("PORT", 8080)
+	viper.SetDefault("IMG_STORE_USE_PRESIGNED", false)
+	viper.SetDefault("IMG_STORE_PRESIGNED_TTL", 300)
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()

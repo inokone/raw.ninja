@@ -7,6 +7,7 @@ import (
 	"github.com/inokone/photostorage/auth/role"
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
+	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/mail"
 	"github.com/inokone/photostorage/photo"
 	"github.com/inokone/photostorage/search"
@@ -19,20 +20,26 @@ type Storers struct {
 	Users    user.Storer
 	Roles    role.Storer
 	Accounts account.Storer
+	Images   image.Storer
+}
+
+// Services is a struct to collect all `Service` entities used by the application
+type Services struct {
+	Load photo.LoadService
 }
 
 // Init is a function to initialize handler mapping for URLs
-func Init(v1 *gin.RouterGroup, s Storers, c common.AppConfig) {
+func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 	var (
 		mailer = mail.NewService(c.Mail)
-		p      = photo.NewController(s.Photos, c.Store)
-		m      = auth.NewJWTHandler(s.Users, c.Auth)
-		a      = auth.NewController(s.Users, s.Accounts, m, c.Auth)
-		ac     = account.NewController(s.Users, s.Accounts, mailer, c.Auth)
-		se     = search.NewController(s.Photos)
-		st     = stats.NewController(s.Photos, s.Users, c.Store)
-		u      = user.NewController(s.Users)
-		r      = role.NewController(s.Roles)
+		p      = photo.NewController(st.Photos, st.Images, c.Store)
+		m      = auth.NewJWTHandler(st.Users, c.Auth)
+		a      = auth.NewController(st.Users, st.Accounts, m, c.Auth)
+		ac     = account.NewController(st.Users, st.Accounts, mailer, c.Auth)
+		sea    = search.NewController(st.Photos, se.Load)
+		sts    = stats.NewController(st.Photos, st.Users, c.Store)
+		u      = user.NewController(st.Users)
+		r      = role.NewController(st.Roles)
 	)
 
 	v1.GET("healthcheck", common.Healthcheck)
@@ -61,14 +68,14 @@ func Init(v1 *gin.RouterGroup, s Storers, c common.AppConfig) {
 		g.GET("/:id", p.Get)
 		g.PUT("/:id", p.Update)
 		g.DELETE("/:id", p.Delete)
-		g.GET("/:id/download", p.Download)
+		g.GET("/:id/raw", p.Raw)
 		g.GET("/:id/thumbnail", p.Thumbnail)
 	}
 
 	g = v1.Group("/search", m.Validate)
 	{
-		g.GET("", se.Search)
-		g.GET("/favorites", se.Favorites)
+		g.GET("", sea.Search)
+		g.GET("/favorites", sea.Favorites)
 	}
 
 	g = v1.Group("/users")
@@ -86,7 +93,7 @@ func Init(v1 *gin.RouterGroup, s Storers, c common.AppConfig) {
 
 	g = v1.Group("/statistics", m.Validate)
 	{
-		g.GET("/user", st.UserStats)
-		g.GET("/app", m.ValidateAdmin, st.AppStats)
+		g.GET("/user", sts.UserStats)
+		g.GET("/app", m.ValidateAdmin, sts.AppStats)
 	}
 }

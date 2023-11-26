@@ -21,11 +21,18 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Whitelist only CloudFlare domain !!!
+    - make image service serve just image, and have one for raw and one for thumbnails
+    - move router parts into the modules
+    - think about moving the configuration also into the separate modules
+    - status message object should have no status - KISS
+    - extract services from controllers. controllers should be about transforming from RDB to JSON object
+    - Encrypt settings file on EC2 - store private key to somewhere else - e.g. Google passwords 
+
+    - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
     - Add history/audit - with SNS a DynamoDB
+    - Whitelist only CloudFlare domain !!!
     - Add lifecycle rules - with eventbridge trigger and lambdas
     - Investigate compression options for storage
-    - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
     - Testing (handlers and unit testing) - Backend and Frontend
     - Fix PhotoGrid selection display mechanism
     - Fix editing users and roles on admin page

@@ -1,6 +1,7 @@
 package image
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
@@ -73,4 +74,13 @@ func (m Metadata) AsResp() Response {
 		LensMake:    m.Lens.Make,
 		LensModel:   m.Lens.Model,
 	}
+}
+
+// PresignedRequest is a struct for presigned requests that can grant temporary access to RAW
+// or processed images without any additional authentication.
+type PresignedRequest struct {
+	URL    string      `json:"url"`
+	Method string      `json:"method"`
+	Header http.Header `json:"header"`
+	Mode   string      `json:"mode"`
 }

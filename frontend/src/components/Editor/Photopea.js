@@ -131,7 +131,7 @@ const Photopea = () => {
         setCounter(0)
         let id = location.pathname.split('/').slice(-1)
         setLoading(true)
-        fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + id + '/download', {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + id + '/raw', {
             method: "GET",
             mode: "cors",
             credentials: "include"

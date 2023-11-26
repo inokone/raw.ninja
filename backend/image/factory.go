@@ -29,6 +29,7 @@ func NewStorer(config common.ImageStoreConfig) Storer {
 			config.ThumbBucket,
 			config.AwsKey,
 			config.AwsSecret,
+			config.PresignedTTL,
 		)
 		if err != nil {
 			log.Err(err).Msg("Failed to set up S3 storer!")

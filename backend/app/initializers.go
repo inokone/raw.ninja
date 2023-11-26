@@ -14,6 +14,7 @@ import (
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
+	"github.com/inokone/photostorage/web"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -55,12 +56,16 @@ func initDb(c common.RDBConfig) error {
 	return nil
 }
 
-func initStore(c common.ImageStoreConfig) {
-	var is image.Storer = image.NewStorer(c)
-	storers.Photos = photo.NewGORMStorer(db, is)
+func initStorers(c common.ImageStoreConfig) {
+	storers.Photos = photo.NewGORMStorer(db)
+	storers.Images = image.NewStorer(c)
 	storers.Users = user.NewGORMStorer(db)
 	storers.Roles = role.NewGORMStorer(db)
 	storers.Accounts = account.NewGORMStorer(db)
+}
+
+func initServices(c common.ImageStoreConfig, storers web.Storers) {
+	services.Load = *photo.NewLoadService(storers.Photos, storers.Images, c)
 }
 
 func initLog() {

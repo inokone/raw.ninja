@@ -23,7 +23,6 @@ type Descriptor struct {
 	FileName   string    `gorm:"type:varchar(255);index;not null"`
 	Uploaded   time.Time `gorm:"index"`
 	Format     Format
-	Thumbnail  []byte       `gorm:"-"`
 	Tags       []string     `gorm:"type:text[]"`
 	Favorite   bool         `gorm:"index"`
 	Metadata   img.Metadata `gorm:"foreignKey:MetadataID"`
@@ -34,16 +33,15 @@ type Descriptor struct {
 }
 
 // AsResp converts `Descriptor` entity to a `Response“ entity
-func (p Descriptor) AsResp(baseURL string) Response {
+func (p Descriptor) AsResp() Response {
 	return Response{
-		ID:        p.ID.String(),
-		FileName:  p.FileName,
-		Uploaded:  p.Uploaded,
-		Format:    string(p.Format),
-		Thumbnail: baseURL + "/thumbnail",
-		Metadata:  p.Metadata.AsResp(),
-		Tags:      p.Tags,
-		Favorite:  p.Favorite,
+		ID:       p.ID.String(),
+		FileName: p.FileName,
+		Uploaded: p.Uploaded,
+		Format:   string(p.Format),
+		Metadata: p.Metadata.AsResp(),
+		Tags:     p.Tags,
+		Favorite: p.Favorite,
 	}
 }
 

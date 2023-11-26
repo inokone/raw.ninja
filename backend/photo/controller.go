@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
+	"github.com/inokone/photostorage/image"
 
 	"github.com/rs/zerolog/log"
 )
@@ -23,16 +24,20 @@ var (
 // Controller is a struct for all REST handlers related to photos in the application.
 type Controller struct {
 	photos Storer
+	images image.Storer
 	cfg    common.ImageStoreConfig
-	s      service
+	s      uploadService
+	l      LoadService
 }
 
 // NewController creates a new `Controller` instance based on the photo persistence provided in the parameter.
-func NewController(photos Storer, cfg common.ImageStoreConfig) Controller {
+func NewController(photos Storer, images image.Storer, cfg common.ImageStoreConfig) Controller {
 	return Controller{
 		photos: photos,
+		images: images,
 		cfg:    cfg,
-		s:      *newService(photos, cfg),
+		s:      *newUploadService(photos, images, cfg),
+		l:      *NewLoadService(photos, images, cfg),
 	}
 }
 
@@ -113,29 +118,37 @@ func (c Controller) Upload(g *gin.Context) {
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos [get]
 func (c Controller) List(g *gin.Context) {
-	user, err := currentUser(g)
+	var (
+		user     *user.User
+		err      error
+		result   []Photo
+		protocol string
+		baseURL  string
+	)
+
+	user, err = currentUser(g)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
 
-	result, err := c.photos.All(user.ID.String())
+	result, err = c.photos.All(user.ID.String())
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
 	}
 
-	protocol := "http"
+	protocol = "http"
 	if g.Request.TLS != nil {
 		protocol = "https"
 	}
-
-	images := make([]Response, len(result))
-	for i, photo := range result {
-		images[i] = photo.AsResp(protocol + "://" + g.Request.Host + g.Request.URL.Path + photo.ID.String())
+	baseURL = protocol + "://" + g.Request.Host + g.Request.URL.Path
+	imgs, err := c.l.AsResponse(result, baseURL)
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Failed to collect images!"})
+		return
 	}
-
-	g.JSON(http.StatusOK, images)
+	g.JSON(http.StatusOK, imgs)
 }
 
 // Get is a method of `Controller`. Handles requests for retrieving metadata for a single photo or RAW file
@@ -152,8 +165,16 @@ func (c Controller) List(g *gin.Context) {
 // @Failure 500 {object} common.StatusMessage
 // @Router /photos/:id [get]
 func (c Controller) Get(g *gin.Context) {
-	id := g.Param("id")
-	result, err := c.photos.Load(id)
+	var (
+		id       string = g.Param("id")
+		result   *Photo
+		err      error
+		protocol string
+		resp     Response
+		baseURL  string
+	)
+
+	result, err = c.photos.Load(id)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
@@ -164,12 +185,19 @@ func (c Controller) Get(g *gin.Context) {
 		return
 	}
 
-	protocol := "http"
+	protocol = "http"
 	if g.Request.TLS != nil {
 		protocol = "https"
 	}
+	baseURL = protocol + "://" + g.Request.Host + g.Request.URL.Path + id
 
-	g.JSON(http.StatusOK, result.AsResp(protocol+"://"+g.Request.Host+g.Request.URL.Path))
+	resp = result.AsResp()
+	if err = c.l.decorateWithRequest(&resp, baseURL); err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Failed to collect image!"})
+		return
+	}
+
+	g.JSON(http.StatusOK, resp)
 }
 
 // Update is a method of `Controller`. Handles requests for updating a single photo or RAW file of the authenticated user.
@@ -256,7 +284,7 @@ func applyChange(persisted *Photo, newVersion Response) error {
 	return nil
 }
 
-// Download is a method of `Controller`. Handles requests for downloding binary for a single photo or RAW file of the
+// Raw is a method of `Controller`. Handles requests for downloding binary for a single photo or RAW file of the
 // authenticated user. The target photo specified by the photo ID in the URL parameter.
 // @Summary Download RAW file endpoint
 // @Schemes
@@ -268,8 +296,8 @@ func applyChange(persisted *Photo, newVersion Response) error {
 // @Success 200 {array} byte
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
-// @Router /photos/:id/download [get]
-func (c Controller) Download(g *gin.Context) {
+// @Router /photos/:id/raw [get]
+func (c Controller) Raw(g *gin.Context) {
 	id := g.Param("id")
 	img, err := c.photos.Load(id)
 	if err != nil {
@@ -283,7 +311,7 @@ func (c Controller) Download(g *gin.Context) {
 	}
 
 	fileName := img.Desc.FileName
-	raw, err := c.photos.Raw(id)
+	raw, err := c.images.LoadImage(id)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return
@@ -321,7 +349,7 @@ func (c Controller) Thumbnail(g *gin.Context) {
 	}
 
 	fileName := img.Desc.FileName
-	thumbnail, err := c.photos.Thumbnail(id)
+	thumbnail, err := c.images.LoadThumbnail(id)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusNotFound, statusNotFound)
 		return

@@ -4,7 +4,8 @@ import (
 	"time"
 
 	"github.com/inokone/photostorage/auth/user"
-	"github.com/inokone/photostorage/descriptor"
+	"github.com/inokone/photostorage/image"
+	"github.com/inokone/photostorage/photo/descriptor"
 	"gorm.io/gorm"
 
 	"github.com/google/uuid"
@@ -14,6 +15,7 @@ import (
 type Photo struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
 	Raw       []byte    `gorm:"-"`
+	Thumbnail []byte    `gorm:"-"`
 	UserID    string    `gorm:"index"`
 	User      user.User `gorm:"foreignKey:UserID"`
 	DescID    string
@@ -25,8 +27,8 @@ type Photo struct {
 }
 
 // AsResp is a method of the `Photo` struct. It converts a `Photo` object into a `Response` object.
-func (p Photo) AsResp(baseURL string) Response {
-	desc := p.Desc.AsResp(baseURL)
+func (p Photo) AsResp() Response {
+	desc := p.Desc.AsResp()
 	return Response{
 		ID:   p.ID.String(),
 		Desc: desc,
@@ -35,8 +37,10 @@ func (p Photo) AsResp(baseURL string) Response {
 
 // Response is the JSON representation of `Photo` when retrieving from the application
 type Response struct {
-	ID   string              `json:"id"`
-	Desc descriptor.Response `json:"descriptor"`
+	ID        string                  `json:"id"`
+	Desc      descriptor.Response     `json:"descriptor"`
+	Raw       *image.PresignedRequest `json:"raw"`
+	Thumbnail *image.PresignedRequest `json:"thumbnail"`
 }
 
 // UserStats is aggregated data on the photos of a user.

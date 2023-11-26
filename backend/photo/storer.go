@@ -4,8 +4,6 @@ import (
 	"github.com/google/uuid"
 	_ "github.com/lib/pq" // Postgres driver package for GORM, no need to have a name
 	"gorm.io/gorm"
-
-	"github.com/inokone/photostorage/image"
 )
 
 // Writer is an interface for persistence of `Photo` entities.
@@ -19,8 +17,6 @@ type Writer interface {
 type Loader interface {
 	Load(id string) (*Photo, error)
 	All(userID string) ([]Photo, error)
-	Raw(id string) ([]byte, error)
-	Thumbnail(id string) ([]byte, error)
 }
 
 // Searcher is an interface for searching `Photo` entities by various filters in persistence.
@@ -42,35 +38,33 @@ type Storer interface {
 // GORMStorer is an implementation of `Storer` interface based on GORM library.
 type GORMStorer struct {
 	db *gorm.DB
-	ir image.Storer
 }
 
 // NewGORMStorer creates a new `GORMStorer` instance based on the GORM library and image persistence provided in parameters.
-func NewGORMStorer(db *gorm.DB, ir image.Storer) *GORMStorer {
-	return &GORMStorer{
-		db: db,
-		ir: ir,
-	}
+func NewGORMStorer(db *gorm.DB) *GORMStorer {
+	return &GORMStorer{db: db}
 }
 
 // Store is a method of `GORMStorer` for persisting a `Photo` entity.
 func (s *GORMStorer) Store(photo *Photo) (uuid.UUID, error) {
-	s.db.Save(&photo)
-	err := s.ir.Store(photo.ID.String(), photo.Raw, photo.Desc.Thumbnail)
-	return photo.ID, err
+	result := s.db.Save(&photo)
+	return photo.ID, result.Error
 }
 
 // Delete is a method of `GORMStorer` for deleting a `Photo` entity from persistence.
 func (s *GORMStorer) Delete(id string) error {
-	var photo Photo
-	s.db.Delete(&photo, "id = ?", id)
-	return nil
+	var (
+		photo  Photo
+		result *gorm.DB
+	)
+	result = s.db.Delete(&photo, "id = ?", id)
+	return result.Error
 }
 
 // Update is a method of `GORMStorer` for updating metadata of a `Photo` entity in persistence.
 func (s *GORMStorer) Update(photo *Photo) error {
-	s.db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&photo)
-	return nil
+	result := s.db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&photo)
+	return result.Error
 }
 
 // Load is a method of `GORMStorer` for loading a single `Photo` entity by ID provided as parameter.
@@ -110,16 +104,6 @@ func (s *GORMStorer) Search(userID string, searchText string) ([]Photo, error) {
 		"descriptors.file_name LIKE ?", "%"+searchText+"%").Order(
 		"photos.created_at ASC").Find(&photos)
 	return photos, result.Error
-}
-
-// Raw is a method of `GORMStorer` for retrieving the original RAW image as a byte array for the photo specified by the ID in the parameter.
-func (s *GORMStorer) Raw(id string) ([]byte, error) {
-	return s.ir.LoadImage(id)
-}
-
-// Thumbnail is a method of `GORMStorer` for retrieving the thumbnail image as a byte array for the photo specified by the ID in the parameter.
-func (s *GORMStorer) Thumbnail(id string) ([]byte, error) {
-	return s.ir.LoadThumbnail(id)
 }
 
 // UserStats is a method of `GORMStorer` for collecting aggregated data on the photos of the user specified by the ID in the parameter.

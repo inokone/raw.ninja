@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"mime/multipart"
+	"net/http"
 	"path/filepath"
 	"sync"
 	"time"
@@ -12,19 +13,22 @@ import (
 	"github.com/google/uuid"
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
-	"github.com/inokone/photostorage/descriptor"
+	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/image/importer"
+	"github.com/inokone/photostorage/photo/descriptor"
 	"github.com/rs/zerolog/log"
 )
 
-type service struct {
+type uploadService struct {
 	photos Storer
+	images image.Storer
 	config common.ImageStoreConfig
 }
 
-func newService(photos Storer, config common.ImageStoreConfig) *service {
-	return &service{
+func newUploadService(photos Storer, images image.Storer, config common.ImageStoreConfig) *uploadService {
+	return &uploadService{
 		photos: photos,
+		images: images,
 		config: config,
 	}
 }
@@ -34,7 +38,7 @@ type uploadResult struct {
 	err error
 }
 
-func (s service) upload(usr *user.User, file *multipart.FileHeader, ch chan uploadResult, wg *sync.WaitGroup) {
+func (s uploadService) upload(usr *user.User, file *multipart.FileHeader, ch chan uploadResult, wg *sync.WaitGroup) {
 	var (
 		err error
 		mp  multipart.File
@@ -56,7 +60,7 @@ func (s service) upload(usr *user.User, file *multipart.FileHeader, ch chan uplo
 	ch <- uploadResult{id, err}
 }
 
-func (s service) uploadBinary(usr *user.User, raw []byte, filename string) (uuid.UUID, error) {
+func (s uploadService) uploadBinary(usr *user.User, raw []byte, filename string) (uuid.UUID, error) {
 	start := time.Now()
 	var (
 		target        *Photo
@@ -88,11 +92,16 @@ func (s service) uploadBinary(usr *user.User, raw []byte, filename string) (uuid
 		log.Err(err).Msg("Failed to store photo!")
 		return uuid.UUID{}, errors.New("uploaded file could not be stored")
 	}
+	err = s.images.Store(target.ID.String(), target.Raw, target.Thumbnail)
+	if err != nil {
+		log.Err(err).Msg("Failed to store photo!")
+		return uuid.UUID{}, errors.New("uploaded file could not be stored")
+	}
 	log.Debug().Str("file", filename).Dur("elapsed", time.Since(start)).Msg("photo stored")
 	return id, err
 }
 
-func (s service) exceededGlobalQuota(fileSize int64) (bool, error) {
+func (s uploadService) exceededGlobalQuota(fileSize int64) (bool, error) {
 	var (
 		quota int64
 		stats Stats
@@ -111,7 +120,7 @@ func (s service) exceededGlobalQuota(fileSize int64) (bool, error) {
 	return stats.UsedSpace+fileSize > quota, nil
 }
 
-func (s service) exceededUserQuota(usr *user.User, fileSize int64) (bool, error) {
+func (s uploadService) exceededUserQuota(usr *user.User, fileSize int64) (bool, error) {
 	var (
 		stats UserStats
 		err   error
@@ -144,15 +153,78 @@ func createPhoto(user user.User, filename, extension string, raw []byte) (*Photo
 	}
 	res := &Photo{
 		Desc: descriptor.Descriptor{
-			FileName:  filename,
-			Format:    descriptor.ParseFormat(extension),
-			Uploaded:  time.Now(),
-			Thumbnail: thumbnail,
-			Metadata:  *metadata,
+			FileName: filename,
+			Format:   descriptor.ParseFormat(extension),
+			Uploaded: time.Now(),
+			Metadata: *metadata,
 		},
 		User:      user,
 		Raw:       raw,
+		Thumbnail: thumbnail,
 		UsedSpace: len(raw) + len(thumbnail),
 	}
 	return res, nil
+}
+
+// LoadService is a service for retrieving raw and thumbnail files and links
+type LoadService struct {
+	photos Storer
+	images image.Storer
+	cfg    common.ImageStoreConfig
+}
+
+// NewLoadService creates a `LoadService` instance based on the storers and configuration.
+func NewLoadService(photos Storer, images image.Storer, cfg common.ImageStoreConfig) *LoadService {
+	return &LoadService{
+		photos: photos,
+		images: images,
+		cfg:    cfg,
+	}
+}
+
+// AsResponse transforms a Photo array to Response array
+func (s LoadService) AsResponse(result []Photo, baseURL string) ([]Response, error) {
+	var (
+		err  error
+		imgs []Response
+	)
+	imgs = make([]Response, len(result))
+	for i, photo := range result {
+		imgs[i] = photo.AsResp()
+		if err = s.decorateWithRequest(&imgs[i], baseURL+imgs[i].ID); err != nil {
+			log.Err(err).Str("photo_id", imgs[i].ID).Msg("Failed to generate presigned raw.")
+			return nil, err
+		}
+	}
+	return imgs, nil
+}
+
+func (s LoadService) decorateWithRequest(photo *Response, baseURL string) error {
+	var (
+		id  = photo.ID
+		err error
+	)
+	if s.cfg.UsePresigned {
+		photo.Raw, err = s.images.PresignImage(id)
+		if err != nil {
+			return err
+		}
+		photo.Thumbnail, err = s.images.PresignThumbnail(id)
+		if err != nil {
+			return err
+		}
+	} else {
+		photo.Raw = presign(baseURL + "/raw")
+		photo.Thumbnail = presign(baseURL + "/thumbnail")
+	}
+	return nil
+}
+
+func presign(URL string) *image.PresignedRequest {
+	return &image.PresignedRequest{
+		URL:    URL,
+		Method: "GET",
+		Header: http.Header{}, // TODO: this is not really presigned, just a raquest. should rename it
+		Mode:   "cors",
+	}
 }

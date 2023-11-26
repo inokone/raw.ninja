@@ -17,8 +17,9 @@ import (
 )
 
 var (
-	config  *common.AppConfig
-	storers web.Storers
+	config   *common.AppConfig
+	storers  web.Storers
+	services web.Services
 )
 
 // App executes the RAW.Ninja web application.
@@ -32,7 +33,8 @@ func App(path string) {
 		log.Error().AnErr("DatabaseError", err).Msg("Failed to set up connection to database. Application spinning down.")
 		os.Exit(1)
 	}
-	initStore(config.Store)
+	initStorers(config.Store)
+	initServices(config.Store, storers)
 
 	r := gin.New()
 
@@ -54,7 +56,7 @@ func App(path string) {
 	// Set up routes
 	v1 := r.Group("/api/v1")
 
-	web.Init(v1, storers, *config)
+	web.Init(v1, storers, services, *config)
 
 	p := fmt.Sprintf("0.0.0.0:%d", config.Web.Port)
 	if len(config.Auth.TLSCert) > 0 {

@@ -15,14 +15,16 @@ import (
 type Controller struct {
 	photos photo.Storer
 	p      bluemonday.Policy
+	l      photo.LoadService
 }
 
 // NewController is a function to create a new `Controller` instance based on the photo persistence.
-func NewController(photos photo.Storer) Controller {
+func NewController(photos photo.Storer, loader photo.LoadService) Controller {
 	p := bluemonday.StrictPolicy()
 	return Controller{
 		photos: photos,
 		p:      *p,
+		l:      loader,
 	}
 }
 
@@ -38,31 +40,47 @@ func NewController(photos photo.Storer) Controller {
 // @Failure 500 {object} common.StatusMessage
 // @Router /search/quick [get]
 func (c Controller) Search(g *gin.Context) {
-	user, err := currentUser(g)
+	var (
+		usr        *user.User
+		result     []photo.Photo
+		unsafeText string
+		searchText string
+		err        error
+	)
+
+	usr, err = currentUser(g)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
 
-	unsafeText := g.DefaultQuery("query", "")
-	searchText := c.p.Sanitize(unsafeText)
-	result, err := c.photos.Search(user.ID.String(), searchText)
+	unsafeText = g.DefaultQuery("query", "")
+	searchText = c.p.Sanitize(unsafeText)
+	result, err = c.photos.Search(usr.ID.String(), searchText)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 		return
 	}
+	c.respond(g, result)
+}
 
-	protocol := "http"
+func (c Controller) respond(g *gin.Context, result []photo.Photo) {
+	var (
+		protocol = "http"
+		baseURL  string
+		imgs     []photo.Response
+		err      error
+	)
 	if g.Request.TLS != nil {
 		protocol = "https"
 	}
-
-	images := make([]photo.Response, len(result))
-	for i, photo := range result {
-		images[i] = photo.AsResp(protocol + "://" + g.Request.Host + "/api/v1/photos/" + photo.ID.String())
+	baseURL = protocol + "://" + g.Request.Host + "/api/v1/photos/"
+	imgs, err = c.l.AsResponse(result, baseURL)
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Failed to collect images!"})
+		return
 	}
-
-	g.JSON(http.StatusOK, images)
+	g.JSON(http.StatusOK, imgs)
 }
 
 // Favorites is a handler for listing the authenticaed user's favorite photo descriptors endpoint
@@ -77,29 +95,25 @@ func (c Controller) Search(g *gin.Context) {
 // @Failure 500 {object} common.StatusMessage
 // @Router /search/favorites [get]
 func (c Controller) Favorites(g *gin.Context) {
-	user, err := currentUser(g)
+	var (
+		usr    *user.User
+		result []photo.Photo
+		err    error
+	)
+
+	usr, err = currentUser(g)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
 		return
 	}
 
-	result, err := c.photos.Favorites(user.ID.String())
+	result, err = c.photos.Favorites(usr.ID.String())
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Photos do not exist!"})
 		return
 	}
 
-	protocol := "http"
-	if g.Request.TLS != nil {
-		protocol = "https"
-	}
-
-	images := make([]photo.Response, len(result))
-	for i, photo := range result {
-		images[i] = photo.AsResp(protocol + "://" + g.Request.Host + "/api/v1/photos/" + photo.ID.String())
-	}
-
-	g.JSON(http.StatusOK, images)
+	c.respond(g, result)
 }
 
 func currentUser(g *gin.Context) (*user.User, error) {

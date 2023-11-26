@@ -14,9 +14,20 @@ type Loader interface {
 	LoadImage(id string) ([]byte, error)
 }
 
+// Presigner is an interface for providing presigned requests for images (RAW or processed).
+type Presigner interface {
+	PresignThumbnail(id string) (*PresignedRequest, error)
+
+	PresignImage(id string) (*PresignedRequest, error)
+
+	SupportsPresign() bool
+}
+
 // Storer is an interface for types that can store images (RAW or processed).
 type Storer interface {
 	Writer
 
 	Loader
+
+	Presigner
 }

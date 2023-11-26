@@ -359,7 +359,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/photos/:id/download": {
+        "/photos/:id/raw": {
             "get": {
                 "description": "Returns the RAW file for the provided ID",
                 "consumes": [

@@ -8,9 +8,9 @@ import (
 	"github.com/inokone/photostorage/auth/account"
 	"github.com/inokone/photostorage/auth/role"
 	"github.com/inokone/photostorage/auth/user"
-	"github.com/inokone/photostorage/descriptor"
 	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
+	"github.com/inokone/photostorage/photo/descriptor"
 )
 
 // Migrate executes the necessary database initialization and migration
