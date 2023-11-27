@@ -81,6 +81,6 @@ func (m Metadata) AsResp() Response {
 type PresignedRequest struct {
 	URL    string      `json:"url"`
 	Method string      `json:"method"`
-	Header http.Header `json:"header"`
+	Header http.Header `json:"header" swaggerignore:"true"`
 	Mode   string      `json:"mode"`
 }

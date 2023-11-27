@@ -35,6 +35,15 @@ definitions:
       uploaded:
         type: string
     type: object
+  image.PresignedRequest:
+    properties:
+      method:
+        type: string
+      mode:
+        type: string
+      url:
+        type: string
+    type: object
   image.Response:
     properties:
       ISO:
@@ -70,6 +79,10 @@ definitions:
         $ref: '#/definitions/descriptor.Response'
       id:
         type: string
+      raw:
+        $ref: '#/definitions/image.PresignedRequest'
+      thumbnail:
+        $ref: '#/definitions/image.PresignedRequest'
     type: object
   photo.UploadSuccess:
     properties:
@@ -114,9 +127,11 @@ definitions:
         type: string
       favorites:
         type: integer
+      first_name:
+        type: string
       id:
         type: string
-      phone:
+      last_name:
         type: string
       photos:
         type: integer
@@ -133,12 +148,16 @@ definitions:
     properties:
       email:
         type: string
+      first_name:
+        type: string
       id:
         type: string
-      phone:
+      last_name:
         type: string
       role:
         $ref: '#/definitions/role.ProfileRole'
+      status:
+        type: string
     type: object
   user.RoleUser:
     properties:
@@ -152,11 +171,11 @@ externalDocs:
   url: https://swagger.io/resources/open-api/
 info:
   contact: {}
-  description: Photostorage is an application to store RAW image files.
+  description: RAW.Ninja is an application to store RAW image files.
   title: RAW.Ninja API
   version: "0.1"
 paths:
-  /auth/confirm:
+  /account/confirm:
     get:
       consumes:
       - application/json
@@ -184,7 +203,7 @@ paths:
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: Email confirmation endpoint
-  /auth/login:
+  /account/login:
     post:
       consumes:
       - application/json
@@ -200,12 +219,16 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.StatusMessage'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: User login endpoint
-  /auth/logout:
+  /account/logout:
     get:
       consumes:
       - application/json
@@ -218,8 +241,71 @@ paths:
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: Logout endpoint
-  /auth/resend:
-    post:
+  /account/password/change:
+    put:
+      consumes:
+      - application/json
+      description: Resets the password of the logged in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Reset password endpoint
+  /account/password/reset:
+    put:
+      consumes:
+      - application/json
+      description: Resets the password of the logged in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Reset password endpoint
+  /account/recover:
+    put:
+      consumes:
+      - application/json
+      description: Send a password reset email to a user
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Recover account endpoint
+  /account/resend:
+    put:
       consumes:
       - application/json
       description: Resends email confirmation for an email address.
@@ -239,7 +325,7 @@ paths:
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: Resends email confirmation endpoint
-  /auth/signup:
+  /account/signup:
     post:
       consumes:
       - application/json
@@ -630,6 +716,28 @@ paths:
       summary: List users endpoint
   /users/:id:
     patch:
+      consumes:
+      - application/json
+      description: Updates the target user
+      parameters:
+      - description: ID of the user information to patch
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User update endpoint
+    put:
       consumes:
       - application/json
       description: Updates the target user

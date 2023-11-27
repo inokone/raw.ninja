@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/confirm": {
+        "/account/confirm": {
             "get": {
                 "description": "Confirms the email address of the user",
                 "consumes": [
@@ -57,7 +57,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/login": {
+        "/account/login": {
             "post": {
                 "description": "Logs in the user, sets up the JWT authorization",
                 "consumes": [
@@ -80,6 +80,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/common.StatusMessage"
                         }
                     },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -89,7 +95,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/logout": {
+        "/account/logout": {
             "get": {
                 "description": "Logs out of the application, deletes the JWT token uased for authorization",
                 "consumes": [
@@ -109,8 +115,104 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/resend": {
-            "post": {
+        "/account/password/change": {
+            "put": {
+                "description": "Resets the password of the logged in user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Reset password endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/password/reset": {
+            "put": {
+                "description": "Resets the password of the logged in user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Reset password endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/recover": {
+            "put": {
+                "description": "Send a password reset email to a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Recover account endpoint",
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/resend": {
+            "put": {
                 "description": "Resends email confirmation for an email address.",
                 "consumes": [
                     "application/json"
@@ -141,7 +243,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/signup": {
+        "/account/signup": {
             "post": {
                 "description": "Signs the user up for the application",
                 "consumes": [
@@ -731,6 +833,39 @@ const docTemplate = `{
             }
         },
         "/users/:id": {
+            "put": {
+                "description": "Updates the target user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "User update endpoint",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the user information to patch",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            },
             "patch": {
                 "description": "Updates the target user",
                 "consumes": [
@@ -867,6 +1002,20 @@ const docTemplate = `{
                 }
             }
         },
+        "image.PresignedRequest": {
+            "type": "object",
+            "properties": {
+                "method": {
+                    "type": "string"
+                },
+                "mode": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "image.Response": {
             "type": "object",
             "properties": {
@@ -919,6 +1068,12 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "raw": {
+                    "$ref": "#/definitions/image.PresignedRequest"
+                },
+                "thumbnail": {
+                    "$ref": "#/definitions/image.PresignedRequest"
                 }
             }
         },
@@ -988,10 +1143,13 @@ const docTemplate = `{
                 "favorites": {
                     "type": "integer"
                 },
+                "first_name": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
-                "phone": {
+                "last_name": {
                     "type": "string"
                 },
                 "photos": {
@@ -1017,14 +1175,20 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
+                "first_name": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
-                "phone": {
+                "last_name": {
                     "type": "string"
                 },
                 "role": {
                     "$ref": "#/definitions/role.ProfileRole"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },
@@ -1053,7 +1217,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "RAW.Ninja API",
-	Description:      "Photostorage is an application to store RAW image files.",
+	Description:      "RAW.Ninja is an application to store RAW image files.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
