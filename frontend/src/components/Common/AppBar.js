@@ -129,89 +129,91 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
             Ninja
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          {isAuthenticated() && <Box sx={{ display: { xs: 'none', md: 'flex' } }}><OpeningSearchField setQuery={setQuery} /></Box>}
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Button
-              key="upload"
-              onClick={() => handleMenuClick("upload")}
-              sx={{ m: 0, color: theme.palette.secondary.main }}>
-              <CloudUploadIcon />
-            </Button>
-            <Button
-              key="photos"
-              onClick={() => handleMenuClick("photos")}
-              sx={{ m: 0, color: theme.palette.secondary.main }}>
-              <ViewModuleIcon />
-            </Button>
-          </Box>
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-            >
-              <MenuIcon sx={{color: theme.palette.secondary.main}}/>
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' }
-              }}
-            >
-              <MenuItem key="upload" onClick={() => handleMenuClick('upload')}>
-                <CloudUploadIcon sx={{ mr: 1 }} />
-                <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Upload</Typography>
-              </MenuItem>
-              <MenuItem key="photos" onClick={() => handleMenuClick('photos')}>
-                <ViewModuleIcon sx={{ mr: 1 }} />
-                <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Photos</Typography>
-              </MenuItem>
-            </Menu>
-          </Box>
-          {isAuthenticated && user && 
-            <Box sx={{ md: 0, ml: 1 }}>
-              <Tooltip title={"Open profile"}>
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(getInitials()) }} />
+          {isAuthenticated() &&
+            <React.Fragment>
+              <Box sx={{ display: { xs: 'none', md: 'flex' } }}><OpeningSearchField setQuery={setQuery} /></Box>
+              <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                <Button
+                  key="upload"
+                  onClick={() => handleMenuClick("upload")}
+                  sx={{ m: 0, color: theme.palette.secondary.main }}>
+                  <CloudUploadIcon />
+                </Button>
+                <Button
+                  key="photos"
+                  onClick={() => handleMenuClick("photos")}
+                  sx={{ m: 0, color: theme.palette.secondary.main }}>
+                  <ViewModuleIcon />
+                </Button>
+              </Box>
+              <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleOpenNavMenu}
+                >
+                  <MenuIcon sx={{ color: theme.palette.secondary.main }} />
                 </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {Object.entries(profileMenu()).map(([setting, path], i) => (
-                  <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>
-                    <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>{setting}</Typography>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorElNav}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  open={Boolean(anchorElNav)}
+                  onClose={handleCloseNavMenu}
+                  sx={{
+                    display: { xs: 'block', md: 'none' }
+                  }}
+                >
+                  <MenuItem key="upload" onClick={() => handleMenuClick('upload')}>
+                    <CloudUploadIcon sx={{ mr: 1 }} />
+                    <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Upload</Typography>
                   </MenuItem>
-                ))}
-              </Menu>
-            </Box>}
+                  <MenuItem key="photos" onClick={() => handleMenuClick('photos')}>
+                    <ViewModuleIcon sx={{ mr: 1 }} />
+                    <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Photos</Typography>
+                  </MenuItem>
+                </Menu>
+              </Box>
+              <Box sx={{ md: 0, ml: 1 }}>
+                <Tooltip title={"Open profile"}>
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(getInitials()) }} />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: '45px' }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {Object.entries(profileMenu()).map(([setting, path], i) => (
+                    <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>
+                      <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>{setting}</Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </Box>
+            </React.Fragment>}
         </Toolbar>
       </Container>
     </AppBar>
@@ -223,4 +225,4 @@ ResponsiveAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true }) (ResponsiveAppBar);
+export default withStyles(styles, { withTheme: true })(ResponsiveAppBar);

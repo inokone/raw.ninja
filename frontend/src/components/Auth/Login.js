@@ -14,6 +14,8 @@ const Login = ({ setUser }) => {
     const [error, setError] = useState()
     const [success, setSuccess] = useState(false)
     const captchaRef = useRef(null)
+    const [loading, setLoading] = useState(false)
+
 
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -30,6 +32,7 @@ const Login = ({ setUser }) => {
         setPasswordError(password === '')
 
         if (email && password) {
+            setLoading(true)
             fetch(REACT_APP_API_PREFIX + '/api/v1/auth/login', {
                 method: "POST",
                 mode: "cors",
@@ -56,6 +59,9 @@ const Login = ({ setUser }) => {
                 })
                 .catch(error => {
                     setError(error.message)
+                })
+                .finally(() => {
+                    setLoading(false)
                 });
         }
     }
@@ -96,6 +102,7 @@ const Login = ({ setUser }) => {
                                 setError(null)
                             }}
                             required
+                            disabled={loading}
                             variant="outlined"
                             color="primary"
                             type="email"
@@ -111,6 +118,7 @@ const Login = ({ setUser }) => {
                                 setError(null)
                             }}
                             required
+                            disabled={loading}
                             variant="outlined"
                             color="primary"
                             type="password"
@@ -127,7 +135,7 @@ const Login = ({ setUser }) => {
                         </Box>
                         {success && <Alert sx={{ mb: 4 }} severity="success">Logged in successfully!</Alert>}
                         {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
-                        <Button sx={{ mb: 2 }} variant="contained" color="primary" type="submit">Login</Button>
+                        <Button sx={{ mb: 2 }} disabled={loading} variant="contained" color="primary" type="submit">Login</Button>
                     </form>
                     <Typography sx={{ mb: 2 }}><Link to="/password/recover">Forgot password?</Link> - <Link to="/signup">Sign up</Link></Typography>
                 </Box>

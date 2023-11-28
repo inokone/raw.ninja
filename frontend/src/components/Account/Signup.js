@@ -1,12 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { TextField, Button, Alert, Typography, Container, Box, Checkbox, FormControlLabel } from '@mui/material';
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import ReCAPTCHA from "react-google-recaptcha"
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 
 const SignupForm = () => {
+    const navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [emailError, setEmailError] = useState(false)
     const [password, setPassword] = useState('')
@@ -17,6 +18,7 @@ const SignupForm = () => {
     const [success, setSuccess] = useState(false)
     const [accepted, setAccepted] = useState(false)
     const captchaRef = useRef(null)
+    const [loading, setLoading] = useState(false)
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -50,9 +52,13 @@ const SignupForm = () => {
                     });
                 } else {
                     setSuccess(true)
+                    navigate("/login")
                 }
             })
-            .catch(error => console.error(error));
+            .catch(() => setError("Network communication error. Maybe backend is down?"))
+            .finally(() => {
+                setLoading(false)
+            });
     }
 
     return (
@@ -66,6 +72,7 @@ const SignupForm = () => {
                             variant='outlined'
                             color='primary'
                             label="Email"
+                            disabled={loading}
                             value={email}
                             onChange={e => {
                                 setEmailError(email === '')
@@ -82,6 +89,7 @@ const SignupForm = () => {
                             color='primary'
                             label="Password"
                             error={passwordError}
+                            disabled={loading}
                             onChange={e => {
                                 setPassword(e.target.value)
                                 setPasswordError(password.length > 0 && password.length < 8)
@@ -104,13 +112,19 @@ const SignupForm = () => {
                             variant="outlined"
                             color="primary"
                             type="password"
+                            disabled={loading}
                             value={confirmation}
                             error={confirmationError}
                             fullWidth
                             sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
                             helperText={confirmationError && "New password and confirmation must match."}
                         />
-                        <FormControlLabel sx={{ mb: 4 }} control={<Checkbox onChange={(event) => setAccepted(event.target.checked)} />} label={<Typography>I have read and accept the <Link to="/terms">terms and conditions</Link>.</Typography>} />
+                        <FormControlLabel 
+                            sx={{ mb: 4 }} 
+                            control={<Checkbox onChange={(event) => setAccepted(event.target.checked)} />} 
+                            label={<Typography>I have read and accept the <Link to="/terms">terms and conditions</Link>.</Typography>} 
+                            disabled={loading}
+                        />
 
                         <Box sx={{ mb: 4, placeContent: 'center', display: 'flex' }}>
                             <ReCAPTCHA 
@@ -118,9 +132,9 @@ const SignupForm = () => {
                                 sitekey="6Let2RIpAAAAANGXcsSJ9aOQEaQmwKqsaZB7IAaQ"
                             />  
                         </Box>
-                        {success && <Alert sx={{ mb: 4 }} severity="success">Signed up successfully! Please <Link to="/login">log in</Link>!</Alert>}
+                        {success && <Alert sx={{ mb: 4 }} severity="success">Signed up successfully! Navigating to login...</Alert>}
                         {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
-                        <Button sx={{ mb: 4 }} variant="contained" color="primary" type="submit" disabled={!accepted}>Sign up</Button>
+                        <Button sx={{ mb: 4 }} variant="contained" color="primary" type="submit" disabled={!accepted || loading}>Sign up</Button>
                     </form>
                     {!success && <Typography>Already have an account? <Link to="/login">Login Here</Link></Typography>}
                 </Box>

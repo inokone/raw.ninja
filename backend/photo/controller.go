@@ -142,7 +142,7 @@ func (c Controller) List(g *gin.Context) {
 	if g.Request.TLS != nil {
 		protocol = "https"
 	}
-	baseURL = protocol + "://" + g.Request.Host + g.Request.URL.Path
+	baseURL = protocol + "://" + g.Request.Host + "/api/v1/photos/"
 	imgs, err := c.l.AsResponse(result, baseURL)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Failed to collect images!"})
@@ -189,7 +189,7 @@ func (c Controller) Get(g *gin.Context) {
 	if g.Request.TLS != nil {
 		protocol = "https"
 	}
-	baseURL = protocol + "://" + g.Request.Host + g.Request.URL.Path + id
+	baseURL = protocol + "://" + g.Request.Host + g.Request.URL.Path
 
 	resp = result.AsResp()
 	if err = c.l.decorateWithRequest(&resp, baseURL); err != nil {
