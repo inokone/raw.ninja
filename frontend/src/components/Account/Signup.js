@@ -52,7 +52,7 @@ const SignupForm = () => {
                     });
                 } else {
                     setSuccess(true)
-                    navigate("/login")
+                    navigate("/login?source=successfulRegistration")
                 }
             })
             .catch(() => setError("Network communication error. Maybe backend is down?"))
@@ -69,6 +69,8 @@ const SignupForm = () => {
                     <form onSubmit={handleSubmit} action={<Link to="/login" />}>
                         <TextField
                             type="email"
+                            name="email"
+                            autoComplete="username"
                             variant='outlined'
                             color='primary'
                             label="Email"
@@ -85,6 +87,8 @@ const SignupForm = () => {
                         />
                         <TextField
                             type="password"
+                            name="password"
+                            autoComplete="password"
                             variant='outlined'
                             color='primary'
                             label="Password"
@@ -102,6 +106,8 @@ const SignupForm = () => {
                         />
                         <TextField
                             label="Confirm Password"
+                            name="password"
+                            autoComplete="password"
                             onChange={e => {
                                 let conf = e.target.value
                                 setConfirmation(conf)

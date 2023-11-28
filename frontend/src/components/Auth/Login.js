@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { TextField, Button, Alert, Box, Container, Typography } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import ReCAPTCHA from "react-google-recaptcha"
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
@@ -12,10 +12,10 @@ const Login = ({ setUser }) => {
     const [emailError, setEmailError] = useState(false)
     const [passwordError, setPasswordError] = useState(false)
     const [error, setError] = useState()
-    const [success, setSuccess] = useState(false)
+    const [success, setSuccess] = useState()
     const captchaRef = useRef(null)
     const [loading, setLoading] = useState(false)
-
+    const [queryParameters] = useSearchParams()
 
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -24,10 +24,9 @@ const Login = ({ setUser }) => {
             setError("You have to solve the captcha")
             return
         }
-
         captchaRef.current.reset();
-
         setError(null)
+        setSuccess(null)
         setEmailError(email === '')
         setPasswordError(password === '')
 
@@ -53,7 +52,7 @@ const Login = ({ setUser }) => {
                         });
                     } else {
                         setError(null)
-                        setSuccess(true)
+                        setSuccess("Logged in successfully!")
                         updateLoggedinUser("/home")
                     }
                 })
@@ -90,6 +89,13 @@ const Login = ({ setUser }) => {
             .catch(error => setError(error));
     }
 
+    React.useEffect(() => { 
+        let source = queryParameters.get("source") 
+        if (source === "successfulRegistration") {
+            setSuccess("Successfully signed up, please log in!")
+        }
+    }, [queryParameters, success])
+
     return (
         <React.Fragment>
             <Container maxWidth="sm">
@@ -97,12 +103,15 @@ const Login = ({ setUser }) => {
                     <form autoComplete="off" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff" }}>
                         <TextField
                             label="Email"
+                            name="email"
                             onChange={e => {
                                 setEmail(e.target.value)
                                 setError(null)
+                                setSuccess(null)
                             }}
                             required
                             disabled={loading}
+                            autocomplete="username" 
                             variant="outlined"
                             color="primary"
                             type="email"
@@ -113,12 +122,15 @@ const Login = ({ setUser }) => {
                         />
                         <TextField
                             label="Password"
+                            name="password"
                             onChange={e => {
                                 setPassword(e.target.value)
                                 setError(null)
+                                setSuccess(null)
                             }}
                             required
                             disabled={loading}
+                            autocomplete="password" 
                             variant="outlined"
                             color="primary"
                             type="password"
@@ -133,7 +145,7 @@ const Login = ({ setUser }) => {
                                 sitekey="6Let2RIpAAAAANGXcsSJ9aOQEaQmwKqsaZB7IAaQ"
                             />
                         </Box>
-                        {success && <Alert sx={{ mb: 4 }} severity="success">Logged in successfully!</Alert>}
+                        {success && <Alert sx={{ mb: 4 }} severity="success">{success}</Alert>}
                         {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
                         <Button sx={{ mb: 2 }} disabled={loading} variant="contained" color="primary" type="submit">Login</Button>
                     </form>

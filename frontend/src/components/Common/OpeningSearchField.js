@@ -3,7 +3,7 @@ import React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -44,16 +44,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const handleQueryChange = (event, setQuery, location, navigate) => {
+const handleQueryChange = (event, setQuery, navigate) => {
   setQuery(event.target.value)
-  if (location.pathname !== '/search') {
-    navigate("/search");
-  }
+  navigate("/search");
 }
 
 const OpeningSearchField = ({ setQuery }) => {
   const navigate = useNavigate()
-  const location = useLocation()
 
   return (<Search>
     <SearchIconWrapper>
@@ -61,8 +58,10 @@ const OpeningSearchField = ({ setQuery }) => {
     </SearchIconWrapper>
     <StyledInputBase
       placeholder="Search…"
+      name="search"
+      autoComplete="search"
       inputProps={{ 'aria-label': 'search' }}
-      onChange={e => handleQueryChange(e, setQuery, location, navigate)}
+      onChange={e => handleQueryChange(e, setQuery, navigate)}
     />
   </Search>);
 }
