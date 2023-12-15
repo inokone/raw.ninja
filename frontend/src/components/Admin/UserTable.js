@@ -81,6 +81,8 @@ const UserTable = () => {
                                     <StyledTableCell>E-mail</StyledTableCell>
                                     <StyledTableCell>Name</StyledTableCell>
                                     <StyledTableCell>Role</StyledTableCell>
+                                    <StyledTableCell>Image Count</StyledTableCell>
+                                    <StyledTableCell>Used Space</StyledTableCell>
                                     <StyledTableCell>Registered</StyledTableCell>
                                     <StyledTableCell>Last Updated</StyledTableCell>
                                     <StyledTableCell>Deleted</StyledTableCell>
@@ -93,6 +95,8 @@ const UserTable = () => {
                                             <StyledTableCell>{user.email}</StyledTableCell>
                                             <StyledTableCell>{user.first_name + " " + user.last_name}</StyledTableCell>
                                             <StyledTableCell>{user.role.name}</StyledTableCell>
+                                            <StyledTableCell>{user.images}</StyledTableCell>
+                                            <StyledTableCell>{user.used_space}</StyledTableCell>
                                             <StyledTableCell>{asDate(user.created)}</StyledTableCell>
                                             <StyledTableCell>{asDate(user.updated)}</StyledTableCell>
                                             <StyledTableCell>{user.deleted}</StyledTableCell>

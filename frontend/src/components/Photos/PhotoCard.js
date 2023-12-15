@@ -1,96 +1,160 @@
 import * as React from 'react';
-import DownloadIcon from '@mui/icons-material/Download';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import { Card, CardMedia, Box, CardActions, CardActionArea, IconButton, Tooltip } from "@mui/material";
+import StarIcon from '@mui/icons-material/Star';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Brightness1Icon from '@mui/icons-material/Brightness1';
+import { Box, IconButton, Tooltip } from "@mui/material";
 import { makeStyles } from '@mui/styles';
-
-const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   favorite: {
-    color: 'red',
+    color: 'white',
+    cursor: "pointer",
   },
   nonfavorite: {
     color: 'lightgray',
+    cursor: "pointer",
   },
+  selected: {
+    position: 'absolute',
+    fill: "#06befa",
+    cursor: "pointer",
+    overflow: "hidden",
+    width: "32px",
+    height: "32px",
+  },
+  unselected: {
+    position: 'absolute',
+    color: "lightgray",
+    cursor: "pointer",
+  },
+  selected_bg: {
+    position: 'absolute',
+    fill: "white",
+    cursor: "pointer",
+  },
+  unselected_bg: {
+    display: 'none',
+  },
+  selected_box: {
+    marginTop: '4px',
+    marginLeft: '4px',
+    width: "32px",
+    height: "32px",
+    position: 'relative',
+  },
+  unselected_box: {
+    marginTop: '8px',
+    marginLeft: '8px',
+    width: "24px",
+    height: "24px",
+    color: 'lightgray', 
+    position: 'relative'
+  },
+
 }));
 
-const PhotoCard = ({ image, setImage, selected, onClick }) => {
+const PhotoCard = ({ photo, setPhoto, onClick, imageProps: { src, alt, style, width, height, ...restImageProps } }) => {
+  const navigate = useNavigate();
   const classes = useStyles();
+  const [isHovering, setIsHovering] = React.useState(false);
 
-  const handleFavoriteClick = (image) => {
-    const updatedImage = { ...image };
-    updatedImage.descriptor.favorite = !image.descriptor.favorite
-    setImage(updatedImage)
+  const handleMouseOver = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseOut = () => {
+    setIsHovering(false);
+  };
+
+  const handleFavoriteClick = (photo) => {
+    const updatedPhoto = { ...photo };
+    updatedPhoto.favorite = !photo.favorite
+    setPhoto(updatedPhoto)
   }
 
-  const handleDownloadClick = (image) => {
-    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id + '/raw', {
-      method: "GET",
-      mode: "cors",
-      credentials: "include"
-    })
-      .then(response => response.blob())
-      .then(blob => {
-        var url = window.URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.setAttribute(
-          'download',
-          image.descriptor.filename,
-        );
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      });
+  const handleSelectClick = (photo) => {
+    const updatedPhoto = { ...photo };
+    updatedPhoto.selected = !photo.selected
+    setPhoto(updatedPhoto)
   }
+
+  const imgStyle = {
+    transition: "transform .135s cubic-bezier(0.0,0.0,0.2,1),opacity linear .15s"
+  };
+  const selectedImgStyle = {
+    transform: "translateZ(0px) scale3d(0.9, 0.9, 1)",
+    transition: "transform .135s cubic-bezier(0.0,0.0,0.2,1),opacity linear .15s"
+  };
 
   const handleClick = (id) => {
     onClick(id)
   }
 
+  const handleEditClick = () => {
+    navigate('/editor/' + photo.id + '?format=' + photo.format)
+  }
+
   return (
-    <Card sx={{ maxWidth: 250, position: 'relative', cursor: "pointer" }}>
-      <Box>
-        <CardMedia
-          component="img"
-          height="200px"
-          image={image.thumbnail.url}
-          loading="lazy"
-          alt={image.descriptor.filename}
-          onClick={() => handleClick(image.id)}
-        />
-      </Box>
-      <CardActionArea component="div" sx={{
-        ...(!selected && {
+    <Box sx={{ position: 'relative' }} style={style} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
+      <img
+        src={src}
+        alt={alt}
+        width='100%'
+        height='100%'
+        style={
+          photo.selected ? { ...imgStyle, ...selectedImgStyle } : { ...imgStyle }
+        }
+        {...restImageProps}
+        onClick={() => handleClick(photo)}
+      />
+      {(photo.favorite || isHovering) && <Box sx={{
         background:
-          'linear-gradient(to top, rgba(0,0,0,0.7) 0%, ' +
+          'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
           'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
-        }),
-        ...(selected && {
-          background:
-            'linear-gradient(to top, rgba(0,255,0,0.9) 0%, ' +
-            'rgba(0,255,0,0.9) 10%, rgba(0,0,0,0.65) 11%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
-        }),
         position: 'absolute',
-        bottom: 0,
-        right: 0,
         width: '100%',
+        textAlign: 'right',
+        top: 0,
+        right: 0,
       }}>
-        <CardActions disableSpacing>
-          <Tooltip title="Prevent file from being deleted by life-cycle rules">
-            <IconButton aria-label="Add to favorites" onClick={() => handleFavoriteClick(image)}>
-              <FavoriteIcon className={image.descriptor.favorite ? classes.favorite : classes.nonfavorite} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Download RAW file">
-            <IconButton aria-label="Download RAW image" onClick={() => handleDownloadClick(image)} sx={{ color: 'lightgray' }}>
-              <DownloadIcon />
-            </IconButton>
-          </Tooltip>
-        </CardActions>
-      </CardActionArea>
-    </Card>
+        {isHovering &&
+          <>
+            <Tooltip title="Edit photo">
+              <IconButton aria-label="Edit this photo" onClick={() => handleEditClick(photo)} sx={{ color: 'lightgray' }}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip></>}
+        <Tooltip title="Mark as favorite">
+          <IconButton aria-label="Add to favorites" onClick={() => handleFavoriteClick(photo)}>
+            <StarIcon className={photo.favorite ? classes.favorite : classes.nonfavorite} />
+          </IconButton>
+        </Tooltip>
+      </Box>}
+      {(isHovering || photo.selected) && <Box sx={{
+        position: 'absolute',
+        textAlign: 'left',
+        top: 0,
+        left: 0,
+      }}>
+        <Tooltip title="Select photo">
+          <IconButton aria-label="Select photo" onClick={() => handleSelectClick(photo)} className={photo.selected ? classes.selected_box: classes.unselected_box}>
+            <span // Stacking 2 Icons over each other so it looks better
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "Center",
+                alignItems: "Center"
+              }}
+            >
+              <Brightness1Icon className={photo.selected ? classes.selected_bg : classes.unselected_bg} />
+              <CheckCircleIcon className={photo.selected ? classes.selected : classes.unselected} />
+            </span>
+          </IconButton>
+        </Tooltip>
+      </Box>}
+    </Box>
   );
 }
 export default PhotoCard;

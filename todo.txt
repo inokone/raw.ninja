@@ -21,8 +21,23 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Fix image display on Safari! Test other browsers
+    - Display image metadata somehow. Maybe lightbox captions?
+    - Fix width/height - exif lying
+      - store thumb width and height too
+    - Add grouping for images
+      - Make a group for each upload - display the group upon successful upload
+      - With selection have an option to create a gallery/collection
+    - Display multiple image groups (by date or smg)
+    - Replace table displays with an advanced component
     - Display image count + used space per user on admin page
+    - Automate IaC
+      - CloudFormation with
+        - Frontend on S3, later possibly CloudFront
+        - Backend docker uploaded to ECR
+        - Backend running in ECS from ECR
+        - ALB deployed by CF
+        - CloudWatch logs by CF
+        - Credentials should come from AWS Systems Manager Parameter Store
     - make image service serve just image, and have one for raw and one for thumbnails
     - move router parts into the modules
     - think about moving the configuration also into the separate modules
@@ -53,7 +68,6 @@ Functionality:
     - Add tooltips and info icons everywhere
     - Have a "rows" type of view for photos - photo with details next to it, potentially dwonload and favorite buttons
     - Add filtering, ordering and pagination for images
-    - Add grouping for images
     - Add batch uploading files
     - Add personal lifecycle rules
       - archive files after Y days

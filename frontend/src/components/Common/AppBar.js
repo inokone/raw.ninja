@@ -106,7 +106,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Container maxWidth="xxl" sx={{ bgcolor: theme.palette.common.black }}>
         <Toolbar disableGutters variant="dense">
           <SvgIcon sx={{ mr: 0.5, color: theme.palette.primary.main }} component={Logo} />
