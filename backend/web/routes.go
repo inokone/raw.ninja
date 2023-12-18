@@ -2,6 +2,7 @@ package web
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/inokone/photostorage/album"
 	"github.com/inokone/photostorage/auth"
 	"github.com/inokone/photostorage/auth/account"
 	"github.com/inokone/photostorage/auth/role"
@@ -13,6 +14,7 @@ import (
 	"github.com/inokone/photostorage/photo"
 	"github.com/inokone/photostorage/search"
 	"github.com/inokone/photostorage/stats"
+	"github.com/inokone/photostorage/upload"
 )
 
 // Storers is a struct to collect all `Storer` entities used by the application
@@ -33,16 +35,19 @@ type Services struct {
 // Init is a function to initialize handler mapping for URLs
 func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 	var (
-		mailer = mail.NewService(c.Mail)
-		p      = photo.NewController(st.Photos, st.Images, c.Store)
-		m      = auth.NewJWTHandler(st.Users, c.Auth)
-		a      = auth.NewController(st.Users, st.Accounts, m, c.Auth)
-		ac     = account.NewController(st.Users, st.Accounts, mailer, c.Auth)
-		sea    = search.NewController(st.Photos, se.Load)
-		sts    = stats.NewController(st.Photos, st.Users, c.Store)
-		u      = user.NewController(st.Users)
-		r      = role.NewController(st.Roles)
-		co     = collection.NewController(st.Collections)
+		mailer   = mail.NewService(c.Mail)
+		uploader = photo.NewUploadService(st.Photos, st.Images, c.Store)
+		loader   = photo.NewLoadService(st.Photos, st.Images, c.Store)
+		p        = photo.NewController(st.Photos, st.Images, c.Store)
+		m        = auth.NewJWTHandler(st.Users, c.Auth)
+		a        = auth.NewController(st.Users, st.Accounts, m, c.Auth)
+		ac       = account.NewController(st.Users, st.Accounts, mailer, c.Auth)
+		sea      = search.NewController(st.Photos, se.Load)
+		sts      = stats.NewController(st.Photos, st.Users, c.Store)
+		u        = user.NewController(st.Users)
+		r        = role.NewController(st.Roles)
+		al       = album.NewController(st.Collections)
+		up       = upload.NewController(st.Collections, uploader, loader)
 	)
 
 	v1.GET("healthcheck", common.Healthcheck)
@@ -66,7 +71,6 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 
 	g = v1.Group("/photos", m.Validate)
 	{
-		g.POST("/", p.Upload)
 		g.GET("/", p.List)
 		g.GET("/:id", p.Get)
 		g.PUT("/:id", p.Update)
@@ -75,12 +79,19 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 		g.GET("/:id/thumbnail", p.Thumbnail)
 	}
 
-	g = v1.Group("/collections", m.Validate)
+	g = v1.Group("/uploads", m.Validate)
 	{
-		g.POST("/", co.CreateAlbum)
-		g.GET("/", co.List)
-		g.GET("/:id", co.Get)
-		g.DELETE("/:id", co.Delete)
+		g.POST("/", up.Upload)
+		g.GET("/", up.List)
+		g.GET("/:id", up.Get)
+	}
+
+	g = v1.Group("/albums", m.Validate)
+	{
+		g.POST("/", al.CreateAlbum)
+		g.GET("/", al.List)
+		g.GET("/:id", al.Get)
+		g.DELETE("/:id", al.Delete)
 	}
 
 	g = v1.Group("/search", m.Validate)

@@ -19,26 +19,31 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type uploadService struct {
+// UploadService is a service entity handling photo uploads
+type UploadService struct {
 	photos Storer
 	images image.Storer
 	config common.ImageStoreConfig
 }
 
-func newUploadService(photos Storer, images image.Storer, config common.ImageStoreConfig) *uploadService {
-	return &uploadService{
+// NewUploadService creates an `UploadService` instance based on storers and configuration
+func NewUploadService(photos Storer, images image.Storer, config common.ImageStoreConfig) *UploadService {
+	return &UploadService{
 		photos: photos,
 		images: images,
 		config: config,
 	}
 }
 
-type uploadResult struct {
-	id  uuid.UUID
-	err error
+// UploadResult is a struct to store result of a single photo's upload
+type UploadResult struct {
+	ID  uuid.UUID
+	Err error
 }
 
-func (s uploadService) upload(usr *user.User, file *multipart.FileHeader, ch chan uploadResult, wg *sync.WaitGroup) {
+// Upload is a method og `UploadService`, capable of uploading a single file. The method is concurrency safe, target
+// is parallelization when multiple files are uploaded. Results of the upload is added to the channel uploadResult.
+func (s UploadService) Upload(usr *user.User, file *multipart.FileHeader, ch chan UploadResult, wg *sync.WaitGroup) {
 	var (
 		err error
 		mp  multipart.File
@@ -49,18 +54,18 @@ func (s uploadService) upload(usr *user.User, file *multipart.FileHeader, ch cha
 	defer wg.Done()
 	mp, err = file.Open()
 	if err != nil {
-		ch <- uploadResult{uuid.UUID{}, err}
+		ch <- UploadResult{uuid.UUID{}, err}
 	}
 	defer closeRequestFile(mp)
 	raw, err = io.ReadAll(mp)
 	if err != nil {
-		ch <- uploadResult{uuid.UUID{}, err}
+		ch <- UploadResult{uuid.UUID{}, err}
 	}
 	id, err = s.uploadBinary(usr, raw, file.Filename)
-	ch <- uploadResult{id, err}
+	ch <- UploadResult{id, err}
 }
 
-func (s uploadService) uploadBinary(usr *user.User, raw []byte, filename string) (uuid.UUID, error) {
+func (s UploadService) uploadBinary(usr *user.User, raw []byte, filename string) (uuid.UUID, error) {
 	start := time.Now()
 	var (
 		target        *Photo
@@ -101,7 +106,7 @@ func (s uploadService) uploadBinary(usr *user.User, raw []byte, filename string)
 	return id, err
 }
 
-func (s uploadService) exceededGlobalQuota(fileSize int64) (bool, error) {
+func (s UploadService) exceededGlobalQuota(fileSize int64) (bool, error) {
 	var (
 		quota int64
 		stats Stats
@@ -120,7 +125,7 @@ func (s uploadService) exceededGlobalQuota(fileSize int64) (bool, error) {
 	return stats.UsedSpace+fileSize > quota, nil
 }
 
-func (s uploadService) exceededUserQuota(usr *user.User, fileSize int64) (bool, error) {
+func (s UploadService) exceededUserQuota(usr *user.User, fileSize int64) (bool, error) {
 	var (
 		stats UserStats
 		err   error

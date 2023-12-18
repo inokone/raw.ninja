@@ -70,7 +70,7 @@ const UserTable = () => {
 
     return (
         <React.Fragment>
-            {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+            {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay />}
             {users &&
                 <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>

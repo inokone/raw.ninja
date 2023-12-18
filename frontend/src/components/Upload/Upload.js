@@ -25,12 +25,11 @@ const useStyles = makeStyles(theme => createStyles({
   }
 }));
 
-
-
 const Upload = () => {
   const navigate = useNavigate()
-  const [stage, setStage] = React.useState(0)
-  const [error, setError] = React.useState()
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState(null)
+  const [success, setSuccess] = React.useState(false)
   const [files, setFiles] = React.useState([])
   const classes = useStyles();
 
@@ -42,14 +41,14 @@ const Upload = () => {
     if (files.length === 0) {
       return
     }
-    setStage(1)
+    setLoading(true)
     var data = new FormData()
 
     for (const file of files) {
       data.append('files[]', file, file.name);
     }
 
-    fetch(REACT_APP_API_PREFIX + '/api/v1/photos/', {
+    fetch(REACT_APP_API_PREFIX + '/api/v1/uploads/', {
       method: "POST",
       mode: "cors",
       credentials: "include",
@@ -59,27 +58,29 @@ const Upload = () => {
         if (!response.ok) {
           response.json().then(content => {
             setError(content.message)
+            setLoading(false)
           });
         } else {
           response.json().then(content => {
-            let first = content.photo_ids[0]
-            setStage(2)
-            setError(null)
-            navigate("/photos/" + first)
+            setSuccess(true)
+            setLoading(false)
+            navigate("/uploads/" + content)
           })
         }
       })
       .catch(error => {
         setError(error.message)
-        setStage(3)
+        setLoading(false)
       });
   }
 
   return (
     <React.Fragment>
-      {stage === 0 &&
+      {!loading &&
         <Container>
           <Box m={5}>
+            {success && <Alert sx={{ mb: 1 }} onClose={() => setSuccess(null)} severity="success">Upload successful!</Alert>}
+            {error && <Alert sx={{ mb: 1 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             <DropzoneArea 
               m={5}  
               filesLimit={20}
@@ -99,9 +100,7 @@ const Upload = () => {
           {files.length > 0 && <Button onClick={handleClick} variant="contained">Upload</Button>}
         </Container>
       }
-      {stage === 1 && <ProgressDisplay text="Please wait for processing the uploaded photos..." />}
-      {stage === 2 && <Alert sx={{ mb: 4 }} severity="success">Upload successful!</Alert>}
-      {stage === 3 && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+      {loading && <ProgressDisplay text="Please wait for processing the uploaded photos..." />}
     </React.Fragment>
   );
 }

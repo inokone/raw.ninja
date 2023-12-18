@@ -2,11 +2,10 @@ package photo
 
 import (
 	"errors"
-	"mime/multipart"
 	"net/http"
-	"sync"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/image"
@@ -26,7 +25,7 @@ type Controller struct {
 	photos Storer
 	images image.Storer
 	cfg    common.ImageStoreConfig
-	s      uploadService
+	s      UploadService
 	l      LoadService
 }
 
@@ -36,74 +35,9 @@ func NewController(photos Storer, images image.Storer, cfg common.ImageStoreConf
 		photos: photos,
 		images: images,
 		cfg:    cfg,
-		s:      *newUploadService(photos, images, cfg),
+		s:      *NewUploadService(photos, images, cfg),
 		l:      *NewLoadService(photos, images, cfg),
 	}
-}
-
-// Upload is a method of `Controller`. Handles RAW and photo upload requests. Capable of handling multiple files
-// uploaded within a single request.
-// @Summary Photo upload endpoint
-// @Schemes
-// @Tags photos
-// @Description Upload RAW files to store
-// @Accept multipart/form-data
-// @Produce json
-// @Param files[] formData file true "Photos to store"
-// @Success 201 {object} UploadSuccess
-// @Failure 400 {object} common.StatusMessage
-// @Failure 415 {object} common.StatusMessage
-// @Failure 500 {object} common.StatusMessage
-// @Router /photos/upload [post]
-func (c Controller) Upload(g *gin.Context) {
-	var (
-		usr   *user.User
-		err   error
-		form  *multipart.Form
-		files []*multipart.FileHeader
-		ids   []string
-		ch    chan uploadResult
-		wg    *sync.WaitGroup
-	)
-
-	form, err = g.MultipartForm()
-	if err != nil {
-		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Could not extract uploaded file from request!"})
-		return
-	}
-
-	files = form.File["files[]"]
-
-	if len(files) == 0 {
-		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "You have to upload at least 1 file!"})
-		return
-	}
-
-	usr, err = currentUser(g)
-	if err != nil {
-		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Error with the session. Please log in again!"})
-		return
-	}
-
-	ch = make(chan uploadResult, len(files))
-	wg = new(sync.WaitGroup)
-	for _, file := range files {
-		wg.Add(1)
-		go c.s.upload(usr, file, ch, wg)
-	}
-	wg.Wait()
-	close(ch)
-	for result := range ch {
-		if result.err != nil {
-			g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Uploaded file is corrupt!"})
-		}
-		ids = append(ids, result.id.String())
-	}
-
-	g.JSON(http.StatusCreated, UploadSuccess{
-		PhotoIDs: ids,
-		UserID:   usr.ID.String(),
-	})
 }
 
 // List is a method of `Controller`. Handles listing all photos and RAW files of the authenticated user.
@@ -360,12 +294,12 @@ func (c Controller) Thumbnail(g *gin.Context) {
 	g.Data(http.StatusOK, "application/octet-stream", thumbnail)
 }
 
-func authorize(g *gin.Context, userID string) error {
+func authorize(g *gin.Context, userID uuid.UUID) error {
 	user, err := currentUser(g)
 	if err != nil {
 		return err
 	}
-	if userID != user.ID.String() {
+	if userID != user.ID {
 		return errors.New("user is not authorized")
 	}
 	return nil

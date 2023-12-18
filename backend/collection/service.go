@@ -21,42 +21,36 @@ func NewService(s Storer) *Service {
 }
 
 // CreateUpload is a method of `Service` creating a persisted upload type collection
-func (s Service) CreateUpload(usr user.User, photoIDs []string) (*Collection, error) {
+func (s Service) CreateUpload(usr user.User, photoIDs []uuid.UUID) (*Collection, error) {
 	var (
-		u      Collection
+		u      *Collection
 		err    error
 		photos []photo.Photo
 	)
-	photos, err = createPhotos(photoIDs)
-	if err != nil {
-		return nil, err
-	}
-	u = Collection{
+	photos = createPhotos(photoIDs)
+	u = &Collection{
 		Type:   Upload,
-		Owner:  usr,
+		User:   usr,
 		Photos: photos,
-		Name:   time.Now().Local().Local().Format("YYYY-MM-DD"),
+		Name:   time.Now().Local().Format("YYYY-MM-DD"),
 	}
-	if err = s.s.Store(&u); err != nil {
+	if err = s.s.Store(u); err != nil {
 		return nil, err
 	}
-	return &u, nil
+	return u, nil
 }
 
 // CreateAlbum is a method of `Service` creating a persisted album type collection
-func (s Service) CreateAlbum(usr user.User, name string, photoIDs []string) (*Collection, error) {
+func (s Service) CreateAlbum(usr user.User, name string, photoIDs []uuid.UUID) (*Collection, error) {
 	var (
 		u      Collection
 		err    error
 		photos []photo.Photo
 	)
-	photos, err = createPhotos(photoIDs)
-	if err != nil {
-		return nil, err
-	}
+	photos = createPhotos(photoIDs)
 	u = Collection{
 		Type:   Album,
-		Owner:  usr,
+		User:   usr,
 		Photos: photos,
 		Name:   name,
 	}
@@ -66,19 +60,14 @@ func (s Service) CreateAlbum(usr user.User, name string, photoIDs []string) (*Co
 	return &u, nil
 }
 
-func createPhotos(photoIDs []string) ([]photo.Photo, error) {
-	var (
-		res []photo.Photo = make([]photo.Photo, len(photoIDs))
-		err error
-	)
+func createPhotos(photoIDs []uuid.UUID) []photo.Photo {
+	var res []photo.Photo = make([]photo.Photo, len(photoIDs))
 	for i, id := range photoIDs {
-		res[i] = photo.Photo{}
-		res[i].ID, err = uuid.Parse(id)
-		if err != nil {
-			return nil, err
+		res[i] = photo.Photo{
+			ID: id,
 		}
 	}
-	return res, nil
+	return res
 }
 
 // SetProperties is a method of `Service` for updating name and tags of a persisted collection

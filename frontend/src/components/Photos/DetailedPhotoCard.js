@@ -99,7 +99,7 @@ const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
 
   return (
     <React.Fragment>
-      {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+      {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
       <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.34)', borderRadius: '4px', my: 1, mr: 1.5 }}>
         <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.54)', color: 'white', padding: '4px', borderRadius: '4px'}}>
           <Grid container>

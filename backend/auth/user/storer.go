@@ -93,9 +93,7 @@ func (s *GORMStorer) Patch(usr AdminView) error {
 	}
 
 	persisted.RoleID = usr.Role.ID
-
 	res := s.db.Updates(persisted)
-
 	return res.Error
 }
 

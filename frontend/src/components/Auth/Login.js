@@ -145,8 +145,8 @@ const Login = ({ setUser }) => {
                                 sitekey="6Let2RIpAAAAANGXcsSJ9aOQEaQmwKqsaZB7IAaQ"
                             />
                         </Box>
-                        {success && <Alert sx={{ mb: 4 }} severity="success">{success}</Alert>}
-                        {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+                        {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">{success}</Alert>}
+                        {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                         <Button sx={{ mb: 2 }} disabled={loading} variant="contained" color="primary" type="submit">Login</Button>
                     </form>
                     <Typography sx={{ mb: 2 }}><Link to="/password/recover">Forgot password?</Link> - <Link to="/signup">Sign up</Link></Typography>

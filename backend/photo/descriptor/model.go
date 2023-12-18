@@ -26,7 +26,7 @@ type Descriptor struct {
 	Tags       []string     `gorm:"type:text[]"`
 	Favorite   bool         `gorm:"index"`
 	Metadata   img.Metadata `gorm:"foreignKey:MetadataID"`
-	MetadataID string
+	MetadataID uuid.UUID
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 	DeletedAt  gorm.DeletedAt

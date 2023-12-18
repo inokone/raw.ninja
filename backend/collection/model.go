@@ -22,7 +22,7 @@ const (
 
 // Scan is a function to return a `CollectionType` for value
 func (ct *Type) Scan(value interface{}) error {
-	*ct = Type(value.([]byte))
+	*ct = Type(value.(string))
 	return nil
 }
 
@@ -34,8 +34,8 @@ func (ct Type) Value() (driver.Value, error) {
 // Collection is a type for a collection of photos.
 type Collection struct {
 	ID        uuid.UUID     `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	Owner     user.User     `gorm:"foreignKey:OwnerID"`
-	OwnerID   string        `gorm:"index"`
+	User      user.User     `gorm:"foreignKey:UserID"`
+	UserID    uuid.UUID     `gorm:"index"`
 	Type      Type          `gorm:"type:collection_type"`
 	Name      string        `gorm:"type:varchar(255)"`
 	Tags      []string      `gorm:"type:text[]"`
@@ -47,15 +47,10 @@ type Collection struct {
 
 // AsResp is a method of `Collection` to convert to JSON representation.
 func (c Collection) AsResp() Resp {
-	var photos []photo.Response = make([]photo.Response, len(c.Photos))
-	for i, photo := range c.Photos {
-		photos[i] = photo.AsResp()
-	}
 	return Resp{
 		ID:        c.ID.String(),
 		Name:      c.Name,
 		Tags:      c.Tags,
-		Photos:    photos,
 		CreatedAt: c.CreatedAt,
 	}
 }

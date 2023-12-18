@@ -25,6 +25,7 @@ import Landing from './components/Landing/Landing';
 import TermsOfUse from './components/Common/TermsOfUse';
 import CookieConsent from './components/Common/CookieConsent';
 import CookieRulesDialog from './components/Common/CookieRulesDialog';
+import UploadView from './components/Photos/UploadView';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -96,12 +97,13 @@ const App = () => {
               <Route path="/terms" element={<TermsOfUse />} />
               <Route path="/" element={<Landing />} />
               <Route path="/confirm" element={<EmailConfirmation />} />
-                  <Route element={<ProtectedRoute user={user} redirect="/" />}>
+                <Route element={<ProtectedRoute user={user} redirect="/" />}>
                 <Route path="/home" element={<Dashboard user={user} />} />
                 <Route path="/upload" element={<Upload user={user} />} />
                 <Route path="/photos" element={<PhotoList user={user} />} />
                 <Route path="/editor/:photoId" element={<Photopea/>} />
                 <Route path="/photos/:photosId" element={<PhotoDisplay user={user} />} />
+                <Route path="/uploads/:uploadId" element={<UploadView user={user} />} />
                 <Route path="/users/:userId" element={<Preferences user={user} />} />
                 <Route path="/profile" element={<UserProfile user={user} />} />
                 <Route path="/search" element={<SearchResult query={query} />} />

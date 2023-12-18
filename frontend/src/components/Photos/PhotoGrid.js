@@ -47,6 +47,16 @@ const PhotoGrid = ({ populator, data }) => {
             });
     }
 
+    const setSelected = (photo) => {
+        let newImages = images.slice()
+        newImages.forEach(i => {
+            if (i.id === photo.id) {
+                i.selected = photo.selected
+            } 
+        });
+        setImages(newImages)
+    }
+
     const formatShutterSpeed = (shutterSpeed) => {
         let validDividers = [2, 4, 8, 15, 30, 60, 125, 250, 500, 1000, 2000, 4000, 8000]
         if (shutterSpeed < 1) {
@@ -76,6 +86,9 @@ const PhotoGrid = ({ populator, data }) => {
     }
 
     const processImages = (content) => {
+        if (!Array.isArray(content)) {
+            content = content.photos
+        }
         let result = content.map(image => asPhoto(image))
         setImages(result)
     }
@@ -124,9 +137,9 @@ const PhotoGrid = ({ populator, data }) => {
 
     return (
         <React.Fragment>
-            {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+            {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay />}
-            {images && <PhotoGallery photos={images} setPhoto={setPhoto}/>}
+            {images && <PhotoGallery photos={images} setPhoto={setPhoto} setSelected={setSelected}/>}
         </React.Fragment>
     );
 }

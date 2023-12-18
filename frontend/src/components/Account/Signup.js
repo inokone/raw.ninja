@@ -138,8 +138,8 @@ const SignupForm = () => {
                                 sitekey="6Let2RIpAAAAANGXcsSJ9aOQEaQmwKqsaZB7IAaQ"
                             />  
                         </Box>
-                        {success && <Alert sx={{ mb: 4 }} severity="success">Signed up successfully! Navigating to login...</Alert>}
-                        {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+                        {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Signed up successfully! Navigating to login...</Alert>}
+                        {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                         <Button sx={{ mb: 4 }} variant="contained" color="primary" type="submit" disabled={!accepted || loading}>Sign up</Button>
                     </form>
                     {!success && <Typography>Already have an account? <Link to="/login">Login Here</Link></Typography>}

@@ -45,14 +45,14 @@ func (s *GORMStorer) Store(collection *Collection) error {
 
 // Update is a method of the `GORMStorer` struct. Takes a `Collection` and updates it.
 func (s *GORMStorer) Update(collection *Collection) error {
-	res := s.db.Updates(collection)
+	res := s.db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(collection)
 	return res.Error
 }
 
 // ByID is a method of the `GORMStorer` struct. Takes an UUID as parameter to load a `Collection` object from persistence.
 func (s *GORMStorer) ByID(id uuid.UUID) (*Collection, error) {
 	var collection Collection
-	result := s.db.Preload("Photos").Where(&Collection{ID: id}).First(&collection)
+	result := s.db.Preload("Photos.Desc.Metadata").First(&collection, "id = ?", id.String())
 	return &collection, result.Error
 }
 
@@ -60,7 +60,7 @@ func (s *GORMStorer) ByID(id uuid.UUID) (*Collection, error) {
 // The returned
 func (s *GORMStorer) ByUserAndType(usr *user.User, ct Type) ([]Collection, error) {
 	var collections []Collection
-	result := s.db.Where(&Collection{OwnerID: usr.ID.String(), Type: ct}).Find(&collections)
+	result := s.db.Where(&Collection{UserID: usr.ID, Type: ct}).Find(&collections)
 	return collections, result.Error
 }
 

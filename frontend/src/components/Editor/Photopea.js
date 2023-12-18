@@ -168,7 +168,7 @@ const Photopea = () => {
     return (
         <div className="iframe-container">
             {loading && <ProgressDisplay />}
-            {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
+            {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             {initialzing && <Alert sx={{ mb: 1 }} onClose={() => { setInitialzing(false) }}>Loading image...</Alert>}
             {saving && <Alert sx={{ mb: 1 }} onClose={() => { setSaving(false) }}>Saving modifications...</Alert>}
             <iframe title="Editor" width="100%" id="pp" src={"https://photopea.com#" + settings()}

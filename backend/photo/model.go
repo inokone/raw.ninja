@@ -16,9 +16,9 @@ type Photo struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
 	Raw       []byte    `gorm:"-"`
 	Thumbnail []byte    `gorm:"-"`
-	UserID    string    `gorm:"index"`
+	UserID    uuid.UUID `gorm:"index"`
 	User      user.User `gorm:"foreignKey:UserID"`
-	DescID    string
+	DescID    uuid.UUID
 	Desc      descriptor.Descriptor `gorm:"foreignKey:DescID"`
 	UsedSpace int
 	CreatedAt time.Time
@@ -56,10 +56,4 @@ type Stats struct {
 	Photos    int
 	Favorites int
 	UsedSpace int64
-}
-
-// UploadSuccess is a JSON response type for upload results.
-type UploadSuccess struct {
-	PhotoIDs []string `json:"photo_ids"`
-	UserID   string   `json:"user_id"`
 }
