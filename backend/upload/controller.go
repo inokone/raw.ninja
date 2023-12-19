@@ -42,7 +42,7 @@ func NewController(uploads collection.Storer, uploader *photo.UploadService, loa
 // @Accept multipart/form-data
 // @Produce json
 // @Param files[] formData file true "Photos to store"
-// @Success 201 {object} UploadSuccess
+// @Success 201 {object} string
 // @Failure 400 {object} common.StatusMessage
 // @Failure 415 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
