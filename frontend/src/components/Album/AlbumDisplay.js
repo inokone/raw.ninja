@@ -1,13 +1,13 @@
 import * as React from 'react';
 import PhotoGrid from '../Photos/PhotoGrid';
-import { useLocation } from "react-router-dom"
+import { useLocation } from "react-router-dom";
+import { Typography } from '@mui/material';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const UploadView = ({user}) => {
+const AlbumDisplay = ({ user }) => {
     const location = useLocation()
     const path = location.pathname
-    console.log(path)
 
     const populate = () => {
         if (!user) {
@@ -16,15 +16,18 @@ const UploadView = ({user}) => {
             })
         }
         return fetch(REACT_APP_API_PREFIX + '/api/v1' + path, {
-                method: "GET",
-                mode: "cors",
-                credentials: "include"
-            }) 
+            method: "GET",
+            mode: "cors",
+            credentials: "include"
+        })
     }
 
     return (
-        <PhotoGrid populator={populate} data={[]}></PhotoGrid>
+        <>
+            <Typography variant='h4'>Album</Typography>
+            <PhotoGrid populator={populate} data={[]}></PhotoGrid>
+        </>
     )
 }
 
-export default UploadView;
+export default AlbumDisplay;

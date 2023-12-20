@@ -46,7 +46,7 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 		sts      = stats.NewController(st.Photos, st.Users, c.Store)
 		u        = user.NewController(st.Users)
 		r        = role.NewController(st.Roles)
-		al       = album.NewController(st.Collections)
+		al       = album.NewController(st.Collections, loader)
 		up       = upload.NewController(st.Collections, uploader, loader)
 	)
 

@@ -9,6 +9,7 @@ import (
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/collection"
 	"github.com/inokone/photostorage/common"
+	"github.com/inokone/photostorage/photo"
 	"github.com/rs/zerolog/log"
 )
 
@@ -16,13 +17,15 @@ import (
 type Controller struct {
 	albums  collection.Storer
 	service collection.Service
+	loader  *photo.LoadService
 }
 
 // NewController creates a new `Controller` instance based on the collection persistence provided in the parameter.
-func NewController(albums collection.Storer) Controller {
+func NewController(albums collection.Storer, loader *photo.LoadService) Controller {
 	return Controller{
 		albums:  albums,
 		service: *collection.NewService(albums),
+		loader:  loader,
 	}
 }
 
@@ -101,27 +104,44 @@ func convertIDs(s []string) ([]uuid.UUID, error) {
 // @Router /albums/:id [get]
 func (c Controller) Get(g *gin.Context) {
 	var (
-		err    error
-		result *collection.Collection
-		id     uuid.UUID
+		err      error
+		cl       *collection.Collection
+		id       uuid.UUID
+		protocol string
+		baseURL  string
+		res      collection.Resp
 	)
 	id, err = uuid.Parse(g.Param("id"))
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid identifier!"})
 		return
 	}
-	result, err = c.albums.ByID(id)
+	cl, err = c.albums.ByID(id)
 	if err != nil {
 		log.Err(err).Msg("Failed to retrieve album!")
 		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 404, Message: "Failed to retrieve album!"})
 		return
 	}
-	if err = authorize(g, result.User.ID); err != nil {
+	if err = authorize(g, cl.UserID); err != nil {
 		log.Err(err).Msg("Failed to retrieve album!")
 		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Unauthorized!"})
 		return
 	}
-	g.JSON(http.StatusOK, result.AsResp())
+	res = cl.AsResp()
+
+	protocol = "http"
+	if g.Request.TLS != nil {
+		protocol = "https"
+	}
+	baseURL = protocol + "://" + g.Request.Host + "/api/v1/photos/"
+
+	res.Photos, err = c.loader.AsResponse(cl.Photos, baseURL)
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Failed to collect images!"})
+		return
+	}
+
+	g.JSON(http.StatusOK, res)
 }
 
 // List is a REST handler for retrieving albums of a user
@@ -152,6 +172,7 @@ func (c Controller) List(g *gin.Context) {
 		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 404, Message: "Failed to retrieve collection!"})
 		return
 	}
+	res = make([]collection.Resp, len(albums))
 	for i, album := range albums {
 		res[i] = album.AsResp()
 	}
@@ -186,7 +207,7 @@ func (c Controller) Delete(g *gin.Context) {
 		g.AbortWithStatusJSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Failed to retrieve collection!"})
 		return
 	}
-	if err = authorize(g, result.User.ID); err != nil {
+	if err = authorize(g, result.UserID); err != nil {
 		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Unauthorized!"})
 		return
 	}

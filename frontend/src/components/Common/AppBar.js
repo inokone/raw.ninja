@@ -13,6 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CollectionsIcon from '@mui/icons-material/Collections';
 import OpeningSearchField from './OpeningSearchField';
 import { SvgIcon } from '@mui/material';
 import { useNavigate } from "react-router-dom";
@@ -106,7 +107,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
   };
 
   return (
-    <AppBar position="sticky">
+    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Container maxWidth="xxl" sx={{ bgcolor: theme.palette.common.black }}>
         <Toolbar disableGutters variant="dense">
           <SvgIcon sx={{ mr: 0.5, color: theme.palette.primary.main }} component={Logo} />
@@ -137,13 +138,19 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
                   key="upload"
                   onClick={() => handleMenuClick("upload")}
                   sx={{ m: 0, color: theme.palette.secondary.main }}>
-                  <CloudUploadIcon />
+                  <Typography>UPLOAD</Typography>
                 </Button>
                 <Button
                   key="photos"
                   onClick={() => handleMenuClick("photos")}
                   sx={{ m: 0, color: theme.palette.secondary.main }}>
-                  <ViewModuleIcon />
+                  <Typography>PHOTOS</Typography>
+                </Button>
+                <Button
+                  key="albums"
+                  onClick={() => handleMenuClick("albums")}
+                  sx={{ m: 0, color: theme.palette.secondary.main }}>
+                  <Typography>ALBUMS</Typography>
                 </Button>
               </Box>
               <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -181,6 +188,10 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
                   <MenuItem key="photos" onClick={() => handleMenuClick('photos')}>
                     <ViewModuleIcon sx={{ mr: 1 }} />
                     <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Photos</Typography>
+                  </MenuItem>
+                  <MenuItem key="albums" onClick={() => handleMenuClick('albums')}>
+                    <CollectionsIcon sx={{ mr: 1 }} />
+                    <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Albums</Typography>
                   </MenuItem>
                 </Menu>
               </Box>

@@ -48,7 +48,7 @@ export default function PhotoGallery({photos, setPhoto, setSelected}) {
     }
 
     return (
-        <Box sx={{ paddingTop: '5px'}}>
+        <Box>
             <PhotoAlbum 
                 photos={photos} 
                 layout="rows"

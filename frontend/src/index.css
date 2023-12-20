@@ -15,4 +15,5 @@ code {
 .wrapper {
   width: 100vw;
   min-height: 60hw;
+  padding-top: 48px;
 }

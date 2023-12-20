@@ -3,7 +3,6 @@
 import * as React from 'react';
 import PhotoGrid from '../Photos/PhotoGrid';
 
-
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const PhotoList = ({user}) => {

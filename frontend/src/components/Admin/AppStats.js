@@ -32,6 +32,7 @@ const AppStats = () => {
                 if (!response.ok) {
                     response.json().then(content => {
                         setError(content.message)
+                        setLoading(false)
                     });
                 } else {
                     response.json().then(content => {

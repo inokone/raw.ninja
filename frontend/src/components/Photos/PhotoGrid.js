@@ -2,13 +2,41 @@ import * as React from 'react';
 import { Alert } from "@mui/material";
 import ProgressDisplay from '../Common/ProgressDisplay';
 import PhotoGallery from './PhotoGallery';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import SelectionActions from './SelectionActions';
+import { useNavigate } from 'react-router-dom';
+
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
+const drawerWidth = 60;
+
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
+    ({ theme, open }) => ({
+        flexGrow: 1,
+        padding: theme.spacing(1),
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        marginLeft: `-${drawerWidth}px`,
+        ...(open && {
+            transition: theme.transitions.create('margin', {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+            marginLeft: 0,
+        }),
+    }),
+);
+
 const PhotoGrid = ({ populator, data }) => {
+    const navigate = useNavigate();
     const [error, setError] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [images, setImages] = React.useState(null)
+    const [open, setOpen] = React.useState(false)
 
     const dateOf = (data) => {
         return new Date(data).toLocaleDateString()
@@ -49,12 +77,34 @@ const PhotoGrid = ({ populator, data }) => {
 
     const setSelected = (photo) => {
         let newImages = images.slice()
+        let selectedCount = 0
         newImages.forEach(i => {
             if (i.id === photo.id) {
                 i.selected = photo.selected
             } 
+            if (i.selected) {
+                selectedCount++
+            }
         });
         setImages(newImages)
+        setOpen(selectedCount > 0)
+    }
+
+    const clearSelection = () => {
+        let newImages = images.slice()
+        newImages.forEach(i => { i.selected = false });
+        setImages(newImages)
+        setOpen(false)
+    }
+
+    const batchDelete = () => {
+        let selectedIDs = images.filter((img) => img.selected).map((img) => img.id);
+        alert( "Deleting [" + selectedIDs + "]!")
+    }
+
+    const createAlbum = () => {
+        let selectedIDs = images.filter((img) => img.selected).map((img) => img.id);
+        navigate('/albums/create' , {state:{photos: selectedIDs}})
     }
 
     const formatShutterSpeed = (shutterSpeed) => {
@@ -77,12 +127,36 @@ const PhotoGrid = ({ populator, data }) => {
         }
     }
 
+    const formatBytes = (bytes, decimals = 2) => {
+        let negative = (bytes < 0)
+        if (negative) {
+            bytes = -bytes
+        }
+        if (!+bytes) return '0 Bytes'
+
+        const k = 1024
+        const dm = decimals < 0 ? 0 : decimals
+        const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+        let displayText = `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+        return negative ? "-" + displayText : displayText
+    }
+
+    const validTime = (time) => {
+        return !time.startsWith("1970-01-01T")
+    }
+
     const description = (image) => {
-        let timestamp = "Taken on " + dateOf(image.descriptor.metadata.timestamp)
-        let aperture = image.descriptor.metadata.aperture !== 0 ? "\nƒ/" + Math.round((image.descriptor.metadata.aperture + Number.EPSILON) * 100) / 100 : ""
-        let shutter = image.descriptor.metadata.shutter !== 0 ? " - " + formatShutterSpeed(image.descriptor.metadata.shutter) + " sec" : ""
-        let iso = image.descriptor.metadata.ISO !== 0 ? " - ISO " + image.descriptor.metadata.ISO : ""
-        return timestamp + aperture + shutter + iso
+        let date = dateOf(image.descriptor.metadata.timestamp)
+        let timestamp = validTime(image.descriptor.metadata.timestamp) ? ("Taken on " + date + "\n") : ""
+        let aperture = image.descriptor.metadata.aperture !== 0 ? "ƒ/" + Math.round((image.descriptor.metadata.aperture + Number.EPSILON) * 100) / 100 + "  ": ""
+        let shutter = image.descriptor.metadata.shutter !== 0 ? formatShutterSpeed(image.descriptor.metadata.shutter) + " sec  " : ""
+        let iso = image.descriptor.metadata.ISO !== 0 ? "ISO " + image.descriptor.metadata.ISO + "  " : ""
+        let dim = image.descriptor.metadata.width + " x " + image.descriptor.metadata.height + " px  "
+        let size = formatBytes(image.descriptor.metadata.data_size)
+        return timestamp + aperture + shutter + iso + dim + size
     }
 
     const processImages = (content) => {
@@ -136,11 +210,14 @@ const PhotoGrid = ({ populator, data }) => {
     }, [data, populator, images, error, loading])
 
     return (
-        <React.Fragment>
-            {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
-            {loading && <ProgressDisplay />}
-            {images && <PhotoGallery photos={images} setPhoto={setPhoto} setSelected={setSelected}/>}
-        </React.Fragment>
+        <Box sx={{ display: 'flex' }}>
+            <SelectionActions open={open} handleCreate={createAlbum} handleDelete={batchDelete} handleClear={clearSelection}/>
+            <Main open={open}>
+                {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
+                {loading && <ProgressDisplay />}
+                {images && <PhotoGallery photos={images} setPhoto={setPhoto} setSelected={setSelected}/>}
+            </Main>
+        </Box >
     );
 }
 

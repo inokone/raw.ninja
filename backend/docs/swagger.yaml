@@ -1,5 +1,22 @@
 basePath: /api/v1
 definitions:
+  collection.Resp:
+    properties:
+      descriptor:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      photos:
+        items:
+          $ref: '#/definitions/photo.Response'
+        type: array
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
   common.Health:
     properties:
       status:
@@ -83,15 +100,6 @@ definitions:
         $ref: '#/definitions/image.PresignedRequest'
       thumbnail:
         $ref: '#/definitions/image.PresignedRequest'
-    type: object
-  photo.UploadSuccess:
-    properties:
-      photo_ids:
-        items:
-          type: string
-        type: array
-      user_id:
-        type: string
     type: object
   role.ProfileRole:
     properties:
@@ -346,6 +354,102 @@ paths:
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: User registration endpoint
+  /albums/:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of albums for the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/collection.Resp'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: endpoint for retrieving albums of a user
+    post:
+      consumes:
+      - application/json
+      description: Creates an album collection
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/collection.Resp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Endpoint for creating an album collection.
+  /albums/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an album by the ID
+      parameters:
+      - description: ID of Collection to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/collection.Resp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Endpoint fore deleting an album by ID.
+    get:
+      consumes:
+      - application/json
+      description: Returns an album by the ID
+      parameters:
+      - description: ID of Collection to retrieve
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/collection.Resp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Endpoint fore retrieving a album by ID.
   /healthcheck:
     get:
       consumes:
@@ -531,39 +635,6 @@ paths:
       summary: Thumbnail image endpoint
       tags:
       - photos
-  /photos/upload:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Upload RAW files to store
-      parameters:
-      - description: Photos to store
-        in: formData
-        name: files[]
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/photo.UploadSuccess'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/common.StatusMessage'
-        "415":
-          description: Unsupported Media Type
-          schema:
-            $ref: '#/definitions/common.StatusMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/common.StatusMessage'
-      summary: Photo upload endpoint
-      tags:
-      - photos
   /roles/:
     get:
       consumes:
@@ -697,6 +768,88 @@ paths:
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: User statistics endpoint
+  /uploads/:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of uploads for the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/collection.Resp'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: endpoint for retrieving uploads of a user
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload RAW files to store
+      parameters:
+      - description: Photos to store
+        in: formData
+        name: files[]
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "415":
+          description: Unsupported Media Type
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Photo upload endpoint
+      tags:
+      - photos
+  /uploads/:id:
+    get:
+      consumes:
+      - application/json
+      description: Returns an upload by the ID
+      parameters:
+      - description: ID of Collection to retrieve
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/collection.Resp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Endpoint fore retrieving an upload by ID.
   /users:
     get:
       consumes:
