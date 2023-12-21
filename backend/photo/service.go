@@ -204,6 +204,14 @@ func (s LoadService) AsResponse(result []Photo, baseURL string) ([]Response, err
 	return imgs, nil
 }
 
+// ThumbnailURL generates presigned URL for a thumbnail
+func (s LoadService) ThumbnailURL(photoID uuid.UUID, baseURL string) (*image.PresignedRequest, error) {
+	if s.cfg.UsePresigned {
+		return s.images.PresignThumbnail(photoID.String())
+	}
+	return presign(baseURL + photoID.String() + "/thumbnail"), nil
+}
+
 func (s LoadService) decorateWithRequest(photo *Response, baseURL string) error {
 	var (
 		id  = photo.ID
@@ -229,7 +237,7 @@ func presign(URL string) *image.PresignedRequest {
 	return &image.PresignedRequest{
 		URL:    URL,
 		Method: "GET",
-		Header: http.Header{}, // TODO: this is not really presigned, just a raquest. should rename it
+		Header: http.Header{}, // TODO: this is not really presigned, just a request. should rename it
 		Mode:   "cors",
 	}
 }

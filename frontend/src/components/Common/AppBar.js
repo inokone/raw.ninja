@@ -129,6 +129,16 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
           >
             Ninja
           </Typography>
+          <Typography
+            ml={3}
+            variant="h4"
+            className={classes.brandText}
+            display="inline"
+            color="orange"
+            onClick={() => navigate(user ? '/home' : '/')}
+          >
+            BETA
+          </Typography>
           <Box sx={{ flexGrow: 1 }} />
           {isAuthenticated() &&
             <React.Fragment>

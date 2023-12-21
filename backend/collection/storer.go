@@ -6,6 +6,15 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	listQuery = `SELECT c.id as ID, c.name as Name, c.tags as Tags, c.created_at as Created, count(p.photo_id) as Photos, c.thumbnail_id as Thumbnail
+	FROM collections c 
+	JOIN collection_photos p ON c.id = p.collection_id 
+	WHERE user_id = ? and type = ?
+	GROUP BY c.id
+	ORDER by c.created_at DESC`
+)
+
 // Writer is the interface for changing `Collection` in persistence
 type Writer interface {
 	Store(c *Collection) error
@@ -15,7 +24,7 @@ type Writer interface {
 
 // Loader is the interface from loading `Collection` from persistence
 type Loader interface {
-	ByUserAndType(usr *user.User, ct Type) ([]Collection, error)
+	ByUserAndType(usr *user.User, ct Type) ([]ListItem, error)
 	ByID(id uuid.UUID) (*Collection, error)
 }
 
@@ -56,12 +65,12 @@ func (s *GORMStorer) ByID(id uuid.UUID) (*Collection, error) {
 	return &collection, result.Error
 }
 
-// ByUserAndType is a method of the `GORMStorer` struct. Takes a user and a type as parameters to lists `Collection` objects from persistence.
+// ByUserAndType is a method of the `GORMStorer` struct. Takes a user and a type as parameters to lists `Collection` objects as `ListResp` from persistence.
 // The returned
-func (s *GORMStorer) ByUserAndType(usr *user.User, ct Type) ([]Collection, error) {
-	var collections []Collection
-	result := s.db.Where(&Collection{UserID: usr.ID, Type: ct}).Find(&collections)
-	return collections, result.Error
+func (s *GORMStorer) ByUserAndType(usr *user.User, ct Type) ([]ListItem, error) {
+	var collection []ListItem
+	res := s.db.Raw(listQuery, usr.ID, ct).Scan(&collection)
+	return collection, res.Error
 }
 
 // Delete is a method of the `GORMStorer` struct. Takes an id as parameter and deletes the corresponding `Collection` from persistence.

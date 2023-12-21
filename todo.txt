@@ -21,13 +21,11 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Fix width/height - exif lying
-      - store thumb width and height too
-    - Add grouping for images
-      - With selection have an option to create a gallery/collection
-    - Display multiple image groups (by date or smg)
+    - Create tag editor (+ display) for albums
     - Replace table displays with an advanced component
+    - Fix width/height - exif can be lying, so store thumb width and height too
     - Display image count + used space per user on admin page
+    - Display multiple image groups (by date or smg)
     - Automate IaC
       - CloudFormation with
         - Frontend on S3, later possibly CloudFront

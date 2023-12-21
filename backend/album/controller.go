@@ -156,10 +156,12 @@ func (c Controller) Get(g *gin.Context) {
 // @Router /albums/ [get]
 func (c Controller) List(g *gin.Context) {
 	var (
-		err    error
-		albums []collection.Collection
-		res    []collection.Resp
-		user   *user.User
+		err      error
+		albums   []collection.ListItem
+		res      []collection.ListResp
+		user     *user.User
+		protocol string
+		baseURL  string
 	)
 	user, err = currentUser(g)
 	if err != nil {
@@ -169,13 +171,28 @@ func (c Controller) List(g *gin.Context) {
 	albums, err = c.albums.ByUserAndType(user, collection.Album)
 	if err != nil {
 		log.Err(err).Msg("Failed to list albums!")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 404, Message: "Failed to retrieve collection!"})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Failed to list albums!"})
 		return
 	}
-	res = make([]collection.Resp, len(albums))
-	for i, album := range albums {
-		res[i] = album.AsResp()
+	protocol = "http"
+	if g.Request.TLS != nil {
+		protocol = "https"
 	}
+	baseURL = protocol + "://" + g.Request.Host + "/api/v1/photos/"
+	res = make([]collection.ListResp, len(albums))
+	for i, album := range albums {
+		res[i] = albums[i].AsListResp()
+		if album.Thumbnail == uuid.Nil {
+			continue
+		}
+		res[i].Thumbnail, err = c.loader.ThumbnailURL(album.Thumbnail, baseURL)
+		if err != nil {
+			log.Err(err).Msg("Failed to list albums!")
+			g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Failed to list albums!"})
+			return
+		}
+	}
+
 	g.JSON(http.StatusOK, res)
 }
 

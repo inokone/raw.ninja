@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/inokone/photostorage/auth/user"
+	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
 	"gorm.io/gorm"
 )
@@ -33,16 +34,18 @@ func (ct Type) Value() (driver.Value, error) {
 
 // Collection is a type for a collection of photos.
 type Collection struct {
-	ID        uuid.UUID     `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	User      user.User     `gorm:"foreignKey:UserID"`
-	UserID    uuid.UUID     `gorm:"index"`
-	Type      Type          `gorm:"type:collection_type"`
-	Name      string        `gorm:"type:varchar(255)"`
-	Tags      []string      `gorm:"type:text[]"`
-	Photos    []photo.Photo `gorm:"many2many:collection_photos;"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
+	ID          uuid.UUID     `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	User        user.User     `gorm:"foreignKey:UserID"`
+	UserID      uuid.UUID     `gorm:"index"`
+	Type        Type          `gorm:"type:collection_type"`
+	Name        string        `gorm:"type:varchar(255)"`
+	Tags        []string      `gorm:"type:text[]"`
+	Photos      []photo.Photo `gorm:"many2many:collection_photos;"`
+	ThumbnailID uuid.UUID
+	Thumbnail   photo.Photo `gorm:"foreignKey:ThumbnailID"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt
 }
 
 // AsResp is a method of `Collection` to convert to JSON representation.
@@ -61,15 +64,38 @@ type Resp struct {
 	Name      string           `json:"name"`
 	Tags      []string         `json:"tags"`
 	Photos    []photo.Response `json:"photos"`
-	CreatedAt time.Time        `json:"descriptor"`
+	CreatedAt time.Time        `json:"created_at" time_format:"unix"`
+}
+
+// ListItem is an entry for listing `Collection` items
+type ListItem struct {
+	ID        uuid.UUID
+	Name      string
+	Tags      []string
+	Photos    int
+	Thumbnail uuid.UUID
+	Created   time.Time
 }
 
 // ListResp is a JSON representation
 type ListResp struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Tags      []string  `json:"tags"`
-	CreatedAt time.Time `json:"descriptor"`
+	ID         string                  `json:"id"`
+	Name       string                  `json:"name"`
+	Tags       []string                `json:"tags"`
+	PhotoCount int                     `json:"photo_count"`
+	Thumbnail  *image.PresignedRequest `json:"thumbnail"`
+	CreatedAt  time.Time               `json:"created_at" time_format:"unix"`
+}
+
+// AsResp is a method of `Collection` to convert to JSON representation.
+func (l ListItem) AsListResp() ListResp {
+	return ListResp{
+		ID:         l.ID.String(),
+		Name:       l.Name,
+		Tags:       l.Tags,
+		CreatedAt:  l.Created,
+		PhotoCount: l.Photos,
+	}
 }
 
 // CreateAlbum is a JSON type for creating a new album type collection

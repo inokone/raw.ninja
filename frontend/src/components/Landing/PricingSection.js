@@ -89,8 +89,7 @@ function PricingSection(props) {
                             title="Premium"
                             pricing={
                                 <span>
-                                    $9.99
-                                    <Typography display="inline"> / month</Typography>
+                                    Not Available
                                 </span>
                             }
                             features={["Up to 1Tb storage", "Image lifecycle rules", "Image sharing options"]}
@@ -109,8 +108,7 @@ function PricingSection(props) {
                             title="Business"
                             pricing={
                                 <span>
-                                    $49.99
-                                    <Typography display="inline"> / month</Typography>
+                                    Not Available
                                 </span>
                             }
                             features={["Up to 5Tb storage", "Up to 5 users", "Shared workspace"]}

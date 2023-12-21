@@ -99,7 +99,25 @@ const PhotoGrid = ({ populator, data }) => {
 
     const batchDelete = () => {
         let selectedIDs = images.filter((img) => img.selected).map((img) => img.id);
-        alert( "Deleting [" + selectedIDs + "]!")
+        // hacky way, batch delete backend option would be much better
+        selectedIDs.forEach(id => {
+            deletePhoto(id)
+        })
+    }
+
+    const deletePhoto = (id) => {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + id, {
+            method: "DELETE",
+            mode: "cors",
+            credentials: "include"
+        }).then(response => {
+            if (!response.ok) {
+                return new Promise((resolve, reject) => {
+                    reject(response.status + ":" + response.statusText)
+                })
+            }
+            navigate(0)
+        });
     }
 
     const createAlbum = () => {
