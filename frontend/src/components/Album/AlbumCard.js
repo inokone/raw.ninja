@@ -15,7 +15,7 @@ const AlbumCard = ({ album, onClick }) => {
     }
 
     return (
-        <Card style={{ flex: 1 }} sx={{ maxWidth: 250, position: 'relative', cursor: "pointer", margin: 1, bgcolor: "lightgrey" }}>
+        <Card style={{ flex: 1 }} sx={{position: 'relative', cursor: "pointer", margin: 1, bgcolor: "lightgrey" }}>
             <Box>
                 <Typography 
                     variant='h7'

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import PhotoGrid from '../Photos/PhotoGrid';
 import { useLocation } from "react-router-dom";
 import { Typography } from '@mui/material';
+import PhotoGrid from '../Photos/PhotoGrid';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -24,7 +24,6 @@ const AlbumDisplay = ({ user }) => {
 
     return (
         <>
-            <Typography variant='h4'>Album</Typography>
             <PhotoGrid populator={populate} data={[]}></PhotoGrid>
         </>
     )

@@ -31,7 +31,7 @@ const CreateAlbum = () => {
             body: JSON.stringify({
                 "name": name,
  //               "tags": tags,
-                "photos": state.photos
+                "photos": state && state.photos ? state.photos : null
             })
         }).then(response => {
             response.json().then(content => {

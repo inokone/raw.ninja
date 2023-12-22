@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { Alert } from "@mui/material";
+import { Alert, Box, Fab, Typography } from "@mui/material";
+import { styled } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
 import ProgressDisplay from '../Common/ProgressDisplay';
 import PhotoGallery from './PhotoGallery';
-import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import SelectionActions from './SelectionActions';
-import { useNavigate } from 'react-router-dom';
 
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
@@ -31,11 +31,12 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     }),
 );
 
-const PhotoGrid = ({ populator, data }) => {
+const PhotoGrid = ({ populator, data, fabAction }) => {
     const navigate = useNavigate();
     const [error, setError] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [images, setImages] = React.useState(null)
+    const [title, setTitle] = React.useState(null)
     const [open, setOpen] = React.useState(false)
 
     const dateOf = (data) => {
@@ -179,6 +180,7 @@ const PhotoGrid = ({ populator, data }) => {
 
     const processImages = (content) => {
         if (!Array.isArray(content)) {
+            setTitle(content.name)
             content = content.photos
         }
         let result = content.map(image => asPhoto(image))
@@ -222,6 +224,7 @@ const PhotoGrid = ({ populator, data }) => {
                     setLoading(false)
                 });
         }
+
         if (!images && !error && !loading) {
             loadImages()
         }
@@ -231,10 +234,23 @@ const PhotoGrid = ({ populator, data }) => {
         <Box sx={{ display: 'flex' }}>
             <SelectionActions open={open} handleCreate={createAlbum} handleDelete={batchDelete} handleClear={clearSelection}/>
             <Main open={open}>
+                {title && <Typography variant='h4'>{title}</Typography>}
                 {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                 {loading && <ProgressDisplay />}
                 {images && <PhotoGallery photos={images} setPhoto={setPhoto} setSelected={setSelected}/>}
             </Main>
+            {fabAction &&
+                <Box onClick={fabAction} sx={{
+                    '& > :not(style)': { m: 1 },     
+                    position: "fixed",
+                    bottom: 16,
+                    right: 16
+                    }}>
+                    <Fab color="primary" aria-label="add">
+                        <AddIcon />
+                    </Fab>
+                </Box>
+            }
         </Box >
     );
 }

@@ -30,11 +30,11 @@ func (s Service) createCollection(usr user.User, name string, ct Type, photoIDs 
 		u         *Collection
 		err       error
 		photos    []photo.Photo
-		thumbnail uuid.UUID
+		thumbnail *uuid.UUID
 	)
 	photos = createPhotos(photoIDs)
 	if len(photoIDs) > 0 {
-		thumbnail = photoIDs[0]
+		thumbnail = &photoIDs[0]
 	}
 	u = &Collection{
 		Type:        ct,

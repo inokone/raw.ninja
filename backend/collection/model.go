@@ -41,7 +41,7 @@ type Collection struct {
 	Name        string        `gorm:"type:varchar(255)"`
 	Tags        []string      `gorm:"type:text[]"`
 	Photos      []photo.Photo `gorm:"many2many:collection_photos;"`
-	ThumbnailID uuid.UUID
+	ThumbnailID *uuid.UUID
 	Thumbnail   photo.Photo `gorm:"foreignKey:ThumbnailID"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

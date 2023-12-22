@@ -9,7 +9,7 @@ import (
 const (
 	listQuery = `SELECT c.id as ID, c.name as Name, c.tags as Tags, c.created_at as Created, count(p.photo_id) as Photos, c.thumbnail_id as Thumbnail
 	FROM collections c 
-	JOIN collection_photos p ON c.id = p.collection_id 
+	LEFT JOIN collection_photos p ON c.id = p.collection_id 
 	WHERE user_id = ? and type = ?
 	GROUP BY c.id
 	ORDER by c.created_at DESC`
