@@ -87,7 +87,7 @@ type ListResp struct {
 	CreatedAt  time.Time               `json:"created_at" time_format:"unix"`
 }
 
-// AsResp is a method of `Collection` to convert to JSON representation.
+// AsListResp is a method of `ListItem` to convert to JSON representation.
 func (l ListItem) AsListResp() ListResp {
 	return ListResp{
 		ID:         l.ID.String(),
