@@ -1,21 +1,6 @@
 import { Doughnut } from "react-chartjs-2";
 import { Chart, ArcElement, Title, Tooltip } from "chart.js";
-import { Box, Typography, Stack } from '@mui/material';
-import { makeStyles, useTheme } from '@mui/styles';
-
-const useStyles = makeStyles((theme) => ({
-    percentage: {
-        color: theme.palette.primary.main,
-        fontWeight: 1000,
-        fontSize: '3em'
-    },
-    percentageText: {
-        color: theme.palette.primary.main,
-        fontWeight: 800,
-        fontSize: '2em',
-        marginLeft: 5
-    },
-}));
+import { useTheme } from '@mui/styles';
 
 Chart.register(ArcElement, Title, Tooltip);
 
@@ -74,35 +59,38 @@ const options = {
     rotation: 270,
     circumference: 180,
     cutout: "80%",
-    responsive: true,
-    maintainAspectRatio: true
+    responsive: true
+}
+
+const textCenter = (text, color) => {
+    const t = text
+    return {
+        id: 'textCenter',
+        beforeDatasetsDraw(chart) {
+            const { ctx, data, width, height } = chart;
+            ctx.save();
+            const fontsize = (height / 160).toFixed(2);
+            ctx.font = `bolder ${fontsize}em Poppins`;
+            ctx.fillStyle = color
+            ctx.textBaseLine = 'middle';
+            ctx.textAlign = 'center'
+            ctx.fillText(t, chart.getDatasetMeta(0).data[0].x, chart.getDatasetMeta(0).data[0].y);
+            ctx.save();
+        }
+    }
 }
 
 const SpaceChart = ({usedSpace, quota}) => {
-    const classes = useStyles();
     const theme = useTheme();
 
     return (
-        <Box sx={{position: 'relative'}}>
-            <Doughnut
-                data={data(usedSpace, quota, theme)}
-                options={options}
-            />
-            <Stack
-                direction={"row"}
-                alignItems={"baseline"}
-                style={{
-                    position: "absolute",
-                    top: "70%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    textAlign: "center"
-                }}
-            >
-                <Typography className={classes.percentage}>{quota > 0 ? Math.round(100 * usedSpace / quota) + "%" : "Unlimited"}</Typography>
-                <Typography className={classes.percentageText}>used</Typography>
-            </Stack>
-        </Box>
+        <Doughnut
+            data={data(usedSpace, quota, theme)}
+            options={options}
+            plugins={[textCenter(
+                quota > 0 ? Math.round(100 * usedSpace / quota) + "% used" : "Unlimited",
+                theme.palette.primary.light)]}
+        />
     );
 };
 

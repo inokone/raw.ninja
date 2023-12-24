@@ -15,14 +15,17 @@ const Dashboard = ({user}) => {
 
   return (
     <React.Fragment>
-      <FairWarningDialog
-        open={isWarningDialogOpen}
-        onClose={handleWarningDialogClose}
-      />
-      <Typography variant='h2'>{"Welcome back" + (user.first_name && ", " + user.first_name) + "!"}</Typography>
-      <Statistics user={user}/>
-      <Uploads user={user}/>
-      <Favorites user={user}/>
+      {user && 
+      <>
+        <FairWarningDialog
+          open={isWarningDialogOpen}
+          onClose={handleWarningDialogClose}
+        />
+        <Typography variant='h2'>{"Welcome back" + (user.first_name && ", " + user.first_name) + "!"}</Typography>
+        <Statistics user={user}/>
+        <Uploads user={user}/>
+        <Favorites user={user}/>
+      </>}
     </React.Fragment>
   )
 }
