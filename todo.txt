@@ -22,10 +22,16 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Create tag editor (+ display) for albums
+    - Create tag editor (+ display) for albums (MUI Chip component)
     - Improve PhotoGrid
       - Context menu configurable from props
       - Is selection enabled
+      - Limit of images
+    - Make image.Service serve just a single image, and have one image service per size
+      - 3 levels for images (instead of 2)
+        - raw
+        - thumbnails
+        - NEW fullscreen
     - Make album title editable
     - Create "delete album"
     - Add photos to existing collections
@@ -44,7 +50,6 @@ Functionality:
         - CloudWatch logs by CF
         - Credentials should come from AWS Systems Manager Parameter Store
     - Add lifecycle rules - with eventbridge trigger and lambdas
-    - Make image.Service serve just a single image, and have one image service per size(raw, thumbnails, fullscreen)
     - Extract services from controllers. controllers should be about conversion between DB to JSON object
     - Encrypt settings file on EC2 - store private key to somewhere else - e.g. Google passwords 
     - Host frontend on S3 + cloudfront (https://aws.plainenglish.io/how-to-host-your-react-application-in-aws-s3-c0940cd4377b)
@@ -56,11 +61,10 @@ Functionality:
     - Show quota on profile dropdown maybe?
   - Next steps:
     - Testing (handlers and unit testing) - Backend and Frontend
-    - Fix width/height - exif can be lying, so store thumb width and height too
     - Investigate compression options for storage
     - Advanced concurrency for file upload
-    - Add rating option for images
-    - Add tags for images
+    - Add rating option for images (MUI Rating)
+    - Add tags for images (MUI Chip)
     - Generative AI based on the decisions of the user (1to5 rating) to advise a score
     - Extract constants and Status/Error variables on top of Go modules
     - Refactor with dependency injection (no framework)

@@ -84,3 +84,10 @@ type PresignedRequest struct {
 	Header http.Header `json:"header" swaggerignore:"true"`
 	Mode   string      `json:"mode"`
 }
+
+// ThumbnailImg is a struct storing a generated thumbnail image
+type ThumbnailImg struct {
+	Image  []byte
+	Width  int
+	Height int
+}

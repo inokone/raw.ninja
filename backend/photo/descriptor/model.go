@@ -19,40 +19,46 @@ func ParseFormat(s string) Format {
 
 // Descriptor is a collection of metadata for a photo
 type Descriptor struct {
-	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	FileName   string    `gorm:"type:varchar(255);index;not null"`
-	Uploaded   time.Time `gorm:"index"`
-	Format     Format
-	Tags       []string     `gorm:"type:text[]"`
-	Favorite   bool         `gorm:"index"`
-	Metadata   img.Metadata `gorm:"foreignKey:MetadataID"`
-	MetadataID uuid.UUID
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	DeletedAt  gorm.DeletedAt
+	ID          uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	FileName    string    `gorm:"type:varchar(255);index;not null"`
+	Uploaded    time.Time `gorm:"index"`
+	Format      Format
+	Tags        []string     `gorm:"type:text[]"`
+	Favorite    bool         `gorm:"index"`
+	Metadata    img.Metadata `gorm:"foreignKey:MetadataID"`
+	MetadataID  uuid.UUID
+	ThumbWidth  int
+	ThumbHeight int
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt
 }
 
 // AsResp converts `Descriptor` entity to a `Response“ entity
 func (p Descriptor) AsResp() Response {
 	return Response{
-		ID:       p.ID.String(),
-		FileName: p.FileName,
-		Uploaded: p.Uploaded,
-		Format:   string(p.Format),
-		Metadata: p.Metadata.AsResp(),
-		Tags:     p.Tags,
-		Favorite: p.Favorite,
+		ID:          p.ID.String(),
+		FileName:    p.FileName,
+		Uploaded:    p.Uploaded,
+		Format:      string(p.Format),
+		Metadata:    p.Metadata.AsResp(),
+		Tags:        p.Tags,
+		Favorite:    p.Favorite,
+		ThumbWidth:  p.ThumbWidth,
+		ThumbHeight: p.ThumbHeight,
 	}
 }
 
 // Response entity is a REST response representation of a `Descriptor“.
 type Response struct {
-	ID        string       `json:"id"`
-	FileName  string       `json:"filename"`
-	Uploaded  time.Time    `json:"uploaded"`
-	Format    string       `json:"format"`
-	Thumbnail string       `json:"thumbnail"`
-	Metadata  img.Response `json:"metadata"`
-	Tags      []string     `json:"tags"`
-	Favorite  bool         `json:"favorite"`
+	ID          string       `json:"id"`
+	FileName    string       `json:"filename"`
+	Uploaded    time.Time    `json:"uploaded"`
+	Format      string       `json:"format"`
+	Thumbnail   string       `json:"thumbnail"`
+	ThumbWidth  int          `json:"thumbnail_width"`
+	ThumbHeight int          `json:"thumbnail_height"`
+	Metadata    img.Response `json:"metadata"`
+	Tags        []string     `json:"tags"`
+	Favorite    bool         `json:"favorite"`
 }

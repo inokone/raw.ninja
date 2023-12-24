@@ -20,7 +20,6 @@ const UserDetails = ({ user }) => {
         }
         user.last_name = lastName
         user.first_name = firstName
-        console.log(user)
         fetch(REACT_APP_API_PREFIX + '/api/v1/users/' + user.id, {
             method: "PUT",
             mode: "cors",

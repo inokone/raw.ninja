@@ -5,9 +5,7 @@ import (
 	"image"
 	"image/jpeg"
 	"math"
-	"time"
 
-	"github.com/rs/zerolog/log"
 	"golang.org/x/image/draw"
 )
 
@@ -18,10 +16,8 @@ const (
 
 // Thumbnail is a function to generate a thumbnail image of max size [`thumbWidth`, `thumbHeight`] for the image provided as a parameter.
 func Thumbnail(original image.Image) (image.Image, error) {
-	start := time.Now()
 	result := canvas(original.Bounds().Size().X, original.Bounds().Size().Y)
 	draw.NearestNeighbor.Scale(result, result.Rect, original, original.Bounds(), draw.Over, nil)
-	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Generated thumbnail.")
 	return result, nil
 }
 
@@ -35,10 +31,8 @@ func canvas(width int, height int) *image.RGBA {
 
 // ExportJpeg is a function to export the image provided as parameter as a byte array in JPEG format.
 func ExportJpeg(image image.Image) ([]byte, error) {
-	start := time.Now()
 	buf := new(bytes.Buffer)
 	err := jpeg.Encode(buf, image, nil)
-	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Exported thumbnail.")
 	return buf.Bytes(), err
 }
 

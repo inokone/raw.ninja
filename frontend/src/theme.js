@@ -121,7 +121,10 @@ const theme = createTheme(adaptV4Theme({
         }
     },
     typography: {
-        useNextVariants: true
+        useNextVariants: true,
+        fontFamily: [
+            '"Poppins"',
+        ].join(','),
     }
 }));
 

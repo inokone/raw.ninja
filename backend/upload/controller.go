@@ -182,7 +182,7 @@ func (c Controller) List(g *gin.Context) {
 		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Unauthorized!"})
 		return
 	}
-	uploads, err = c.uploads.ByUserAndType(user, collection.Album)
+	uploads, err = c.uploads.ByUserAndType(user, collection.Upload)
 	if err != nil {
 		log.Err(err).Msg("Failed to list uploads!")
 		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Failed to list uploads!"})
@@ -197,7 +197,7 @@ func (c Controller) List(g *gin.Context) {
 	res = make([]collection.ListResp, len(uploads))
 	for i, album := range uploads {
 		res[i] = uploads[i].AsListResp()
-		if len(album.Thumbnail) == 0 {
+		if album.Thumbnail == uuid.Nil {
 			continue
 		}
 		res[i].Thumbnail, err = c.loader.ThumbnailURL(album.Thumbnail, baseURL)

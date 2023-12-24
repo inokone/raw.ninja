@@ -12,5 +12,5 @@ type Importer interface {
 
 	Describe(raw []byte) (*img.Metadata, error)
 
-	Thumbnail(raw []byte) ([]byte, error)
+	Thumbnail(raw []byte) (*img.ThumbnailImg, error)
 }

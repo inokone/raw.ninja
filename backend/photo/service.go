@@ -148,7 +148,9 @@ func closeRequestFile(mp multipart.File) {
 
 func createPhoto(user user.User, filename, extension string, raw []byte) (*Photo, error) {
 	i := importer.NewImporter(string(descriptor.ParseFormat(extension)))
+	start := time.Now()
 	thumbnail, err := i.Thumbnail(raw)
+	log.Debug().Dur("Elapsed", time.Since(start)).Str("File", filename).Msg("Image import monitored.")
 	if err != nil {
 		return nil, err
 	}
@@ -158,15 +160,17 @@ func createPhoto(user user.User, filename, extension string, raw []byte) (*Photo
 	}
 	res := &Photo{
 		Desc: descriptor.Descriptor{
-			FileName: filename,
-			Format:   descriptor.ParseFormat(extension),
-			Uploaded: time.Now(),
-			Metadata: *metadata,
+			FileName:    filename,
+			Format:      descriptor.ParseFormat(extension),
+			Uploaded:    time.Now(),
+			Metadata:    *metadata,
+			ThumbWidth:  thumbnail.Width,
+			ThumbHeight: thumbnail.Height,
 		},
 		User:      user,
 		Raw:       raw,
-		Thumbnail: thumbnail,
-		UsedSpace: len(raw) + len(thumbnail),
+		Thumbnail: thumbnail.Image,
+		UsedSpace: len(raw) + len(thumbnail.Image),
 	}
 	return res, nil
 }

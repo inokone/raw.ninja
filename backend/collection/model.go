@@ -118,3 +118,16 @@ type UpdateAlbum struct {
 	Name string   `json:"name"`
 	Tags []string `json:"tags"`
 }
+
+// Stat is a struct for statistics on a single collection
+type Stat struct {
+	Created time.Time
+	Photos  int
+	Type    Type
+}
+
+// StatsResp is a JSON type for returning collection related statistics
+type StatsResp struct {
+	Uploads map[time.Time]int `json:"uploads"`
+	Albums  int               `json:"album_count"`
+}

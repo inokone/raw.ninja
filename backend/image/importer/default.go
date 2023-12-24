@@ -92,7 +92,11 @@ func asApex(m *exif.Exif, f exif.FieldName) float64 {
 	if err != nil {
 		return 0
 	}
-	return math.Pow(2, -float64(numer)/float64(denom))
+	res := math.Pow(2, -float64(numer)/float64(denom))
+	if math.IsNaN(res) {
+		return 0
+	}
+	return res
 }
 
 func asFloat(m *exif.Exif, f exif.FieldName) float64 {
@@ -104,7 +108,11 @@ func asFloat(m *exif.Exif, f exif.FieldName) float64 {
 	if err != nil {
 		return 0
 	}
-	return float64(numer) / float64(denom)
+	res := float64(numer) / float64(denom)
+	if math.IsNaN(res) {
+		return 0
+	}
+	return res
 }
 
 func asInt(m *exif.Exif, f exif.FieldName) int {
@@ -137,16 +145,31 @@ func asTime(m *exif.Exif) int64 {
 }
 
 // Thumbnail is a method of `DefaultImporter` for generating a thumbnail image byte array for an image bye array.
-func (i DefaultImporter) Thumbnail(raw []byte) ([]byte, error) {
-	im, err := i.Image(raw)
+func (i DefaultImporter) Thumbnail(raw []byte) (*img.ThumbnailImg, error) {
+	var (
+		im  *image.Image
+		err error
+		f   string
+		tn  image.Image
+		res []byte
+	)
+	im, err = i.Image(raw)
 	if err != nil {
-		f, _ := tempFile("forensics", raw)
+		f, _ = tempFile("forensics", raw)
 		log.Warn().Str("path", f).Msg("Image import failed, writing forensics file.")
 		return nil, err
 	}
-	tn, err := img.Thumbnail(*im)
+	tn, err = img.Thumbnail(*im)
 	if err != nil {
 		return nil, err
 	}
-	return img.ExportJpeg(tn)
+	res, err = img.ExportJpeg(tn)
+	if err != nil {
+		return nil, err
+	}
+	return &img.ThumbnailImg{
+		Image:  res,
+		Width:  tn.Bounds().Dx(),
+		Height: tn.Bounds().Dy(),
+	}, nil
 }

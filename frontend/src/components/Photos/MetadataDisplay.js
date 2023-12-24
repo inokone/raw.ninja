@@ -1,26 +1,8 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
-import { createStyles, makeStyles } from '@mui/styles';
 import { Grid, Box } from "@mui/material";
 
-
-
-const useStyles = makeStyles(theme => createStyles({
-  tableDataCell: {
-    color: theme.palette.common.bluegray,
-    align: 'left'
-  },
-  tableGroup: {
-    color: theme.palette.common.white,
-  }
-}))
-
 const MetadataDisplay = ({ metadata }) => {
-  const classes = useStyles();
 
   const formatShutterSpeed = (shutterSpeed) => {
     let validDividers = [2, 4, 8, 15, 30, 60, 125, 250, 500, 1000, 2000, 4000, 8000]
@@ -142,28 +124,6 @@ const MetadataDisplay = ({ metadata }) => {
         value: metadata.metadata.lens_model
       }
     ]
-  }
-
-  const displayDataOld = (data) => {
-    return (
-      <React.Fragment>
-        <Typography variant="h5" className={classes.tableGroup}>{data.title}</Typography>
-        <Table size="small">
-          <TableBody>
-            {
-              data.values.map((value, index) => {
-                return (
-                  <TableRow key={data.title + index}>
-                    <TableCell className={classes.tableDataCell}>{value.label}</TableCell>
-                    <TableCell className={classes.tableDataCell}>{value.value}</TableCell>
-                  </TableRow>
-                )
-              })
-            }
-          </TableBody>
-        </Table>
-      </React.Fragment>
-    )
   }
 
   const displayData = (data) => {

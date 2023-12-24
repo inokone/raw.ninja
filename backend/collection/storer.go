@@ -13,6 +13,13 @@ const (
 	WHERE user_id = ? and type = ?
 	GROUP BY c.id
 	ORDER by c.created_at DESC`
+
+	statQuery = `SELECT c.created_at as Created, c.type as Type, count(p.photo_id) as Photos
+	FROM collections c 
+	LEFT JOIN collection_photos p ON c.id = p.collection_id 
+	WHERE user_id = ?
+	GROUP BY c.id
+	ORDER by c.created_at DESC`
 )
 
 // Writer is the interface for changing `Collection` in persistence
@@ -32,6 +39,7 @@ type Loader interface {
 type Storer interface {
 	Writer
 	Loader
+	Stats(usr *user.User) ([]Stat, error)
 }
 
 // GORMStorer is the `Storer` implementation based on GORM library.
@@ -66,7 +74,6 @@ func (s *GORMStorer) ByID(id uuid.UUID) (*Collection, error) {
 }
 
 // ByUserAndType is a method of the `GORMStorer` struct. Takes a user and a type as parameters to lists `Collection` objects as `ListResp` from persistence.
-// The returned
 func (s *GORMStorer) ByUserAndType(usr *user.User, ct Type) ([]ListItem, error) {
 	var collection []ListItem
 	res := s.db.Raw(listQuery, usr.ID, ct).Scan(&collection)
@@ -78,4 +85,11 @@ func (s *GORMStorer) Delete(id uuid.UUID) error {
 	var collection Collection
 	result := s.db.Where(&Collection{ID: id}).Delete(&collection)
 	return result.Error
+}
+
+// Stats is a method of the `GORMStorer` struct. Takes a user to list `Collection` objects with types and photo counts and creation date.
+func (s *GORMStorer) Stats(usr *user.User) ([]Stat, error) {
+	var collection []Stat
+	res := s.db.Raw(statQuery, usr.ID).Scan(&collection)
+	return collection, res.Error
 }

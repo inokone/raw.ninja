@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import ResponsiveAppBar from './components/Common/AppBar';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Dashboard from './components/Dashboard/Dashboard';
+import Dashboard from './components/Home/Dashboard';
 import Preferences from './components/Preferences/Preferences';
 import Admin from './components/Admin/Admin';
 import Upload from './components/Upload/Upload';

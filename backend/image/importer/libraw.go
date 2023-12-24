@@ -3,8 +3,8 @@ package importer
 import (
 	"fmt"
 	"image"
+	"math"
 	"os"
-	"time"
 
 	raw "github.com/inokone/golibraw"
 	pi "github.com/inokone/photostorage/image"
@@ -14,12 +14,14 @@ import (
 // LibrawImporter is an implementation of `Importer` using LibRAW library.
 type LibrawImporter struct {
 	tempDir string
+	def     DefaultImporter
 }
 
 // NewLibrawImporter creates a new `LibrawImporter` instance.
 func NewLibrawImporter() Importer {
 	return LibrawImporter{
 		tempDir: "photostore",
+		def:     NewDefaultImporter(),
 	}
 }
 
@@ -50,6 +52,12 @@ func (p LibrawImporter) Describe(rawBytes []byte) (*pi.Metadata, error) {
 	if err != nil {
 		return nil, fmt.Errorf("metadata extract error [%v]", err)
 	}
+	if math.IsNaN(metadata.Aperture) {
+		metadata.Aperture = 0
+	}
+	if math.IsNaN(metadata.Shutter) {
+		metadata.Shutter = 0
+	}
 	return &pi.Metadata{
 		Height:    metadata.Height,
 		Width:     metadata.Width,
@@ -72,37 +80,47 @@ func (p LibrawImporter) Describe(rawBytes []byte) (*pi.Metadata, error) {
 
 // Thumbnail is a methof of `LibrawImporter` for extracting existing thumbnail image from the RAW image byte array.
 // If the RAW image does not contain a thumbnail, this function generates one from the RAW image.
-func (p LibrawImporter) Thumbnail(rawBytes []byte) ([]byte, error) {
-	start := time.Now()
+func (p LibrawImporter) Thumbnail(rawBytes []byte) (*pi.ThumbnailImg, error) {
 	path, err := tempFile("raw", rawBytes)
 	defer removeTempFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("thumbnail extract error [%v]", err)
 	}
-	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Temp file created for raw.")
-
 	exportPath := tempPath("thumb")
 	defer removeTempFile(exportPath)
-	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Temp path created for thumb.")
-
 	err = raw.ExtractThumbnail(path, exportPath)
 	if err == nil {
-		return os.ReadFile(exportPath)
+		rs, err := os.ReadFile(exportPath)
+		if err != nil {
+			return nil, fmt.Errorf("thumbnail extract error [%v]", err)
+		}
+		im, err := p.def.Image(rs)
+		if err != nil {
+			return nil, fmt.Errorf("thumbnail extract error [%v]", err)
+		}
+		return &pi.ThumbnailImg{
+			Image:  rs,
+			Width:  (*im).Bounds().Dx(),
+			Height: (*im).Bounds().Dy(),
+		}, nil
 	}
 	log.Debug().AnErr("Thumbnail extraction", err).Msg("Failed to extract thumbnail")
-	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Thumbnail extraction finished.")
 	// most likely we have no thumbnail embedded in the RAW image, let's create one
 	img, err := p.Image(rawBytes)
 	if err != nil {
 		return nil, err
 	}
-	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Image bytes loaded.")
 	*img, err = pi.Thumbnail(*img)
 	if err != nil {
 		return nil, err
 	}
-	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("Thumbnail generated.")
 	res, err := pi.ExportJpeg(*img)
-	log.Debug().Dur("Elapsed time", time.Since(start)).Msg("JPEG thumbnail exported.")
-	return res, err
+	if err != nil {
+		return nil, err
+	}
+	return &pi.ThumbnailImg{
+		Image:  res,
+		Width:  (*img).Bounds().Dx(),
+		Height: (*img).Bounds().Dy(),
+	}, nil
 }

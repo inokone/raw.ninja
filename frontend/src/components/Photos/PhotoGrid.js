@@ -31,7 +31,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     }),
 );
 
-const PhotoGrid = ({ populator, data, fabAction }) => {
+const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
     const navigate = useNavigate();
     const [error, setError] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
@@ -184,6 +184,9 @@ const PhotoGrid = ({ populator, data, fabAction }) => {
             content = content.photos
         }
         let result = content.map(image => asPhoto(image))
+        if (onDataLoaded) {
+            onDataLoaded(result)
+        }
         setImages(result)
     }
 
@@ -191,8 +194,8 @@ const PhotoGrid = ({ populator, data, fabAction }) => {
         return {
             src: image.thumbnail.url,
             original: image.thumbnail.url,
-            width: image.descriptor.metadata.width,
-            height: image.descriptor.metadata.height,
+            width: image.descriptor.thumbnail_width ? image.descriptor.thumbnail_width : image.descriptor.metadata.width,
+            height: image.descriptor.thumbnail_height ? image.descriptor.thumbnail_height : image.descriptor.metadata.height,
             caption: image.descriptor.filename,
             title: image.descriptor.filename,
             description: description(image),

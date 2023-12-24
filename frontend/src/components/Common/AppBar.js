@@ -110,9 +110,9 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Container maxWidth="xxl" sx={{ bgcolor: theme.palette.common.black }}>
         <Toolbar disableGutters variant="dense">
-          <SvgIcon sx={{ mr: 0.5, color: theme.palette.primary.main }} component={Logo} />
+          <SvgIcon sx={{ mr: 0.5, color: theme.palette.primary.main, transform: { sm: 'scale(1.0)', xs: 'scale(0.8)' } }} component={Logo} />
           <Typography
-            variant="h4"
+            sx={{typography: { sm: 'h4', xs: 'h5' }}}
             className={classes.brandText}
             display="inline"
             color="primary"
@@ -121,7 +121,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
             RAW
           </Typography>
           <Typography
-            variant="h4"
+            sx={{ typography: { sm: 'h4', xs: 'h5' } }}
             className={classes.brandText}
             display="inline"
             color="secondary"
@@ -130,8 +130,8 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
             Ninja
           </Typography>
           <Typography
-            ml={3}
-            variant="h4"
+            ml={1}
+            sx={{ typography: { sm: 'h4', xs: 'h5' } }}
             className={classes.brandText}
             display="inline"
             color="orange"
@@ -188,7 +188,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
                   open={Boolean(anchorElNav)}
                   onClose={handleCloseNavMenu}
                   sx={{
-                    display: { xs: 'block', md: 'none' }
+                    display: { xs: 'block', md: 'none', mr: 1 }
                   }}
                 >
                   <MenuItem key="upload" onClick={() => handleMenuClick('upload')}>
@@ -207,7 +207,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
               </Box>
               <Box sx={{ md: 0, ml: 1 }}>
                 <Tooltip title={"Open profile"}>
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, transform: { sm: 'scale(0.9)', xs: 'scale(0.8)' } }}>
                     <Avatar alt={getInitials()} src="/static/images/avatar/3.jpg" sx={{ bgcolor: stringToColor(getInitials()) }} />
                   </IconButton>
                 </Tooltip>
