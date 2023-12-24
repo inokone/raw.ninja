@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, Alert, Grid } from '@mui/material';
+import { Box, Alert, Grid } from '@mui/material';
 import ProgressDisplay from '../Common/ProgressDisplay';
 import AlbumCard from '../Album/AlbumCard';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const Uploads = ({ user }) => {
+const Uploads = ({ user, onDataLoaded }) => {
     const navigate = useNavigate()
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
@@ -30,6 +30,9 @@ const Uploads = ({ user }) => {
                         content = []
                     }
                     setUploads(content)
+                    if (onDataLoaded) {
+                        onDataLoaded(content)
+                    }
                     setLoading(false)
                 })
             }
@@ -55,7 +58,6 @@ const Uploads = ({ user }) => {
             {loading && <ProgressDisplay />}
             {uploads !== null &&
                 <>
-                    {uploads.length > 0 && <Typography variant='h4'>Recent Uploads</Typography>}
                     <Grid container>
                     {uploads.slice(0, 10).map((album) => {
                             return (<Grid item key={album.id} xs={6} md={4} lg={2} xl={2}><AlbumCard album={album} onClick={onAlbumClick} /></Grid>)

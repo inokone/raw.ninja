@@ -23,21 +23,21 @@ Functionality:
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
     - Create tag editor (+ display) for albums (MUI Chip component)
+    - Replace table displays with an advanced component
+    - Make album title editable
+    - Create "delete album"
     - Improve PhotoGrid
       - Context menu configurable from props
       - Is selection enabled
       - Limit of images
+    - Add photos to existing collections
+    - Remove photos from collections
     - Make image.Service serve just a single image, and have one image service per size
       - 3 levels for images (instead of 2)
         - raw
         - thumbnails
         - NEW fullscreen
-    - Make album title editable
-    - Create "delete album"
-    - Add photos to existing collections
-    - Remove photos from collections
 
-    - Replace table displays with an advanced component
     - Display image count + used space per user on admin page
     - Display multiple image groups (by date or smg)
     - Create dark mode

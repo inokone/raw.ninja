@@ -69,7 +69,7 @@ const textCenter = (text, color) => {
     return {
         id: 'textCenter',
         beforeDatasetsDraw(chart) {
-            const { ctx, data, width, height } = chart;
+            const { ctx, height } = chart;
             ctx.save();
             const fontsize = (height / 160).toFixed(2);
             ctx.font = `bolder ${fontsize}em Poppins`;

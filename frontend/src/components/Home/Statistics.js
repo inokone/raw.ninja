@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const Statistics = () => {
+const Statistics = ({ onDataLoaded }) => {
     const classes = useStyles();
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
@@ -35,6 +35,9 @@ const Statistics = () => {
                 response.json().then(content => {
                     setLoading(false)
                     setStats(content)
+                    if (onDataLoaded) {
+                        onDataLoaded(content)
+                    }
                 })
             }
         }).catch(error => {
