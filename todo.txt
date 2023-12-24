@@ -36,11 +36,11 @@ Functionality:
     - Create "delete album"
     - Add photos to existing collections
     - Remove photos from collections
-    - Status message object should have no status, object should be kept though - KISS
 
     - Replace table displays with an advanced component
     - Display image count + used space per user on admin page
     - Display multiple image groups (by date or smg)
+    - Create dark mode
     - Automate IaC
       - CloudFormation with
         - Frontend on S3, later possibly CloudFront
@@ -49,6 +49,7 @@ Functionality:
         - ALB deployed by CF
         - CloudWatch logs by CF
         - Credentials should come from AWS Systems Manager Parameter Store
+    - Status message object should have no status, object should be kept though - KISS
     - Add lifecycle rules - with eventbridge trigger and lambdas
     - Extract services from controllers. controllers should be about conversion between DB to JSON object
     - Encrypt settings file on EC2 - store private key to somewhere else - e.g. Google passwords 

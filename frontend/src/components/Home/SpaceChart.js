@@ -59,7 +59,9 @@ const options = {
     rotation: 270,
     circumference: 180,
     cutout: "80%",
-    responsive: true
+    aspectRatio: 2,
+    responsive: true,
+    maintainAspectRatio: true
 }
 
 const textCenter = (text, color) => {
@@ -84,7 +86,7 @@ const SpaceChart = ({usedSpace, quota}) => {
     const theme = useTheme();
 
     return (
-        <Doughnut
+        <Doughnut 
             data={data(usedSpace, quota, theme)}
             options={options}
             plugins={[textCenter(

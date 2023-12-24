@@ -55,14 +55,13 @@ const Statistics = () => {
             {loading && <ProgressDisplay />}
             {stats !== null &&
                 <Grid container spacing={2} alignContent={'baseline'}>
-                    <Grid item xs={12} md={3} className={classes.chart}>
+                    <Grid item xs={12} md={4} display="flex" justifyContent="center" alignItems="center" className={classes.chart}>
                         <SpaceChart usedSpace={stats.used_space} quota={stats.quota} />
                     </Grid>
                     <Grid item xs={12} md={4} display="flex" justifyContent="center" alignItems="center" className={classes.chart}>
                         <AggregatedChart photos={stats.photos} favorites={stats.favorites} albums={stats.albums} />
                     </Grid>
-                    <Grid item xs={12} md={4}
-                    display="flex" justifyContent="center" alignItems="center" className={classes.chart}>
+                    <Grid item xs={12} md={4} display="flex" justifyContent="center" alignItems="center" className={classes.chart}>
                         <UploadChart uploads={stats.uploads}/>
                     </Grid>
                 </Grid>}
