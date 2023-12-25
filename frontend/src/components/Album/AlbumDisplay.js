@@ -38,7 +38,7 @@ const AlbumDisplay = ({ user }) => {
             credentials: "include",
             body: JSON.stringify({
                 "name": name,
-                // "tags": tags,
+                "tags": tags,
             })
         }).then(response => {
             response.json().then(content => {
@@ -53,6 +53,10 @@ const AlbumDisplay = ({ user }) => {
 
     const handleDataLoaded = (data) => {
         setTitle(data.name)
+        if (data.tags === null) {
+            data.tags = []
+            setData(data)
+        }
         setData(data)
     }
 

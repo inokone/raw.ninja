@@ -22,10 +22,10 @@ func NewService(s Storer) *Service {
 
 // CreateUpload is a method of `Service` creating a persisted upload type collection
 func (s Service) CreateUpload(usr user.User, photoIDs []uuid.UUID) (*Collection, error) {
-	return s.createCollection(usr, time.Now().Local().Format("2006-01-02 15:04"), Upload, photoIDs)
+	return s.createCollection(usr, time.Now().Local().Format("2006-01-02 15:04"), Upload, nil, photoIDs)
 }
 
-func (s Service) createCollection(usr user.User, name string, ct Type, photoIDs []uuid.UUID) (*Collection, error) {
+func (s Service) createCollection(usr user.User, name string, ct Type, tags []string, photoIDs []uuid.UUID) (*Collection, error) {
 	var (
 		u         *Collection
 		err       error
@@ -39,6 +39,7 @@ func (s Service) createCollection(usr user.User, name string, ct Type, photoIDs 
 	u = &Collection{
 		Type:        ct,
 		User:        usr,
+		Tags:        tags,
 		Photos:      photos,
 		Name:        name,
 		ThumbnailID: thumbnail,
@@ -50,8 +51,8 @@ func (s Service) createCollection(usr user.User, name string, ct Type, photoIDs 
 }
 
 // CreateAlbum is a method of `Service` creating a persisted album type collection
-func (s Service) CreateAlbum(usr user.User, name string, photoIDs []uuid.UUID) (*Collection, error) {
-	return s.createCollection(usr, name, Album, photoIDs)
+func (s Service) CreateAlbum(usr user.User, name string, tags []string, photoIDs []uuid.UUID) (*Collection, error) {
+	return s.createCollection(usr, name, Album, tags, photoIDs)
 }
 
 func createPhotos(photoIDs []uuid.UUID) []photo.Photo {

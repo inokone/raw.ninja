@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { TextField, Button, Alert, Typography, Container, Box } from '@mui/material';
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { TextField, Button, Alert, Typography, Container, Box, Autocomplete, Chip } from '@mui/material';
+import { useNavigate, useLocation } from "react-router-dom";
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -30,7 +30,7 @@ const CreateAlbum = () => {
             },
             body: JSON.stringify({
                 "name": name,
- //               "tags": tags,
+                "tags": tags,
                 "photos": state && state.photos ? state.photos : null
             })
         }).then(response => {
@@ -53,7 +53,7 @@ const CreateAlbum = () => {
             <Container maxWidth="sm">
                 <Box style={{ flex: 1 }} sx={{ m: 4 }}>
                     <Typography pb={3} variant='h4'>New Album</Typography>
-                    <form onSubmit={handleSubmit} action={<Link to="/login" />}>
+                    <form onSubmit={handleSubmit}>
                         <TextField
                             type="text"
                             name="album"
@@ -72,21 +72,33 @@ const CreateAlbum = () => {
                             required
                             sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
                         />
-                        <TextField
-                            type="text"
-                            name="tags"
+                        <Autocomplete
+                            multiple
+                            id="tags"
+                            options={[].map(a => a)}
+                            value={tags}
+                            onChange={(event, newValue) => {
+                                setTags(newValue);
+                            }}
                             variant='outlined'
                             color='primary'
-                            label="Tags"
-                            disabled={loading}
-                            value={tags}
-                            onChange={e => {
-                                setTags(e.target.value)
-                                setError(null)
-                            }}
-                            fullWidth
+                            freeSolo
+                            renderTags={(value, getTagProps) =>
+                                value.map((option, index) => (
+                                    <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+                                ))
+                            }
                             sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
-                        />                         
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    variant='outlined'
+                                    color='primary'
+                                    label="Tags"
+                                    placeholder="Tags"
+                                />
+                            )}
+                        />                    
                         {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Created successfully! Loading...</Alert>}
                         {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                         <Button sx={{ mb: 4 }} variant="contained" color="primary" type="submit" disabled={loading}>Create</Button>

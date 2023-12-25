@@ -65,7 +65,7 @@ func (c Controller) Create(g *gin.Context) {
 		return
 	}
 
-	result, err = c.service.CreateAlbum(*usr, ca.Name, ids)
+	result, err = c.service.CreateAlbum(*usr, ca.Name, ca.Tags, ids)
 	if err != nil {
 		log.Err(err).Msg("Failed to create album!")
 		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error!"})

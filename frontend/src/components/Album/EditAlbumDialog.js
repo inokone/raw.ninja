@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Autocomplete, Chip} from "@mui/material";
 import withStyles from '@mui/styles/withStyles';
 
 const styles = theme => ({
@@ -50,19 +50,32 @@ function EditAlbumDialog(props) {
                     required
                     sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
                 />
-                <TextField
-                    type="text"
-                    name="tags"
+                <Autocomplete
+                    multiple
+                    id="tags"
+                    options={[].map(a => a)}
+                    value={tags}
+                    onChange={(event, newValue) => {
+                        setTags(newValue);
+                    }}
                     variant='outlined'
                     color='primary'
-                    label="Tags"
-                    value={tags}
-                    onChange={e => {
-                        setTags(e.target.value)
-                    }}
-                    fullWidth
-                    sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
-                />
+                    freeSolo
+                    renderTags={(value, getTagProps) =>
+                        value.map((option, index) => (
+                            <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+                        ))
+                    }
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            variant='outlined'
+                            color='primary'
+                            label="Tags"
+                            placeholder="Tags"
+                        />
+                    )}
+                /> 
             </DialogContent>
             <DialogActions className={classes.dialogActions}>
                 <Button
