@@ -88,7 +88,8 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 
 	g = v1.Group("/albums", m.Validate)
 	{
-		g.POST("/", al.CreateAlbum)
+		g.POST("/", al.Create)
+		g.PATCH("/:id", al.Patch)
 		g.GET("/", al.List)
 		g.GET("/:id", al.Get)
 		g.DELETE("/:id", al.Delete)

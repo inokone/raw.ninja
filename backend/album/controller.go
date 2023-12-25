@@ -39,7 +39,7 @@ func NewController(albums collection.Storer, loader *photo.LoadService) Controll
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
 // @Router /albums/ [post]
-func (c Controller) CreateAlbum(g *gin.Context) {
+func (c Controller) Create(g *gin.Context) {
 	var (
 		ca     collection.CreateAlbum
 		err    error
@@ -142,6 +142,59 @@ func (c Controller) Get(g *gin.Context) {
 	}
 
 	g.JSON(http.StatusOK, res)
+}
+
+// Patch is the REST handler for patching an existing album by ID.
+// @Summary Endpoint for patching an album by ID.
+// @Schemes
+// @Description Patches an album by the ID
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of Collection to patch"
+// @Success 200 {object} collection.Resp
+// @Failure 404 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
+// @Router /albums/:id [patch]
+func (c Controller) Patch(g *gin.Context) {
+	var (
+		err error
+		cr  collection.Resp
+		cl  *collection.Collection
+		id  uuid.UUID
+	)
+	id, err = uuid.Parse(g.Param("id"))
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid identifier!"})
+		return
+	}
+	if err := g.ShouldBindJSON(&cr); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.ValidationMessage(err))
+		return
+	}
+	cl, err = c.albums.ByID(id)
+	if err != nil {
+		log.Err(err).Msg("Failed to patch album!")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 404, Message: "Failed to patch album!"})
+		return
+	}
+	if err = authorize(g, cl.UserID); err != nil {
+		log.Err(err).Msg("Failed to patch album!")
+		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Unauthorized!"})
+		return
+	}
+	if cr.Tags != nil {
+		cl.Tags = cr.Tags
+	}
+	if len(cr.Name) > 0 {
+		cl.Name = cr.Name
+	}
+	err = c.albums.Update(cl)
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown issue, contact administrator!"})
+		log.Err(err).Msg("Failed to patch album!")
+		return
+	}
+	g.JSON(http.StatusOK, cl.AsResp())
 }
 
 // List is a REST handler for retrieving albums of a user
