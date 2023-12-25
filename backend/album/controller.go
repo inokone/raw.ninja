@@ -29,7 +29,7 @@ func NewController(albums collection.Storer, loader *photo.LoadService) Controll
 	}
 }
 
-// CreateAlbum is the REST handler for creating an album collection.
+// Create is the REST handler for creating an album collection.
 // @Summary Endpoint for creating an album collection.
 // @Schemes
 // @Description Creates an album collection
