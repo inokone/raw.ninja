@@ -8,6 +8,7 @@ import (
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -34,13 +35,13 @@ func (ct Type) Value() (driver.Value, error) {
 
 // Collection is a type for a collection of photos.
 type Collection struct {
-	ID          uuid.UUID     `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	User        user.User     `gorm:"foreignKey:UserID"`
-	UserID      uuid.UUID     `gorm:"index"`
-	Type        Type          `gorm:"type:collection_type"`
-	Name        string        `gorm:"type:varchar(255)"`
-	Tags        []string      `gorm:"type:text[]"`
-	Photos      []photo.Photo `gorm:"many2many:collection_photos;"`
+	ID          uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	User        user.User      `gorm:"foreignKey:UserID"`
+	UserID      uuid.UUID      `gorm:"index"`
+	Type        Type           `gorm:"type:collection_type"`
+	Name        string         `gorm:"type:varchar(255)"`
+	Tags        pq.StringArray `gorm:"type:text[]"`
+	Photos      []photo.Photo  `gorm:"many2many:collection_photos;"`
 	ThumbnailID *uuid.UUID
 	Thumbnail   photo.Photo `gorm:"foreignKey:ThumbnailID"`
 	CreatedAt   time.Time

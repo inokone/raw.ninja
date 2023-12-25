@@ -22,7 +22,7 @@ func NewService(s Storer) *Service {
 
 // CreateUpload is a method of `Service` creating a persisted upload type collection
 func (s Service) CreateUpload(usr user.User, photoIDs []uuid.UUID) (*Collection, error) {
-	return s.createCollection(usr, time.Now().Local().Format("2006-01-02 15:04:05"), Upload, photoIDs)
+	return s.createCollection(usr, time.Now().Local().Format("2006-01-02 15:04"), Upload, photoIDs)
 }
 
 func (s Service) createCollection(usr user.User, name string, ct Type, photoIDs []uuid.UUID) (*Collection, error) {

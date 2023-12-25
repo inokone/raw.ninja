@@ -60,7 +60,7 @@ const AlbumList = ({ user }) => {
             {loading && <ProgressDisplay />}
             {albums !== null &&
             <>
-                <Typography variant='h4'>Albums</Typography>
+                <Typography variant='h4' sx={{ marginBottom: 4, marginTop: 2 }} >Albums</Typography>
                 <Grid container>
                         {albums.map((album) => {
                             return (<Grid item key={album.id} xs={6} md={4} lg={2} xl={2}><AlbumCard album={album} onClick={onAlbumClick} /></Grid>)

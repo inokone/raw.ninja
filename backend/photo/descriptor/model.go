@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	img "github.com/inokone/photostorage/image"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -23,9 +24,9 @@ type Descriptor struct {
 	FileName    string    `gorm:"type:varchar(255);index;not null"`
 	Uploaded    time.Time `gorm:"index"`
 	Format      Format
-	Tags        []string     `gorm:"type:text[]"`
-	Favorite    bool         `gorm:"index"`
-	Metadata    img.Metadata `gorm:"foreignKey:MetadataID"`
+	Tags        pq.StringArray `gorm:"type:text[]"`
+	Favorite    bool           `gorm:"index"`
+	Metadata    img.Metadata   `gorm:"foreignKey:MetadataID"`
 	MetadataID  uuid.UUID
 	ThumbWidth  int
 	ThumbHeight int

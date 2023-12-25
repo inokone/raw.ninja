@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Box, Fab, Typography } from "@mui/material";
+import { Alert, Box, Fab } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
@@ -36,7 +36,6 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
     const [error, setError] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [images, setImages] = React.useState(null)
-    const [title, setTitle] = React.useState(null)
     const [open, setOpen] = React.useState(false)
 
     const dateOf = (data) => {
@@ -179,14 +178,13 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
     }
 
     const processImages = (content) => {
+        if (onDataLoaded) {
+            onDataLoaded(content)
+        }
         if (!Array.isArray(content)) {
-            setTitle(content.name)
             content = content.photos
         }
         let result = content.map(image => asPhoto(image))
-        if (onDataLoaded) {
-            onDataLoaded(result)
-        }
         setImages(result)
     }
 
@@ -237,7 +235,6 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
         <Box sx={{ display: 'flex' }}>
             <SelectionActions open={open} handleCreate={createAlbum} handleDelete={batchDelete} handleClear={clearSelection}/>
             <Main open={open}>
-                {title && <Typography variant='h4'>{title}</Typography>}
                 {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                 {loading && <ProgressDisplay />}
                 {images && <PhotoGallery photos={images} setPhoto={setPhoto} setSelected={setSelected}/>}

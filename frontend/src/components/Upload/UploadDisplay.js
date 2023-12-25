@@ -7,6 +7,7 @@ import { Typography } from '@mui/material';
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const UploadDisplay = ({user}) => {
+    const [title, setTitle] = React.useState(null)
     const location = useLocation()
     const path = location.pathname
 
@@ -23,10 +24,14 @@ const UploadDisplay = ({user}) => {
             }) 
     }
 
+    const handleDataLoaded = (data) => {
+        setTitle(data.name)
+    }
+
     return (
         <>
-            <Typography variant='h4'>Upload</Typography>
-            <PhotoGrid populator={populate} data={[]}></PhotoGrid>
+            {title && <Typography sx={{ marginBottom: 4, marginTop: 2 }} variant='h4'>Upload {title}</Typography>}
+            <PhotoGrid populator={populate} data={[]} onDataLoaded={handleDataLoaded}></PhotoGrid>
         </>
     )
 }
