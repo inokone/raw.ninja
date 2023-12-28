@@ -6,7 +6,7 @@ import (
 
 // Writer is the interface for changing `Role` in persistence
 type Writer interface {
-	Patch(role ProfileRole) error
+	Update(role ProfileRole) error
 }
 
 // Loader is the interface from loading `Role` from persistence
@@ -32,8 +32,8 @@ func NewGORMStorer(db *gorm.DB) *GORMStorer {
 	}
 }
 
-// Patch is a method of the `GORMStorer` struct. Takes a `Role` and updates settings (quota and display name) for it.
-func (s *GORMStorer) Patch(role ProfileRole) error {
+// Update is a method of the `GORMStorer` struct. Takes a `Role` and updates settings (quota and display name) for it.
+func (s *GORMStorer) Update(role ProfileRole) error {
 	var persisted Role
 	result := s.db.Where(&Role{RoleType: role.ID}).First(&persisted)
 	if result.Error != nil {

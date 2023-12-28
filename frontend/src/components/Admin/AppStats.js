@@ -58,7 +58,7 @@ const AppStats = () => {
             {error && <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay />}
             {stats &&
-                <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px'}}>
                     <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.34)', color: 'white', mt: 10, borderRadius: '4px', width: '500px' }}>
                         <Grid container>
                             <Grid item xs={12}><Typography variant='h6' sx={{ borderRadius: '4px', bgcolor: 'rgba(0, 0, 0, 0.54)' }}>General statistics</Typography></Grid>

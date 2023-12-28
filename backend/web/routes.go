@@ -111,7 +111,7 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 	g = v1.Group("/roles", m.ValidateAdmin)
 	{
 		g.GET("/", r.List)
-		g.PATCH("/:id", r.Patch)
+		g.POST("/:id", r.Update)
 	}
 
 	g = v1.Group("/statistics", m.Validate)

@@ -54,7 +54,7 @@ func (c Controller) List(g *gin.Context) {
 	g.JSON(http.StatusOK, res)
 }
 
-// Patch updates settings (e.g. quota) for a user role.
+// Update saves changes to settings (e.g. quota) for a user role.
 // @Summary Role update endpoint
 // @Schemes
 // @Description Updates the settings of a role
@@ -63,8 +63,8 @@ func (c Controller) List(g *gin.Context) {
 // @Param id path int true "ID of the role information to patch"
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
-// @Router /roles/:id [patch]
-func (c Controller) Patch(g *gin.Context) {
+// @Router /roles/:id [put]
+func (c Controller) Update(g *gin.Context) {
 	var (
 		in  ProfileRole
 		err error
@@ -73,7 +73,7 @@ func (c Controller) Patch(g *gin.Context) {
 		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Malformed role data"})
 		return
 	}
-	if err = c.roles.Patch(in); err != nil {
+	if err = c.roles.Update(in); err != nil {
 		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid role parameters provided!"})
 		return
 	}

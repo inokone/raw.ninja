@@ -1,38 +1,23 @@
-import React from 'react';
-import { styled } from '@mui/material/styles';
-
-import { Alert, Paper, TableContainer, TableBody, Table, TableHead, TableRow, Box } from "@mui/material";
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-
-import ProgressDisplay from '../Common/ProgressDisplay';
-import EditableTableCell from '../Common/EditableTableCell';
+import { useMemo, useState } from 'react';
+import {
+    MaterialReactTable,
+    useMaterialReactTable,
+} from 'material-react-table';
+import {
+    useQuery,
+    QueryClient,
+    QueryClientProvider,
+    useQueryClient,
+    useMutation
+} from '@tanstack/react-query';
+import { Box, IconButton, Tooltip } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
-    },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-        border: 0,
-    },
-}));
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-        fontSize: 14,
-    },
-}));
-
-const RoleTable = () => {
-    const [error, setError] = React.useState(null)
-    const [loading, setLoading] = React.useState(false)
-    const [roles, setRoles] = React.useState(null)
+const Example = () => {
+    const [validationErrors, setValidationErrors] = useState({});
 
     const formatBytes = (bytes, decimals = 2) => {
         if (!+bytes) return '0 Bytes'
@@ -46,93 +31,234 @@ const RoleTable = () => {
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
     }
 
-    const handleCellEdit = (role, field, value) => {
-        let newRoles = roles.slice()
-        for (let i = 0; i < newRoles.length; i++) {
-            if (newRoles[i].id === role.id) {
-                newRoles[i][field] = value
-            }
-        }
-        setRoles(newRoles)
-        return fetch(REACT_APP_API_PREFIX + '/api/v1/roles/' + role.id, {
-            method: "PATCH",
-            mode: "cors",
-            credentials: "include",
-            body: JSON.stringify({
-                'id': role.id,
-                field: value
-            })
-        })
-    }
-
-    const loadRoles = () => {
-        setLoading(true)
-        fetch(REACT_APP_API_PREFIX + '/api/v1/roles/', {
-            method: "GET",
-            mode: "cors",
-            credentials: "include"
-        })
-            .then(response => {
-                if (!response.ok) {
-                    response.json().then(content => {
-                        setError(content.message)
-                    });
-                } else {
-                    response.json().then(content => {
-                        setRoles(content)
-                        setLoading(false)
+    const usePopulate = () => {
+        return useQuery({
+            queryKey: ['roles'],
+            queryFn: async () => {
+                return await new Promise((resolve, reject) => fetch(REACT_APP_API_PREFIX + '/api/v1/roles/', {
+                    method: "GET",
+                    mode: "cors",
+                    credentials: "include"
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            response.json().then(content => {
+                                reject(content.message)
+                            });
+                        } else {
+                            response.json().then(content => {
+                                resolve(content)
+                            })
+                        }
                     })
-                }
-            })
-            .catch(error => {
-                setError(error.message)
-                setLoading(false)
-            });
+                    .catch(error => {
+                        reject(error.message)
+                    }));
+            },
+            refetchOnWindowFocus: false,
+        });
     }
 
-    React.useEffect(() => {
-        if (!loading && !roles && !error) {
-            loadRoles()
+    function useUpdate() {
+        const queryClient = useQueryClient();
+        return useMutation({
+            mutationFn: async (role) => {
+                console.log(role)
+                return await new Promise((resolve, reject) => fetch(REACT_APP_API_PREFIX + '/api/v1/roles/' + role.id, {
+                    method: "PUT",
+                    mode: "cors",
+                    credentials: "include",
+                    body: JSON.stringify({
+                        id: role.id,
+                        name: role.name,
+                        quota: role.quota
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            response.json().then(content => {
+                                reject(content.message)
+                            });
+                        } else {
+                            response.json().then(content => {
+                                resolve(content)
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        reject(error.message)
+                    }));
+            },
+            //client side optimistic update
+            onMutate: (newRoleInfo) => {
+                queryClient.setQueryData(['roles'], (prevRoles) =>
+                    prevRoles?.map((prevRole) =>
+                        prevRole.id === newRoleInfo.id ? newRoleInfo : prevRole,
+                    ),
+                );
+            },
+        });
+    }
+
+    function useDelete() {
+        const queryClient = useQueryClient();
+        return useMutation({
+            mutationFn: async (roleId) => {
+                return await new Promise((resolve, reject) => fetch(REACT_APP_API_PREFIX + '/api/v1/roles/' + roleId, {
+                    method: "DELETE",
+                    mode: "cors",
+                    credentials: "include"
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            response.json().then(content => {
+                                reject(content.message)
+                            });
+                        } else {
+                            response.json().then(content => {
+                                resolve(content)
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        reject(error.message)
+                    }));
+            },
+            //client side optimistic update
+            onMutate: (roleId) => {
+                queryClient.setQueryData(['roles'], (prevRoles) =>
+                    prevRoles?.filter((role) => role.id !== roleId),
+                );
+            },
+        });
+    }
+
+    const handleUpdate = async ({ values, table }) => {
+        console.log(values)
+        console.log(table)
+        const newValidationErrors = validateRole(values);
+        if (Object.values(newValidationErrors).some((error) => error)) {
+            setValidationErrors(newValidationErrors);
+            return;
         }
-    }, [roles, error, loading])
+        setValidationErrors({});
+        await updateRole(values);
+        table.setEditingRow(null);
+    };
 
-    return (
-        <React.Fragment>
-            {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
-            {loading && <ProgressDisplay />}
-            {roles &&
-                <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
-                    <TableContainer component={Paper} style={{ flex: 0.5 }}>
-                        <Table style={{ flex: 1 }}>
-                            <TableHead>
-                                <TableRow>
-                                    <StyledTableCell>Name</StyledTableCell>
-                                    <StyledTableCell>Quota</StyledTableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {roles.map((role) => {
-                                    return (
-                                        <StyledTableRow key={role.id}>
-                                            <EditableTableCell
-                                                value={role.name}
-                                                formatter={(value) => { return value }}
-                                                onCellEdit={(value) => handleCellEdit(role, 'name', value)}>
-                                            </EditableTableCell>
-                                            <EditableTableCell
-                                                value={role.quota}
-                                                formatter={(value) => { return value <= 0 ? 'Unlimited' : formatBytes(value) }}
-                                                onCellEdit={(value) => handleCellEdit(role, 'quota', value)}>
-                                            </EditableTableCell>
-                                        </StyledTableRow>
-                                    )
-                                })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>}
-        </React.Fragment>
+    const handleDelete = (row) => {
+        if (window.confirm('Are you sure you want to delete this role?')) {
+            deleteRole(row.original.id);
+        }
+    };
+
+    const columns = useMemo(
+        () => [
+            {
+                accessorKey: 'id',
+                header: 'ID',
+                size: 50,
+            },
+            {
+                accessorKey: 'name',
+                header: 'Name',
+                size: 200,
+                error: !!validationErrors?.name,
+                helperText: validationErrors?.name,
+                onFocus: () =>
+                    setValidationErrors({
+                        ...validationErrors,
+                        name: undefined,
+                    }),
+            },
+            {
+                accessorKey: 'quota',
+                header: 'Quota',
+                Cell: ({ cell }) => cell.getValue() <= 0 ? 'Unlimited' : formatBytes(cell.getValue()),
+                size: 100,
+                error: !!validationErrors?.quota,
+                helperText: validationErrors?.quota,
+                onFocus: () =>
+                    setValidationErrors({
+                        ...validationErrors,
+                        quota: undefined,
+                    }),
+            },
+        ],
+        [validationErrors],
     );
-}
 
-export default RoleTable
+    const {
+        data: roles = [],
+        isError: loadError,
+        isFetching,
+        isLoading,
+    } = usePopulate();
+    const { mutateAsync: updateRole, isPending: isUpdating } = useUpdate();
+    const { mutateAsync: deleteRole, isPending: isDeleting } = useDelete();
+
+    const table = useMaterialReactTable({
+        columns,
+        data: roles,
+        enableFullScreenToggle: false,
+        enableDensityToggle: false,
+        createDisplayMode: 'row',
+        editDisplayMode: 'row',
+        enableEditing: true,
+        muiToolbarAlertBannerProps: loadError
+            ? {
+                color: 'error',
+                children: 'Error loading data',
+            }
+            : undefined,
+        onCreatingRowCancel: () => setValidationErrors({}),
+        onEditingRowCancel: () => setValidationErrors({}),
+        onEditingRowSave: handleUpdate,
+        renderRowActions: ({ row, table }) => (
+            <Box sx={{ display: 'flex', gap: '1rem' }}>
+                <Tooltip title="Edit">
+                    <IconButton onClick={() => table.setEditingRow(row)}>
+                        <EditIcon />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete">
+                    <IconButton color="error" onClick={() => handleDelete(row)}>
+                        <DeleteIcon />
+                    </IconButton>
+                </Tooltip>
+            </Box>
+        ),
+        initialState: {
+            columnVisibility: { id: false },
+            density: 'compact'
+        },
+        state: {
+            isLoading: isLoading,
+            isSaving: isUpdating || isDeleting,
+            showAlertBanner: loadError,
+            showProgressBars: isFetching,
+        },
+    });
+
+    return <MaterialReactTable table={table} />;
+};
+
+const queryClient = new QueryClient();
+
+const RoleTable = () => (
+    //Put this with your other react-query providers near root of your app
+    <QueryClientProvider client={queryClient}>
+        <Example />
+    </QueryClientProvider>
+);
+
+export default RoleTable;
+
+const validateRequired = (value) => !!value.length;
+
+function validateRole(role) {
+    return {
+        name: !validateRequired(role.name) ? 'Role Name is Required' : '',
+        quota: !validateRequired(role.quota) ? 'Quota is Required' : '',
+    };
+}
