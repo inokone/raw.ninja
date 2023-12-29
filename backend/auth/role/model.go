@@ -14,18 +14,18 @@ type Role struct {
 	DisplayName string `gorm:"type:varchar(100)"`
 }
 
-// ProfileRole is astruct, the JSON representation of the `Role` entity for profile and admin views.
+// ProfileRole is a struct, the JSON representation of the `Role` entity for profile and admin views.
 type ProfileRole struct {
-	ID    int    `json:"id"`
-	Quota int64  `json:"quota"`
-	Name  string `json:"name"`
+	RoleType    int    `json:"id"`
+	Quota       int64  `json:"quota"`
+	DisplayName string `json:"name"`
 }
 
 // AsProfileRole is a method of the `Role` struct. It converts a `Role` object into a `ProfileRole` object.
 func (u *Role) AsProfileRole() ProfileRole {
 	return ProfileRole{
-		ID:    u.RoleType,
-		Quota: u.Quota,
-		Name:  u.DisplayName,
+		RoleType:    u.RoleType,
+		Quota:       u.Quota,
+		DisplayName: u.DisplayName,
 	}
 }

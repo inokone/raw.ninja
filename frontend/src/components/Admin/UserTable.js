@@ -13,11 +13,28 @@ import {
 } from '@tanstack/react-query';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import LockPersonIcon from '@mui/icons-material/LockPerson';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const Example = () => {
+const UserTableTemplate = () => {
     const [validationErrors, setValidationErrors] = useState({});
+
+    const roles = [{
+        label: "Admin",
+        value: {
+            id: 0,
+            name: "Admin",
+        }
+    },
+    {
+        label: "Free Tier",
+        value: {
+            id: 1,
+            name: "Free Tier",
+        }
+    }]
 
     const columns = useMemo(
         () => [
@@ -25,7 +42,7 @@ const Example = () => {
                 accessorKey: 'id',
                 header: 'Id',
                 enableEditing: false,
-                size: 80,
+                size: 0,
             },
             {
                 accessorKey: 'first_name',
@@ -63,6 +80,7 @@ const Example = () => {
             {
                 accessorKey: 'email',
                 header: 'Email',
+                enableEditing: false,
                 muiEditTextFieldProps: {
                     type: 'email',
                     required: true,
@@ -84,15 +102,15 @@ const Example = () => {
                 Cell: ({ cell }) => new Date(cell.getValue() * 1000).toLocaleDateString(),  //render Date as a string
             },
             {
-                accessorKey: 'role.name',
+                accessorKey: 'role',
                 header: 'Role',
                 editVariant: 'select',
-                editSelectOptions: [],
+                editSelectOptions: roles,
+                enableEditing: false, // when backend is fixed, it can be enabled
                 muiEditTextFieldProps: {
-                    select: true,
-                    error: !!validationErrors?.role,
-                    helperText: validationErrors?.role,
+                    select: true
                 },
+                Cell: ({ cell }) => cell.getValue().name  //render Role name only 
             },
         ],
         [validationErrors],
@@ -106,6 +124,8 @@ const Example = () => {
     } = usePopulate();
     const { mutateAsync: updateUser, isPending: isUpdating } = useUpdate();
     const { mutateAsync: deleteUser, isPending: isDeleting } = useDelete();
+    const { mutateAsync: toggleEnabledUser, isPending: isTogglingEnableUser} = useToggleEnabled();
+
 
     const handleUpdate = async ({ values, table }) => {
         const newValidationErrors = validateUser(values);
@@ -121,6 +141,19 @@ const Example = () => {
     const handleDelete = (row) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
             deleteUser(row.original.id);
+        }
+    };
+
+
+    const handleToggleEnabled = (row) => {
+        if (row.original.enabled === true){
+            if (window.confirm('Are you sure you want to disable this user?')) {
+                toggleEnabledUser(row.original);
+            }
+        } else {
+            if (window.confirm('Are you sure you want to enable this user?')) {
+                toggleEnabledUser(row.original);
+            }
         }
     };
 
@@ -154,20 +187,31 @@ const Example = () => {
                         <EditIcon />
                     </IconButton>
                 </Tooltip>
+                {row.original.enabled === true ?
+                    <Tooltip title="Disable">
+                        <IconButton onClick={() => handleToggleEnabled(row)}>
+                            <LockPersonIcon />
+                        </IconButton>
+                    </Tooltip> :
+                    <Tooltip title="Enable">
+                        <IconButton color="error" onClick={() => handleToggleEnabled(row)}>
+                            <LockOpenIcon />
+                        </IconButton>
+                    </Tooltip>
+                }
                 <Tooltip title="Delete">
-                    <IconButton color="error" onClick={() => handleDelete(row)}>
+                    <IconButton onClick={() => handleDelete(row)}>
                         <DeleteIcon />
                     </IconButton>
                 </Tooltip>
             </Box>
         ),
         initialState: { 
-            columnVisibility: { id: false }, 
             density: 'compact' 
         },
         state: {
             isLoading: isLoading,
-            isSaving: isUpdating || isDeleting,
+            isSaving: isUpdating || isDeleting || isTogglingEnableUser,
             showAlertBanner: loadError,
             showProgressBars: isFetching,
         },
@@ -209,9 +253,71 @@ function useUpdate() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (user) => {
-            //send api update request here
-            await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-            return Promise.resolve();
+            return await new Promise((resolve, reject) => fetch(REACT_APP_API_PREFIX + '/api/v1/users/' + user.id, {
+                method: "PATCH",
+                mode: "cors",
+                credentials: "include",
+                body: JSON.stringify({
+                    id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    role: user.role
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        response.json().then(content => {
+                            reject(content.message)
+                        });
+                    } else {
+                        response.json().then(content => {
+                            resolve(content)
+                        })
+                    }
+                })
+                .catch(error => {
+                    reject(error.message)
+                }));
+        },
+        //client side optimistic update
+        onMutate: (newUserInfo) => {
+            queryClient.setQueryData(['users'], (prevUsers) =>
+                prevUsers?.map((prevUser) =>
+                    prevUser.id === newUserInfo.id ? newUserInfo : prevUser,
+                ),
+            );
+        }
+    });
+}
+
+function useToggleEnabled() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (user) => {
+            user.enabled = user.enabled === true ? false : true
+            return await new Promise((resolve, reject) => fetch(REACT_APP_API_PREFIX + '/api/v1/users/' + user.id + '/enabled', {
+                method: "PUT",
+                mode: "cors",
+                credentials: "include",
+                body: JSON.stringify({
+                    id: user.id,
+                    enabled: user.enabled
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        response.json().then(content => {
+                            reject(content.message)
+                        });
+                    } else {
+                        response.json().then(content => {
+                            resolve(content)
+                        })
+                    }
+                })
+                .catch(error => {
+                    reject(error.message)
+                }));
         },
         //client side optimistic update
         onMutate: (newUserInfo) => {
@@ -228,9 +334,25 @@ function useDelete() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (userId) => {
-            //send api update request here
-            await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-            return Promise.resolve();
+            return await new Promise((resolve, reject) => fetch(REACT_APP_API_PREFIX + '/api/v1/users/' + userId, {
+                method: "DELETE",
+                mode: "cors",
+                credentials: "include"
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        response.json().then(content => {
+                            reject(content.message)
+                        });
+                    } else {
+                        response.json().then(content => {
+                            resolve(content)
+                        })
+                    }
+                })
+                .catch(error => {
+                    reject(error.message)
+                }));
         },
         //client side optimistic update
         onMutate: (userId) => {
@@ -246,27 +368,25 @@ const queryClient = new QueryClient();
 const UserTable = () => (
     //Put this with your other react-query providers near root of your app
     <QueryClientProvider client={queryClient}>
-        <Example />
+        <UserTableTemplate />
     </QueryClientProvider>
 );
 
 export default UserTable;
 
 const validateRequired = (value) => !!value.length;
-const validateEmail = (email) =>
-    !!email.length &&
-    email
-        .toLowerCase()
-        .match(
+const validateEmail = (email) => {
+    return !!email.length && email.toLowerCase().match(
             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         );
+}
 
 function validateUser(user) {
     return {
-        firstName: !validateRequired(user.firstName)
+        firstName: !validateRequired(user.first_name)
             ? 'First Name is Required'
             : '',
-        lastName: !validateRequired(user.lastName) ? 'Last Name is Required' : '',
+        lastName: !validateRequired(user.last_name) ? 'Last Name is Required' : '',
         email: !validateEmail(user.email) ? 'Incorrect Email Format' : '',
     };
 }

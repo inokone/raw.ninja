@@ -78,6 +78,11 @@ func (c Controller) Upload(g *gin.Context) {
 		return
 	}
 
+	if !usr.IsActive() {
+		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Your account has not been confirmed yet. Please confirm you e-mail address!"})
+		return
+	}
+
 	ch = make(chan photo.UploadResult, len(files))
 	wg = new(sync.WaitGroup)
 	for _, file := range files {

@@ -16,7 +16,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const Example = () => {
+const RoleTableTemplate = () => {
     const [validationErrors, setValidationErrors] = useState({});
 
     const formatBytes = (bytes, decimals = 2) => {
@@ -63,7 +63,6 @@ const Example = () => {
         const queryClient = useQueryClient();
         return useMutation({
             mutationFn: async (role) => {
-                console.log(role)
                 return await new Promise((resolve, reject) => fetch(REACT_APP_API_PREFIX + '/api/v1/roles/' + role.id, {
                     method: "PUT",
                     mode: "cors",
@@ -71,7 +70,7 @@ const Example = () => {
                     body: JSON.stringify({
                         id: role.id,
                         name: role.name,
-                        quota: role.quota
+                        quota: parseInt(role.quota)
                     })
                 })
                     .then(response => {
@@ -134,8 +133,6 @@ const Example = () => {
     }
 
     const handleUpdate = async ({ values, table }) => {
-        console.log(values)
-        console.log(table)
         const newValidationErrors = validateRole(values);
         if (Object.values(newValidationErrors).some((error) => error)) {
             setValidationErrors(newValidationErrors);
@@ -158,6 +155,7 @@ const Example = () => {
                 accessorKey: 'id',
                 header: 'ID',
                 size: 50,
+                enableEditing: false
             },
             {
                 accessorKey: 'name',
@@ -170,6 +168,7 @@ const Example = () => {
                         ...validationErrors,
                         name: undefined,
                     }),
+                enableEditing: false
             },
             {
                 accessorKey: 'quota',
@@ -229,7 +228,6 @@ const Example = () => {
             </Box>
         ),
         initialState: {
-            columnVisibility: { id: false },
             density: 'compact'
         },
         state: {
@@ -248,7 +246,7 @@ const queryClient = new QueryClient();
 const RoleTable = () => (
     //Put this with your other react-query providers near root of your app
     <QueryClientProvider client={queryClient}>
-        <Example />
+        <RoleTableTemplate />
     </QueryClientProvider>
 );
 

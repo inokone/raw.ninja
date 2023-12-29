@@ -18,6 +18,7 @@ type User struct {
 	LastName  string    `gorm:"type:varchar(100)"`
 	Role      role.Role `gorm:"foreignKey:RoleID"`
 	Source    string    `gorm:"type:varchar(255)"`
+	Enabled   bool      `gorm:"default:true"`
 	RoleID    int
 	Status    Status
 	CreatedAt time.Time
@@ -65,6 +66,11 @@ func (u *User) VerifyPassword(password string) bool {
 	return err == nil
 }
 
+// IsActive is a method of `User` returning whether the user is enabled, confirmed and can store data
+func (u *User) IsActive() bool {
+	return u.Enabled && u.Status == Confirmed
+}
+
 // AsProfile is a method of the `User` struct. It converts a `User` object into a `Profile` object.
 func (u *User) AsProfile() Profile {
 	return Profile{
@@ -89,6 +95,8 @@ func (u *User) AsAdminView() AdminView {
 		Email:     u.Email,
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
+		Status:    string(u.Status),
+		Enabled:   u.Enabled,
 		Role:      u.Role.AsProfileRole(),
 		Created:   int(u.CreatedAt.Unix()),
 		Updated:   int(u.UpdatedAt.Unix()),
@@ -128,10 +136,27 @@ type AdminView struct {
 	Email     string           `json:"email"`
 	FirstName string           `json:"first_name"`
 	LastName  string           `json:"last_name"`
-	Role      role.ProfileRole `json:"role" binding:"required"`
+	Status    string           `json:"status"`
+	Role      role.ProfileRole `json:"role"`
+	Enabled   bool             `json:"enabled"`
 	Created   int              `json:"created"`
 	Updated   int              `json:"updated"`
 	Deleted   *int             `json:"deleted"`
+}
+
+// Patch is the user representation for patching an admin view of the application.
+type Patch struct {
+	ID        string `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	//	Role      role.ProfileRole `json:"role"` TODO: fix role patching
+	Enabled bool `json:"enabled"`
+}
+
+// SetEnabled is the user representation for enabling/disabling user authentication.
+type SetEnabled struct {
+	ID      string `json:"id"`
+	Enabled bool   `json:"enabled"`
 }
 
 // RoleUser is aggregated data on the role, with the user count.

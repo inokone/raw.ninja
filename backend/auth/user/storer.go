@@ -9,8 +9,9 @@ import (
 type Writer interface {
 	Store(user *User) error
 	Update(user *User) error
-	Patch(usr AdminView) error
+	Patch(usr Patch) error
 	Delete(email string) error
+	SetEnabled(id uuid.UUID, enabled bool) error
 }
 
 // Loader is the interface from loading `User` from persistence
@@ -74,8 +75,8 @@ func (s *GORMStorer) Delete(email string) error {
 	return result.Error
 }
 
-// Patch is a method of the `GORMStorer` struct. Takes a `User` and updates settings (role) for it.
-func (s *GORMStorer) Patch(usr AdminView) error {
+// Patch is a method of the `GORMStorer` struct. Takes a `Patch` and updates settings for it.
+func (s *GORMStorer) Patch(usr Patch) error {
 	var (
 		persisted *User
 		id        uuid.UUID
@@ -92,8 +93,23 @@ func (s *GORMStorer) Patch(usr AdminView) error {
 		return err
 	}
 
-	persisted.RoleID = usr.Role.ID
-	res := s.db.Updates(persisted)
+	res := s.db.Model(&persisted).Updates(usr)
+	return res.Error
+}
+
+// SetEnabled is a method of the `GORMStorer` struct. Takes a user and updates if it is enabled.
+func (s *GORMStorer) SetEnabled(id uuid.UUID, enabled bool) error {
+	var (
+		persisted *User
+		err       error
+	)
+
+	persisted, err = s.ByID(id)
+	if err != nil {
+		return err
+	}
+
+	res := s.db.Model(&persisted).Select("enabled").Updates(map[string]interface{}{"enabled": enabled})
 	return res.Error
 }
 

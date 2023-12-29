@@ -35,13 +35,13 @@ func NewGORMStorer(db *gorm.DB) *GORMStorer {
 // Update is a method of the `GORMStorer` struct. Takes a `Role` and updates settings (quota and display name) for it.
 func (s *GORMStorer) Update(role ProfileRole) error {
 	var persisted Role
-	result := s.db.Where(&Role{RoleType: role.ID}).First(&persisted)
+	result := s.db.Where(&Role{RoleType: role.RoleType}).First(&persisted)
 	if result.Error != nil {
 		return result.Error
 	}
 
 	persisted.Quota = role.Quota
-	persisted.DisplayName = role.Name
+	persisted.DisplayName = role.DisplayName
 
 	result = s.db.Updates(persisted)
 

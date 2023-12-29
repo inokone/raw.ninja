@@ -22,16 +22,16 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Create tag editor (+ display) for albums (MUI Chip component)
-    - Replace table displays with an advanced component
-    - Make album title editable
-    - Create "delete album"
+    - Frontend on S3, later possibly CloudFront
+    - Revamp profile page
     - Improve PhotoGrid
       - Context menu configurable from props
       - Is selection enabled
       - Limit of images
-    - Add photos to existing collections
-    - Remove photos from collections
+    - Album improvements (based on improved photogrid)
+      - Create "delete album"
+      - Add photos to existing album
+      - Remove photos from album (watch out for thumbnails)
     - Make image.Service serve just a single image, and have one image service per size
       - 3 levels for images (instead of 2)
         - raw
@@ -40,10 +40,8 @@ Functionality:
 
     - Display image count + used space per user on admin page
     - Display multiple image groups (by date or smg)
-    - Create dark mode
     - Automate IaC
       - CloudFormation with
-        - Frontend on S3, later possibly CloudFront
         - Backend docker uploaded to ECR
         - Backend running in ECS from ECR
         - ALB deployed by CF
@@ -56,6 +54,7 @@ Functionality:
     - Host frontend on S3 + cloudfront (https://aws.plainenglish.io/how-to-host-your-react-application-in-aws-s3-c0940cd4377b)
     - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
     - Add history/audit - with SNS and DynamoDB
+    - Create dark mode
     - Whitelist only CloudFlare domain !!!
     - Fix editing users and roles on admin page
     - Fix search filter page reload

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 
 	"github.com/inokone/photostorage/common"
@@ -96,7 +97,7 @@ func (c Controller) List(g *gin.Context) {
 // @Router /users/:id [patch]
 func (c Controller) Patch(g *gin.Context) {
 	var (
-		in  AdminView
+		in  Patch
 		err error
 	)
 	if err = g.ShouldBindJSON(&in); err != nil {
@@ -110,6 +111,41 @@ func (c Controller) Patch(g *gin.Context) {
 	g.JSON(http.StatusOK, common.StatusMessage{
 		Code:    200,
 		Message: "User patched!",
+	})
+}
+
+// SetEnabled enables/disables a user for login.
+// @Summary User enable/disable endpoint
+// @Schemes
+// @Description Updates the target user
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the user information to patch"
+// @Success 200 {object} common.StatusMessage
+// @Failure 400 {object} common.StatusMessage
+// @Router /users/:id/enabled [put]
+func (c Controller) SetEnabled(g *gin.Context) {
+	var (
+		in  SetEnabled
+		id  uuid.UUID
+		err error
+	)
+	if err = g.ShouldBindJSON(&in); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Malformed user data"})
+		return
+	}
+	id, err = uuid.Parse(in.ID)
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid user ID provided!"})
+		return
+	}
+	if err = c.users.SetEnabled(id, in.Enabled); err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: "Invalid parameters provided!"})
+		return
+	}
+	g.JSON(http.StatusOK, common.StatusMessage{
+		Code:    200,
+		Message: "User updated!",
 	})
 }
 

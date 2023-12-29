@@ -90,6 +90,11 @@ func (c Controller) Login(g *gin.Context) {
 		return
 	}
 
+	if !usr.Enabled {
+		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Your account has been deactivated. Please contact our administrators!"})
+		return
+	}
+
 	secs, err = c.checkTimeout(usr)
 	if err != nil {
 		log.Err(err).Str("UserID", usr.ID.String()).Msg("Failed to collect login timeout.")
