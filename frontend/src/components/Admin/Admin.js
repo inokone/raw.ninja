@@ -5,7 +5,7 @@ import RoleTable from './RoleTable';
 import { Typography, Box } from "@mui/material";
 
 
-const Admin = ({user}) => {
+const Admin = ({ user }) => {
 
     return (
         <React.Fragment>
@@ -15,9 +15,9 @@ const Admin = ({user}) => {
                     <Box>
                         <Typography variant="h4" sx={{ marginTop: 6, marginBottom: 2 }}>Users</Typography>
                         <Box maxWidth="lg" sx={{ margin: 'auto' }}>
-                            <UserTable/>
+                            <UserTable />
                         </Box>
-                        <Typography variant="h4" sx={{marginTop: 6, marginBottom: 2}}>Roles</Typography>
+                        <Typography variant="h4" sx={{ marginTop: 6, marginBottom: 2 }}>Roles</Typography>
                         <Box maxWidth="sm" sx={{ margin: 'auto' }}>
                             <RoleTable />
                         </Box>

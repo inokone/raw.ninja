@@ -38,7 +38,7 @@ const PhotoDisplay = () => {
         });
     }
 
-    if(!image && !loading && !error) {
+    if (!image && !loading && !error) {
       loadImage()
     }
   }, [path, image, loading, error])
@@ -46,7 +46,7 @@ const PhotoDisplay = () => {
   return (
     <React.Fragment>
       {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
-      {loading && <ProgressDisplay /> }
+      {loading && <ProgressDisplay />}
       {image && <DetailedPhotoCard image={image} closable={false} />}
     </React.Fragment>
   );

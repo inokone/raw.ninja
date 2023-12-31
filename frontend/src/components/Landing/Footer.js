@@ -72,10 +72,10 @@ const styles = (theme) => ({
 });
 
 const infos = [
-//    {
-//        icon: <PhoneIcon />,
-//        description: "+1 555 123456",
-//    },
+    //    {
+    //        icon: <PhoneIcon />,
+    //        description: "+1 555 123456",
+    //    },
     {
         icon: <MailIcon />,
         description: "support@raw.ninja",

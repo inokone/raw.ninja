@@ -30,7 +30,7 @@ const data = (usedSpace, quota, theme) => {
         datasets: [
             {
                 data: [
-                    usedSpace,  
+                    usedSpace,
                     quota <= 0 ? 9 * usedSpace : quota - usedSpace],
                 backgroundColor: [
                     theme.palette.primary.light,
@@ -82,11 +82,11 @@ const textCenter = (text, color) => {
     }
 }
 
-const SpaceChart = ({usedSpace, quota}) => {
+const SpaceChart = ({ usedSpace, quota }) => {
     const theme = useTheme();
 
     return (
-        <Doughnut 
+        <Doughnut
             data={data(usedSpace, quota, theme)}
             options={options}
             plugins={[textCenter(

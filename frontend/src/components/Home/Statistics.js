@@ -8,8 +8,8 @@ import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({
     chart: {
-        bgcolor: theme.palette.primary.light, 
-        borderRadius: '4px' 
+        bgcolor: theme.palette.primary.light,
+        borderRadius: '4px'
     }
 }));
 
@@ -21,7 +21,7 @@ const Statistics = ({ onDataLoaded }) => {
     const [error, setError] = React.useState(null)
     const [stats, setStats] = React.useState(null)
 
-    const populate = () => {
+    const populate = React.useCallback(() => {
         fetch(REACT_APP_API_PREFIX + '/api/v1/statistics/user', {
             method: "GET",
             mode: "cors",
@@ -44,13 +44,13 @@ const Statistics = ({ onDataLoaded }) => {
             setError(error.message)
             setLoading(false)
         });
-    }
+    }, [onDataLoaded])
 
     React.useEffect(() => {
         if (!loading && !stats && !error) {
             populate()
         }
-    }, [stats, loading, error])
+    }, [stats, loading, error, populate])
 
     return (
         <>
@@ -65,7 +65,7 @@ const Statistics = ({ onDataLoaded }) => {
                         <AggregatedChart photos={stats.photos} favorites={stats.favorites} albums={stats.albums} />
                     </Grid>
                     <Grid item xs={12} md={4} display="flex" justifyContent="center" alignItems="center" className={classes.chart}>
-                        <UploadChart uploads={stats.uploads}/>
+                        <UploadChart uploads={stats.uploads} />
                     </Grid>
                 </Grid>}
         </>

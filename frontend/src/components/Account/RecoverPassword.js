@@ -45,7 +45,7 @@ const RecoverPassword = () => {
         <React.Fragment>
             <Container maxWidth="sm">
                 <Box style={{ flex: 1 }} sx={{ m: 4 }}>
-                    <Typography sx={{mb: 2}}>Please enter your email address so we can send you an email to reset your password.</Typography>
+                    <Typography sx={{ mb: 2 }}>Please enter your email address so we can send you an email to reset your password.</Typography>
                     <TextField
                         label="Email"
                         onChange={e => {

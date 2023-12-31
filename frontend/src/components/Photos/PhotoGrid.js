@@ -81,7 +81,7 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
         newImages.forEach(i => {
             if (i.id === photo.id) {
                 i.selected = photo.selected
-            } 
+            }
             if (i.selected) {
                 selectedCount++
             }
@@ -122,7 +122,7 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
 
     const createAlbum = () => {
         let selectedIDs = images.filter((img) => img.selected).map((img) => img.id);
-        navigate('/albums/create' , {state:{photos: selectedIDs}})
+        navigate('/albums/create', { state: { photos: selectedIDs } })
     }
 
     const formatShutterSpeed = (shutterSpeed) => {
@@ -166,29 +166,18 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
         return !time.startsWith("1970-01-01T")
     }
 
-    const description = (image) => {
+    const description = React.useCallback((image) => {
         let date = dateOf(image.descriptor.metadata.timestamp)
         let timestamp = validTime(image.descriptor.metadata.timestamp) ? ("Taken on " + date + "\n") : ""
-        let aperture = image.descriptor.metadata.aperture !== 0 ? "ƒ/" + Math.round((image.descriptor.metadata.aperture + Number.EPSILON) * 100) / 100 + "  ": ""
+        let aperture = image.descriptor.metadata.aperture !== 0 ? "ƒ/" + Math.round((image.descriptor.metadata.aperture + Number.EPSILON) * 100) / 100 + "  " : ""
         let shutter = image.descriptor.metadata.shutter !== 0 ? formatShutterSpeed(image.descriptor.metadata.shutter) + " sec  " : ""
         let iso = image.descriptor.metadata.ISO !== 0 ? "ISO " + image.descriptor.metadata.ISO + "  " : ""
         let dim = image.descriptor.metadata.width + " x " + image.descriptor.metadata.height + " px  "
         let size = formatBytes(image.descriptor.metadata.data_size)
         return timestamp + aperture + shutter + iso + dim + size
-    }
+    }, [])
 
-    const processImages = (content) => {
-        if (onDataLoaded) {
-            onDataLoaded(content)
-        }
-        if (!Array.isArray(content)) {
-            content = content.photos
-        }
-        let result = content.map(image => asPhoto(image))
-        setImages(result)
-    }
-
-    const asPhoto = (image) => {
+    const asPhoto = React.useCallback((image) => {
         return {
             src: image.thumbnail.url,
             original: image.thumbnail.url,
@@ -204,6 +193,20 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
             selected: false
         }
     }
+        , [description])
+
+    const processImages = React.useCallback((content) => {
+        if (onDataLoaded) {
+            onDataLoaded(content)
+        }
+        if (!Array.isArray(content)) {
+            content = content.photos
+        }
+        let result = content.map(image => asPhoto(image))
+        setImages(result)
+    }, [onDataLoaded, asPhoto])
+
+
 
     React.useEffect(() => {
         const loadImages = () => {
@@ -229,23 +232,23 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
         if (!images && !error && !loading) {
             loadImages()
         }
-    }, [data, populator, images, error, loading])
+    }, [data, populator, images, error, loading, processImages])
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <SelectionActions open={open} handleCreate={createAlbum} handleDelete={batchDelete} handleClear={clearSelection}/>
+            <SelectionActions open={open} handleCreate={createAlbum} handleDelete={batchDelete} handleClear={clearSelection} />
             <Main open={open}>
                 {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                 {loading && <ProgressDisplay />}
-                {images && <PhotoGallery photos={images} setPhoto={setPhoto} setSelected={setSelected}/>}
+                {images && <PhotoGallery photos={images} setPhoto={setPhoto} setSelected={setSelected} />}
             </Main>
             {fabAction &&
                 <Box onClick={fabAction} sx={{
-                    '& > :not(style)': { m: 1 },     
+                    '& > :not(style)': { m: 1 },
                     position: "fixed",
                     bottom: 16,
                     right: 16
-                    }}>
+                }}>
                     <Fab color="primary" aria-label="add">
                         <AddIcon />
                     </Fab>

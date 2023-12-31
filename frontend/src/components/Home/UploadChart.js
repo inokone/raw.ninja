@@ -1,5 +1,5 @@
 import { Line } from "react-chartjs-2";
-import { Chart, CategoryScale, LinearScale, LineElement, Title, Tooltip, PointElement} from "chart.js";
+import { Chart, CategoryScale, LinearScale, LineElement, Title, Tooltip, PointElement } from "chart.js";
 import { useTheme } from '@mui/styles';
 
 Chart.register(CategoryScale, LinearScale, LineElement, Title, Tooltip, PointElement);
@@ -26,7 +26,7 @@ const options = (theme) => {
             tooltip: {
                 callbacks: {
                     label: function (context) {
-                        return context.parsed.y + (context.parsed.y !== 1 ? " photos": " photo");
+                        return context.parsed.y + (context.parsed.y !== 1 ? " photos" : " photo");
                     }
                 }
             }

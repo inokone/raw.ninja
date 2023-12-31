@@ -22,7 +22,7 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Frontend on S3, later possibly CloudFront
+    - Add lifecycle rules - with eventbridge trigger and lambdas
     - Revamp profile page
     - Improve PhotoGrid
       - Context menu configurable from props
@@ -41,6 +41,7 @@ Functionality:
     - Display image count + used space per user on admin page
     - Display multiple image groups (by date or smg)
     - Automate IaC
+      - Frontend on S3, later possibly CloudFront
       - CloudFormation with
         - Backend docker uploaded to ECR
         - Backend running in ECS from ECR
@@ -48,7 +49,6 @@ Functionality:
         - CloudWatch logs by CF
         - Credentials should come from AWS Systems Manager Parameter Store
     - Status message object should have no status, object should be kept though - KISS
-    - Add lifecycle rules - with eventbridge trigger and lambdas
     - Extract services from controllers. controllers should be about conversion between DB to JSON object
     - Encrypt settings file on EC2 - store private key to somewhere else - e.g. Google passwords 
     - Host frontend on S3 + cloudfront (https://aws.plainenglish.io/how-to-host-your-react-application-in-aws-s3-c0940cd4377b)

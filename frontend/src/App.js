@@ -29,6 +29,8 @@ import UploadDisplay from './components/Upload/UploadDisplay';
 import CreateAlbum from './components/Album/CreateAlbum';
 import AlbumDisplay from './components/Album/AlbumDisplay';
 import AlbumList from './components/Album/AlbumList';
+import RuleSets from './components/Rules/RuleSets';
+import RuleSet from './components/Rules/RuleSet';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -78,50 +80,53 @@ const App = () => {
           </div>
         </header>
       ) : (
-      <BrowserRouter>
-        {!isCookieRulesDialogOpen && (
-          <CookieConsent
-            handleCookieRulesDialogOpen={handleCookieRulesDialogOpen}
+        <BrowserRouter>
+          {!isCookieRulesDialogOpen && (
+            <CookieConsent
+              handleCookieRulesDialogOpen={handleCookieRulesDialogOpen}
+            />
+          )}
+          <CookieRulesDialog
+            open={isCookieRulesDialogOpen}
+            onClose={handleCookieRulesDialogClose}
           />
-        )}
-        <CookieRulesDialog
-          open={isCookieRulesDialogOpen}
-          onClose={handleCookieRulesDialogClose}
-        />
-        <ResponsiveAppBar user={user} setQuery={setQuery} />
-        <header className="App-header">
-          <div className="wrapper">
-            <Routes>
-              <Route path="/login" element={<Login setUser={setUser} />} />
-              <Route path="/logout" element={<Logout setUser={setUser} />} />
-              <Route path="/password/reset" element={<ResetPassword />} />
-              <Route path="/password/recover" element={<RecoverPassword />} />
-              <Route path="/signup" element={<SignupForm />} />
-              <Route path="/terms" element={<TermsOfUse />} />
-              <Route path="/" element={<Landing />} />
-              <Route path="/confirm" element={<EmailConfirmation />} />
+          <ResponsiveAppBar user={user} setQuery={setQuery} />
+          <header className="App-header">
+            <div className="wrapper">
+              <Routes>
+                <Route path="/login" element={<Login setUser={setUser} />} />
+                <Route path="/logout" element={<Logout setUser={setUser} />} />
+                <Route path="/password/reset" element={<ResetPassword />} />
+                <Route path="/password/recover" element={<RecoverPassword />} />
+                <Route path="/signup" element={<SignupForm />} />
+                <Route path="/terms" element={<TermsOfUse />} />
+                <Route path="/" element={<Landing />} />
+                <Route path="/confirm" element={<EmailConfirmation />} />
                 <Route element={<ProtectedRoute user={user} redirect="/" />}>
-                <Route path="/home" element={<Dashboard user={user} />} />
-                <Route path="/upload" element={<Upload user={user} />} />
-                <Route path="/photos" element={<PhotoList user={user} />} />
-                <Route path="/albums" element={<AlbumList user={user} />} />
-                <Route path="/albums/create" element={<CreateAlbum user={user} />} />
-                <Route path="/albums/:albumId" element={<AlbumDisplay user={user} />} />
-                <Route path="/editor/:photoId" element={<Photopea/>} />
-                <Route path="/photos/:photosId" element={<PhotoDisplay user={user} />} />
-                <Route path="/uploads/:uploadId" element={<UploadDisplay user={user} />} />
-                <Route path="/users/:userId" element={<Preferences user={user} />} />
-                <Route path="/profile" element={<UserProfile user={user} />} />
-                <Route path="/search" element={<SearchResult query={query} />} />
-              </Route>
-              <Route element={<ProtectedRoute user={user} target="admin" redirect="/" />}>
-                <Route path="/admin" element={<Admin user={user} />} />
-              </Route>
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </div>
-        </header>
-      </BrowserRouter>)}
+                  <Route path="/home" element={<Dashboard user={user} />} />
+                  <Route path="/upload" element={<Upload user={user} />} />
+                  <Route path="/photos" element={<PhotoList user={user} />} />
+                  <Route path="/albums" element={<AlbumList user={user} />} />
+                  <Route path="/albums/create" element={<CreateAlbum user={user} />} />
+                  <Route path="/albums/:albumId" element={<AlbumDisplay user={user} />} />
+                  <Route path="/editor/:photoId" element={<Photopea />} />
+                  <Route path="/photos/:photosId" element={<PhotoDisplay user={user} />} />
+                  <Route path="/uploads/:uploadId" element={<UploadDisplay user={user} />} />
+                  <Route path="/users/:userId" element={<Preferences user={user} />} />
+                  <Route path="/rulesets" element={<RuleSets user={user} />} />
+                  <Route path="/rulesets/:ruleSetId" element={<RuleSet user={user} />} />
+                  <Route path="/users/:userId" element={<Preferences user={user} />} />
+                  <Route path="/profile" element={<UserProfile user={user} />} />
+                  <Route path="/search" element={<SearchResult query={query} />} />
+                </Route>
+                <Route element={<ProtectedRoute user={user} target="admin" redirect="/" />}>
+                  <Route path="/admin" element={<Admin user={user} />} />
+                </Route>
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </div>
+          </header>
+        </BrowserRouter>)}
     </div>
   );
 }

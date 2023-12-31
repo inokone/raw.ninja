@@ -37,15 +37,15 @@ const ResetPassword = () => {
                 "password": newPassword
             })
         }).then(response => {
-                if (!response.ok) {
-                    response.json().then(content => {
-                        setError(content.message)
-                    });
-                } else {
-                    setSuccess(true)
-                    navigate('/')
-                }
-            })
+            if (!response.ok) {
+                response.json().then(content => {
+                    setError(content.message)
+                });
+            } else {
+                setSuccess(true)
+                navigate('/')
+            }
+        })
             .catch(error => {
                 setError(error.message)
             })

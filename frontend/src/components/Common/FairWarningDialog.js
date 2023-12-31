@@ -28,12 +28,12 @@ function FairWarningDialog(props) {
             <DialogTitle>Fair Warning</DialogTitle>
             <DialogContent>
                 <Typography variant="h6" color="primary" paragraph>
-                   State of this application
+                    State of this application
                 </Typography>
                 <Typography paragraph>
-                    This current version of the application is used for development and 
-                     <strong> BETA testing</strong>. We are on a journey for creating new features and 
-                    identifying existing issues in the application - including potential 
+                    This current version of the application is used for development and
+                    <strong> BETA testing</strong>. We are on a journey for creating new features and
+                    identifying existing issues in the application - including potential
                     security related issues.
                 </Typography>
                 <Typography variant="h6" color="primary" paragraph>
@@ -43,7 +43,7 @@ function FairWarningDialog(props) {
                     We can <strong>wipe all data</strong> from the application at any given time without
                     any prior notice. We can not take any responsibility for your loss
                     as stated in the <Link to="/terms">terms of use</Link>.
-                    Also, the current environment has rather strict limitations on 
+                    Also, the current environment has rather strict limitations on
                     computation and reliability, so the application can be slow or
                     unavailable for various reasons.
                     Only free tier is available at this point.
@@ -62,8 +62,8 @@ function FairWarningDialog(props) {
                     onClick={onClose}
                     variant="contained"
                     color={theme.palette.common.black}
-                >                   
-                Close
+                >
+                    Close
                 </ColoredButton>
             </DialogActions>
         </Dialog>

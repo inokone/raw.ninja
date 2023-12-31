@@ -3,19 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { Box, Fab, Typography, Alert, Grid } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ProgressDisplay from '../Common/ProgressDisplay';
-import AlbumCard from './AlbumCard';
+import RuleSetCard from './RuleSetCard';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const AlbumList = ({ user }) => {
+const RuleSets = ({ user }) => {
     const navigate = useNavigate()
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
-    const [albums, setAlbums] = React.useState(null)
+    const [ruleSets, setRuleSets] = React.useState(null)
 
     const populate = () => {
         setLoading(true)
-        fetch(REACT_APP_API_PREFIX + '/api/v1/albums/', {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/rulesets/', {
             method: "GET",
             mode: "cors",
             credentials: "include"
@@ -30,7 +30,7 @@ const AlbumList = ({ user }) => {
                     if (content === null) {
                         content = []
                     }
-                    setAlbums(content)
+                    setRuleSets(content)
                     setLoading(false)
                 })
             }
@@ -40,30 +40,30 @@ const AlbumList = ({ user }) => {
         });
     }
 
-    const onAlbumClick = (id) => {
-        navigate("/albums/" + id)
+    const onRuleSetClick = (id) => {
+        navigate("/rulesets/" + id)
     }
 
     const onFabClick = (id) => {
-        navigate("/albums/create")
+        navigate("/rulesets/create")
     }
 
     React.useEffect(() => {
-        if (!loading && !albums && !error) {
+        if (!loading && !ruleSets && !error) {
             populate()
         }
-    }, [albums, loading, error])
+    }, [ruleSets, loading, error])
 
     return (
         <>
             {error && <Alert sx={{ mb: 1 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay />}
-            {albums !== null &&
+            {ruleSets !== null &&
                 <>
-                    <Typography variant='h4' sx={{ marginBottom: 4, marginTop: 2 }} >Albums</Typography>
+                    <Typography variant='h4' sx={{ marginBottom: 4, marginTop: 2 }} >Rule Sets</Typography>
                     <Grid container>
-                        {albums.map((album) => {
-                            return (<Grid item key={album.id} xs={6} md={4} lg={2} xl={2}><AlbumCard album={album} onClick={onAlbumClick} /></Grid>)
+                        {ruleSets.map((ruleSet) => {
+                            return (<Grid item key={ruleSet.id} xs={6} md={4} lg={2} xl={2}><RuleSetCard ruleSet={ruleSet} onClick={onRuleSetClick} /></Grid>)
                         })}
                     </Grid>
                     <Box sx={{
@@ -81,4 +81,4 @@ const AlbumList = ({ user }) => {
     )
 }
 
-export default AlbumList;
+export default RuleSets;

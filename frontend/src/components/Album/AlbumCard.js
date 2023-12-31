@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Card, CardMedia, Box, Typography, Tooltip, Grid} from "@mui/material";
+import { Card, CardMedia, Box, Typography, Tooltip, Grid } from "@mui/material";
 import noimage from './no-image.svg';
 import CollectionsIcon from '@mui/icons-material/Collections';
 
@@ -15,9 +15,9 @@ const AlbumCard = ({ album, onClick }) => {
     }
 
     return (
-        <Card style={{ flex: 1 }} sx={{position: 'relative', cursor: "pointer", margin: 1, bgcolor: "lightgrey" }}>
+        <Card style={{ flex: 1 }} sx={{ position: 'relative', cursor: "pointer", margin: 1, bgcolor: "lightgrey" }}>
             <Box>
-                <Typography 
+                <Typography
                     variant='h7'
                     sx={{
                         position: 'absolute',
@@ -29,20 +29,20 @@ const AlbumCard = ({ album, onClick }) => {
                             'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
                         color: 'white',
                         padding: 1
-                    }} 
+                    }}
                 >{album.name}</Typography>
                 <Box sx={{
                     position: 'absolute',
                     bottom: -5,
                     right: 5,
                     color: 'white',
-                    fontWeight: 'fontWeightMedium', 
+                    fontWeight: 'fontWeightMedium',
                     fontSize: '18px',
                     display: 'inline'
                 }}>
                     <Grid container>
-                    <Typography marginBottom={1} marginRight={'3px'}>{album.photo_count}</Typography>
-                    <CollectionsIcon fontSize='small'/>
+                        <Typography marginBottom={1} marginRight={'3px'}>{album.photo_count}</Typography>
+                        <CollectionsIcon fontSize='small' />
                     </Grid>
                 </Box>
                 <Tooltip title={dateOf(album.created_at)}>

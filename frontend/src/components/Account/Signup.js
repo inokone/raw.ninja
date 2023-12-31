@@ -27,7 +27,7 @@ const SignupForm = () => {
             setError("You have to solve the captcha")
             return
         }
-        
+
         captchaRef.current.reset();
         if (emailError || passwordError || confirmationError) {
             return
@@ -125,18 +125,18 @@ const SignupForm = () => {
                             sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
                             helperText={confirmationError && "New password and confirmation must match."}
                         />
-                        <FormControlLabel 
-                            sx={{ mb: 4 }} 
-                            control={<Checkbox onChange={(event) => setAccepted(event.target.checked)} />} 
-                            label={<Typography>I have read and accept the <Link to="/terms">terms and conditions</Link>.</Typography>} 
+                        <FormControlLabel
+                            sx={{ mb: 4 }}
+                            control={<Checkbox onChange={(event) => setAccepted(event.target.checked)} />}
+                            label={<Typography>I have read and accept the <Link to="/terms">terms and conditions</Link>.</Typography>}
                             disabled={loading}
                         />
 
                         <Box sx={{ mb: 4, placeContent: 'center', display: 'flex' }}>
-                            <ReCAPTCHA 
+                            <ReCAPTCHA
                                 ref={captchaRef}
                                 sitekey="6Let2RIpAAAAANGXcsSJ9aOQEaQmwKqsaZB7IAaQ"
-                            />  
+                            />
                         </Box>
                         {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Signed up successfully! Navigating to login...</Alert>}
                         {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}

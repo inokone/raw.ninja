@@ -40,8 +40,9 @@ const CreateAlbum = () => {
                 } else {
                     setSuccess(true)
                     navigate("/albums/" + content.id)
-                }});
-            })
+                }
+            });
+        })
             .catch(() => setError("Network communication error. Maybe backend is down?"))
             .finally(() => {
                 setLoading(false)
@@ -98,7 +99,7 @@ const CreateAlbum = () => {
                                     placeholder="Tags"
                                 />
                             )}
-                        />                    
+                        />
                         {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Created successfully! Loading...</Alert>}
                         {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                         <Button sx={{ mb: 4 }} variant="contained" color="primary" type="submit" disabled={loading}>Create</Button>

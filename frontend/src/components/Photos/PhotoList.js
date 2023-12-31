@@ -6,7 +6,7 @@ import PhotoGrid from '../Photos/PhotoGrid';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const PhotoList = ({user}) => {
+const PhotoList = ({ user }) => {
   const navigate = useNavigate();
 
   const onFabClick = () => {
@@ -14,7 +14,7 @@ const PhotoList = ({user}) => {
   }
 
   const populate = () => {
-    if(!user) {
+    if (!user) {
       return new Promise((resolve, reject) => {
         reject("User not set!")
       })

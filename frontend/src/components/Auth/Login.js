@@ -89,8 +89,8 @@ const Login = ({ setUser }) => {
             .catch(error => setError(error));
     }
 
-    React.useEffect(() => { 
-        let source = queryParameters.get("source") 
+    React.useEffect(() => {
+        let source = queryParameters.get("source")
         if (source === "successfulRegistration") {
             setSuccess("Successfully signed up, please log in!")
         }
@@ -111,7 +111,7 @@ const Login = ({ setUser }) => {
                             }}
                             required
                             disabled={loading}
-                            autocomplete="username" 
+                            autocomplete="username"
                             variant="outlined"
                             color="primary"
                             type="email"
@@ -130,7 +130,7 @@ const Login = ({ setUser }) => {
                             }}
                             required
                             disabled={loading}
-                            autocomplete="password" 
+                            autocomplete="password"
                             variant="outlined"
                             color="primary"
                             type="password"

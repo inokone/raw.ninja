@@ -53,16 +53,19 @@ const MetadataDisplay = ({ metadata }) => {
     title: "General",
     values: [
       {
-        label: "Format", 
-        value: metadata.format},
+        label: "Format",
+        value: metadata.format
+      },
       {
-        label: "Uploaded", 
-        value: new Date(metadata.uploaded).toLocaleString()},
+        label: "Uploaded",
+        value: new Date(metadata.uploaded).toLocaleString()
+      },
       {
         label: "Taken",
-        value: metadata.metadata.timestamp === 0 ? "N/A" : new Date(metadata.metadata.timestamp).toLocaleString()},
+        value: metadata.metadata.timestamp === 0 ? "N/A" : new Date(metadata.metadata.timestamp).toLocaleString()
+      },
       {
-        label: "Size", 
+        label: "Size",
         value: formatBytes(metadata.metadata.data_size)
       }
     ]
@@ -146,7 +149,7 @@ const MetadataDisplay = ({ metadata }) => {
             </Grid>
           </Box>
         </Box>
-        </React.Fragment>
+      </React.Fragment>
     )
   }
 

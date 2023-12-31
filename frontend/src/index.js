@@ -7,7 +7,6 @@ import { ThemeProvider, StyledEngineProvider, CssBaseline } from "@mui/material"
 import theme from "./theme";
 import GlobalStyles from "./GlobalStyles";
 
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

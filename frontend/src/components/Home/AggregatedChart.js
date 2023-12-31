@@ -29,20 +29,20 @@ const data = (photos, favorites, albums, theme) => {
     }
 };
 
-const options = { 
+const options = {
     plugins: {
         title: {
             display: true,
             text: 'Stored entities',
         }
     },
-    scales: { 
-        y: { 
-            ticks: { 
-                display: false, 
-            }, 
+    scales: {
+        y: {
+            ticks: {
+                display: false,
+            },
         }
-    }, 
+    },
     responsive: true
 };
 

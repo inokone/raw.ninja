@@ -116,7 +116,7 @@ function HeadSection(props) {
                                         >
                                             <Box mb={4}>
                                                 <SvgIcon className={classes.mainLogo} component={Logo} />
-                                                <Typography variant="h3" 
+                                                <Typography variant="h3"
                                                     className={classes.brandText}
                                                     display="inline"
                                                     color="primary">
@@ -135,7 +135,7 @@ function HeadSection(props) {
                                                         variant={isWidthUpLg ? "h6" : "body1"}
                                                         color="textSecondary"
                                                     >
-                                                        Low-cost cloud-based image 
+                                                        Low-cost cloud-based image
                                                         storage for professional photographers.
                                                     </Typography>
                                                 </Box>

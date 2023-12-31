@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Autocomplete, Chip } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, FormHelperText, MenuItem } from "@mui/material";
 import withStyles from '@mui/styles/withStyles';
 
 const styles = theme => ({
@@ -18,11 +18,10 @@ const styles = theme => ({
     }
 });
 
-function EditAlbumDialog(props) {
-    const { classes, onSave, onCancel, open, input } = props;
-    const [name, setName] = React.useState(input.name)
-    const [nameError, setNameError] = React.useState(false)
-    const [tags, setTags] = React.useState(input.tags)
+function RuleSetDialog({ classes, onSave, onCancel, open, input }) {
+    const [name, setName] = React.useState(input ? input.name : null)
+    const [nameError, setNameError] = React.useState(null)
+    const [description, setDescription] = React.useState(input ? input.description : null)
 
     return (
         <Dialog
@@ -31,12 +30,12 @@ function EditAlbumDialog(props) {
             onClose={onCancel}
             className={classes.dialog}
         >
-            <DialogTitle>Edit album</DialogTitle>
+            <DialogTitle>{input ? "Edit" : "Create"} rule set</DialogTitle>
             <DialogContent>
                 <TextField
                     type="text"
-                    name="album"
-                    autoComplete="album"
+                    name="ruleset"
+                    autoComplete="ruleset"
                     variant='outlined'
                     color='primary'
                     label="Name"
@@ -48,38 +47,30 @@ function EditAlbumDialog(props) {
                     }}
                     fullWidth
                     required
-                    sx={{ mb: 4, mt: 1, backgroundColor: "#fff", borderRadius: 1 }}
+                    sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
                 />
-                <Autocomplete
-                    multiple
-                    id="tags"
-                    options={[].map(a => a)}
-                    value={tags}
-                    onChange={(event, newValue) => {
-                        setTags(newValue);
-                    }}
+                <TextField
+                    type="text"
+                    name="rulesetdescription"
+                    autoComplete="rulesetdescription"
                     variant='outlined'
                     color='primary'
-                    freeSolo
-                    renderTags={(value, getTagProps) =>
-                        value.map((option, index) => (
-                            <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-                        ))
-                    }
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            variant='outlined'
-                            color='primary'
-                            label="Tags"
-                            placeholder="Tags"
-                        />
-                    )}
+                    label="Description"
+                    value={description}
+                    onChange={e => {
+                        setDescription(e.target.value)
+                    }}
+                    fullWidth
+                    required
+                    sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
                 />
             </DialogContent>
             <DialogActions className={classes.dialogActions}>
                 <Button
-                    onClick={() => onSave(name, tags)}
+                    onClick={() => onSave({
+                        name: name,
+                        description: description
+                    })}
                     variant="contained"
                     color="primary"
                 >
@@ -97,11 +88,11 @@ function EditAlbumDialog(props) {
     );
 }
 
-EditAlbumDialog.propTypes = {
+RuleSetDialog.propTypes = {
     classes: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired
 };
 
-export default withStyles(styles, { withTheme: true })(EditAlbumDialog);
+export default withStyles(styles, { withTheme: true })(RuleSetDialog);

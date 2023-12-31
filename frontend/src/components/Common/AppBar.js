@@ -25,6 +25,7 @@ import Logo from './Logo';
 
 const settings = {
   Profile: 'profile',
+  Rules: 'rulesets',
   Logout: 'logout'
 };
 

@@ -6,7 +6,7 @@ import { Typography } from '@mui/material';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const UploadDisplay = ({user}) => {
+const UploadDisplay = ({ user }) => {
     const [title, setTitle] = React.useState(null)
     const location = useLocation()
     const path = location.pathname
@@ -18,10 +18,10 @@ const UploadDisplay = ({user}) => {
             })
         }
         return fetch(REACT_APP_API_PREFIX + '/api/v1' + path, {
-                method: "GET",
-                mode: "cors",
-                credentials: "include"
-            }) 
+            method: "GET",
+            mode: "cors",
+            credentials: "include"
+        })
     }
 
     const handleDataLoaded = (data) => {

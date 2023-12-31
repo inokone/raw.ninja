@@ -17,7 +17,7 @@ const settings = () => {
             lang: "en",
             localsave: false,
             phrases: [[1, 2], "Save As " + format.toUpperCase()],
-            menus: [[0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0 , 0, 1], 1, 1, 1, 1, 1, 1],
+            menus: [[0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1], 1, 1, 1, 1, 1, 1],
             customIO: { save: "app.activeDocument.saveToOE(\"" + format + "\");" },
         },
         server: {
@@ -46,7 +46,7 @@ const Photopea = () => {
     const [saving, setSaving] = React.useState(false)
     const [counter, setCounter] = React.useState(0)
 
-    const saveImage = (data) => {
+    const saveImage = React.useCallback((data) => {
         setSaving(true)
         const formData = new FormData();
         formData.append(
@@ -77,7 +77,7 @@ const Photopea = () => {
                 console.error('Error:', error);
                 setSaving(false)
             });
-    }
+    }, [navigate])
 
     function getMimeTypeFromArrayBuffer(arrayBuffer) {
         const uint8arr = new Uint8Array(arrayBuffer)
@@ -104,7 +104,7 @@ const Photopea = () => {
         return null
     }
 
-    const handleEditorMessage = (e) => {
+    const handleEditorMessage = React.useCallback((e) => {
         if (e.data.source === "react-devtools-content-script" || e.data.source === "react-devtools-bridge") {
             return
         }
@@ -125,9 +125,9 @@ const Photopea = () => {
                 saveImage(e.data)
             }
         }
-    }
+    }, [counter, saveImage, saving])
 
-    const loadImage = () => {
+    const loadImage = React.useCallback(() => {
         setCounter(0)
         let id = location.pathname.split('/').slice(-1)
         setLoading(true)
@@ -153,7 +153,7 @@ const Photopea = () => {
                     })
                 }
             })
-    }
+    }, [location])
 
     React.useEffect(() => {
         window.addEventListener("message", handleEditorMessage);
@@ -163,7 +163,7 @@ const Photopea = () => {
         return () => {
             window.removeEventListener('message', handleEditorMessage);
         }
-    }, [loading, error, image])
+    }, [loading, error, image, handleEditorMessage, loadImage])
 
     return (
         <div className="iframe-container">

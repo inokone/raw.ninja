@@ -21,7 +21,7 @@ const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 const UserTableTemplate = () => {
     const [validationErrors, setValidationErrors] = useState({});
 
-    const roles = [{
+    const roles = useMemo(() => [{
         label: "Admin",
         value: {
             id: 0,
@@ -34,7 +34,7 @@ const UserTableTemplate = () => {
             id: 1,
             name: "Free Tier",
         }
-    }]
+    }], [])
 
     const columns = useMemo(
         () => [
@@ -113,7 +113,7 @@ const UserTableTemplate = () => {
                 Cell: ({ cell }) => cell.getValue().name  //render Role name only 
             },
         ],
-        [validationErrors],
+        [validationErrors, roles]
     );
 
     const {
@@ -124,7 +124,7 @@ const UserTableTemplate = () => {
     } = usePopulate();
     const { mutateAsync: updateUser, isPending: isUpdating } = useUpdate();
     const { mutateAsync: deleteUser, isPending: isDeleting } = useDelete();
-    const { mutateAsync: toggleEnabledUser, isPending: isTogglingEnableUser} = useToggleEnabled();
+    const { mutateAsync: toggleEnabledUser, isPending: isTogglingEnableUser } = useToggleEnabled();
 
 
     const handleUpdate = async ({ values, table }) => {
@@ -146,7 +146,7 @@ const UserTableTemplate = () => {
 
 
     const handleToggleEnabled = (row) => {
-        if (row.original.enabled === true){
+        if (row.original.enabled === true) {
             if (window.confirm('Are you sure you want to disable this user?')) {
                 toggleEnabledUser(row.original);
             }
@@ -206,8 +206,8 @@ const UserTableTemplate = () => {
                 </Tooltip>
             </Box>
         ),
-        initialState: { 
-            density: 'compact' 
+        initialState: {
+            density: 'compact'
         },
         state: {
             isLoading: isLoading,
@@ -377,8 +377,8 @@ export default UserTable;
 const validateRequired = (value) => !!value.length;
 const validateEmail = (email) => {
     return !!email.length && email.toLowerCase().match(
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        );
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    );
 }
 
 function validateUser(user) {

@@ -31,7 +31,7 @@ const AlbumDisplay = ({ user }) => {
         })
     }
 
-    const update = (name, tags) => {
+    const update = React.useCallback((name, tags) => {
         return fetch(REACT_APP_API_PREFIX + '/api/v1' + path, {
             method: "PATCH",
             mode: "cors",
@@ -49,7 +49,7 @@ const AlbumDisplay = ({ user }) => {
                 }
             });
         }).catch(() => setError("Network communication error. Maybe backend is down?"))
-    }
+    }, [navigate, path])
 
     const handleDataLoaded = (data) => {
         setTitle(data.name)
@@ -71,7 +71,7 @@ const AlbumDisplay = ({ user }) => {
     const handleEditAlbumDialogSave = React.useCallback((name, tags) => {
         setIsEditAlbumDialogOpen(false);
         update(name, tags)
-    }, [setIsEditAlbumDialogOpen]);
+    }, [setIsEditAlbumDialogOpen, update]);
 
     const handleMouseOver = () => {
         setIsHovering(true);
@@ -83,11 +83,11 @@ const AlbumDisplay = ({ user }) => {
 
     return (
         <>
-            {title && 
+            {title &&
                 <Stack sx={{ marginBottom: 2, marginTop: 2 }} justifyContent={'center'} alignItems={'baseline'} direction="row" spacing={1} onClick={handleEditAlbumDialogOpen}
                     onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
                     <Typography variant='h4'>{title}</Typography>
-                    {isHovering && <EditIcon/>}
+                    {isHovering && <EditIcon />}
                 </Stack>
             }
             {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
@@ -95,13 +95,13 @@ const AlbumDisplay = ({ user }) => {
             {data && data.tags && <Stack sx={{ marginBottom: 4 }} justifyContent={'center'} direction="row" spacing={1} onClick={handleEditAlbumDialogOpen}>
                 {data.tags.map(tag => {
                     return (<Chip key={tag} label={tag} />)
-                })} 
+                })}
             </Stack>}
             {data && <EditAlbumDialog
                 open={isEditAlbumDialogOpen}
                 onSave={handleEditAlbumDialogSave}
                 onCancel={handleEditAlbumDialogClose}
-                input = {{name: data.name, tags: data.tags}}
+                input={{ name: data.name, tags: data.tags }}
             />}
             <PhotoGrid populator={populate} data={[]} onDataLoaded={handleDataLoaded} />
         </>

@@ -5,8 +5,8 @@ import './TermsOfUse.css'
 const TermsOfUse = () => {
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Paper sx={{textAlign: 'left', margin: '25px'}}>
-                <Typography variant='h4' sx={{textAlign: 'center', margin: '20px'}}>RAW.Ninja<br />Terms of Use</Typography>
+            <Paper sx={{ textAlign: 'left', margin: '25px' }}>
+                <Typography variant='h4' sx={{ textAlign: 'center', margin: '20px' }}>RAW.Ninja<br />Terms of Use</Typography>
                 <p>These Terms of Use ("Terms") govern your use of the RAW.Ninja ("App") provided by RAW.Ninja LLC. ("Company"). By accessing or using the App, you agree to be bound by these Terms.</p>
                 <ol>
                     <li><strong>License and Use:</strong> Subject to your compliance with these Terms, Company grants you a limited, non-exclusive, non-transferable, revocable license to use the App solely for your personal or business purposes.</li>
@@ -24,7 +24,7 @@ const TermsOfUse = () => {
                     <li><strong>Indemnification:</strong> You agree to indemnify and hold harmless Company from any claims, damages, losses, liabilities, costs, and expenses arising out of or in connection with your use of the App.</li>
                     <li><strong>Termination:</strong> Company may terminate your access to the App at any time without notice. Upon termination, you must cease using the App.</li>
                     <li><strong>Changes to Terms:</strong> Company reserves the right to modify or revise these Terms at any time. Your continued use of the App after any changes will signify your acceptance of such changes.</li>
-                        <li><strong>Governing Law:</strong>These Terms are governed by and construed in accordance with the laws of the European Union. Any legal action or proceeding arising out of or relating to these Terms shall be brought exclusively in the courts of the European Union, and each party consents to the personal jurisdiction of such courts.</li>
+                    <li><strong>Governing Law:</strong>These Terms are governed by and construed in accordance with the laws of the European Union. Any legal action or proceeding arising out of or relating to these Terms shall be brought exclusively in the courts of the European Union, and each party consents to the personal jurisdiction of such courts.</li>
                     <li><strong>Contact:</strong> For questions or concerns regarding these Terms, please contact support@raw.ninja.</li>
                 </ol>
 

@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: '8px',
     width: "24px",
     height: "24px",
-    color: 'lightgray', 
+    color: 'lightgray',
     position: 'relative'
   },
 
@@ -138,7 +138,7 @@ const PhotoCard = ({ photo, setPhoto, setSelected, onClick, imageProps: { src, a
         left: 0,
       }}>
         <Tooltip title="Select photo">
-          <IconButton aria-label="Select photo" onClick={() => handleSelectClick(photo)} className={photo.selected ? classes.selected_box: classes.unselected_box}>
+          <IconButton aria-label="Select photo" onClick={() => handleSelectClick(photo)} className={photo.selected ? classes.selected_box : classes.unselected_box}>
             <span // Stacking 2 Icons over each other so it looks better
               style={{
                 display: "flex",

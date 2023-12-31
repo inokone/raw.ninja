@@ -6,7 +6,7 @@ import UserDetails from './UserDetails';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const Profile = ({user}) => {
+const Profile = ({ user }) => {
   const [error, setError] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
   const [stats, setStats] = React.useState(null)
@@ -15,7 +15,7 @@ const Profile = ({user}) => {
   const formatBytes = (bytes, decimals = 2) => {
     let negative = (bytes < 0)
     if (negative) {
-      bytes = -bytes 
+      bytes = -bytes
     }
     if (!+bytes) return '0 Bytes'
 
@@ -86,18 +86,18 @@ const Profile = ({user}) => {
   return (
     <React.Fragment>
       {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
-      {loading && <ProgressDisplay /> }
+      {loading && <ProgressDisplay />}
       {user && user.status === "registered" &&
         <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px' }}>
           <Box sx={{ mt: 5, borderRadius: '4px', width: '500px' }}>
-            <Alert severity='warning' variant="filled">Your e-mail address hasn't been confirmed yet. Some features of the application will not be available to you. 
+            <Alert severity='warning' variant="filled">Your e-mail address hasn't been confirmed yet. Some features of the application will not be available to you.
               <Button onClick={handleResendClick}>Resend confirmation</Button>
             </Alert>
             {resendSuccess && <Alert onClose={() => { setResendSuccess(null) }}>Confirmation e-mail sent.</Alert>}
           </Box>
         </Box>
       }
-      
+
       {stats &&
         <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
           <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.34)', color: 'white', mt: 5, borderRadius: '4px', width: '500px' }}>
@@ -137,12 +137,12 @@ const Profile = ({user}) => {
 
       <Typography variant='h6'>User details</Typography>
       <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
-        <UserDetails user={user}/>
+        <UserDetails user={user} />
       </Box>
-      
+
       <Typography variant='h6'>Change Password</Typography>
       <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
-        <ChangePassword user={user}/>
+        <ChangePassword user={user} />
       </Box>
     </React.Fragment>
   );

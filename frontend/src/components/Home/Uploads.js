@@ -12,7 +12,7 @@ const Uploads = ({ user, onDataLoaded }) => {
     const [error, setError] = React.useState(null)
     const [uploads, setUploads] = React.useState(null)
 
-    const populate = () => {
+    const populate = React.useCallback(() => {
         setLoading(true)
         fetch(REACT_APP_API_PREFIX + '/api/v1/uploads/', {
             method: "GET",
@@ -40,7 +40,7 @@ const Uploads = ({ user, onDataLoaded }) => {
             setError(error.message)
             setLoading(false)
         });
-    }
+    }, [onDataLoaded])
 
     const onAlbumClick = (id) => {
         navigate("/uploads/" + id)
@@ -50,7 +50,7 @@ const Uploads = ({ user, onDataLoaded }) => {
         if (!loading && !uploads && !error) {
             populate()
         }
-    }, [uploads, loading, error])
+    }, [uploads, loading, error, populate])
 
     return (
         <>
@@ -59,7 +59,7 @@ const Uploads = ({ user, onDataLoaded }) => {
             {uploads !== null &&
                 <>
                     <Grid container>
-                    {uploads.slice(0, 10).map((album) => {
+                        {uploads.slice(0, 10).map((album) => {
                             return (<Grid item key={album.id} xs={6} md={4} lg={2} xl={2}><AlbumCard album={album} onClick={onAlbumClick} /></Grid>)
                         })}
                     </Grid>
