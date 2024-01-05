@@ -35,7 +35,7 @@ func NewController(albums collection.Storer, loader *photo.LoadService) Controll
 // @Description Creates an album collection
 // @Accept json
 // @Produce json
-// @Success 200 {object} collection.Resp
+// @Success 201 {object} collection.Resp
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
 // @Router /albums/ [post]
@@ -72,7 +72,7 @@ func (c Controller) Create(g *gin.Context) {
 		return
 	}
 
-	g.JSON(http.StatusOK, result.AsResp())
+	g.JSON(http.StatusCreated, result.AsResp())
 }
 
 func convertIDs(s []string) ([]uuid.UUID, error) {

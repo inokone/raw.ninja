@@ -24,14 +24,14 @@ const UserTableTemplate = () => {
     const roles = useMemo(() => [{
         label: "Admin",
         value: {
-            id: 0,
+            id: 1,
             name: "Admin",
         }
     },
     {
         label: "Free Tier",
         value: {
-            id: 1,
+            id: 2,
             name: "Free Tier",
         }
     }], [])

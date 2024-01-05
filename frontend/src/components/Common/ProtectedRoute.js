@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 
 const ProtectedRoute = ({ user, target, redirect, children }) => {
   const navigate = useNavigate();
-  const adminRoleID = 0
+  const adminRoleID = 1
 
   const isAdmin = (user) => {
     return user.role.id === adminRoleID

@@ -13,7 +13,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-const adminRole = 0 // O is the RoleType for admin by default (#iota)
+const adminRole = 1 // 1 is the RoleType for admin by default (# iota + 1)
 
 var unatuhorized = common.StatusMessage{Code: 401, Message: "Unauthorized!"}
 

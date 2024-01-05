@@ -48,7 +48,7 @@ export default function PhotoGallery({ photos, setPhoto, setSelected }) {
     }
 
     return (
-        <Box>
+        <Box sx={{ width: { lg: photos.length < 4 ? photos.length / 4 : '100%'}}}>
             <PhotoAlbum
                 photos={photos}
                 layout="rows"

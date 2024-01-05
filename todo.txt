@@ -23,6 +23,15 @@ Functionality:
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
     - Add lifecycle rules - with eventbridge trigger and lambdas
+    - fix all return objects and statuses for POST requests (201 and created object)
+    - fix method names for List/Load to By("the search criteria")
+    - make captcha more lax (!!!)
+    - fix parameters and response types for swagger
+    - Fix layout on wide screen
+    - First login should not shot statistics display
+    - Info buttons everywhere
+    - Documentation on quota - welcome page and everywhere else
+    - Deleted/Bin folder (shared ruleset?)
     - Revamp profile page
     - Improve PhotoGrid
       - Context menu configurable from props

@@ -55,7 +55,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
   const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const adminRoleID = 0
+  const adminRoleID = 1
 
   const isAdmin = (user) => {
     return user.role.id === adminRoleID

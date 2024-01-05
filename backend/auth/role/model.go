@@ -1,9 +1,9 @@
 package role
 
 const (
-	// RoleAdmin is the administrator role type. Has value 0.
-	RoleAdmin = iota
-	// RoleFreeTier is the role for free tier users. Has value of 1.
+	// RoleAdmin is the administrator role type. Has value 1.
+	RoleAdmin = iota + 1
+	// RoleFreeTier is the role for free tier users. Has value of 2.
 	RoleFreeTier
 )
 
