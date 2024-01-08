@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, FormHelperText, MenuItem } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, InputLabel, Select, MenuItem, FormLabel } from "@mui/material";
 import withStyles from '@mui/styles/withStyles';
 
 const styles = theme => ({
@@ -39,84 +39,67 @@ const timingUnits = [
 
 const timingFor = (duration) => {
     if (!duration) {
-        return null
+        return ""
     }
-    timingUnits.reverse().forEach((unit) => {
-        if (duration % unit.value === 0) {
-            return duration / unit.value
-        }
-    })
+    let unit = timingUnits.slice().reverse().filter((unit) => duration % unit.value === 0)[0]
+    return duration / unit.value
 }
 
 const timingUnitFor = (duration) => {
     if (!duration) {
-        return null
+        return ""
     }
-    timingUnits.reverse().forEach((unit) => {
-        if (duration % unit.value === 0) {
-            return unit
-        }
-    })
+    return timingUnits.slice().reverse().filter((unit) => duration % unit.value === 0)[0].value
 }
 
 function RuleDialog({ classes, onSave, onCancel, open, input, constants }) {
-    const [name, setName] = React.useState(input ? input.name : null)
+    const [name, setName] = React.useState(input ? input.name : "")
     const [nameError, setNameError] = React.useState(null)
-    const [timing, setTiming] = React.useState(input ? timingFor(input.timing) : null)
+    const [timing, setTiming] = React.useState(input ? timingFor(input.timing) : 1)
     const [timingError, setTimingError] = React.useState(null)
-    const [timingUnit, setTimingUnit] = React.useState(input ? timingUnitFor(input.timing) : null)
-    const [action, setAction] = React.useState(input ? input.action : null)
-    const [actionTarget, setActionTarget] = React.useState(input ? input.actionTarget : null)
-
-    const options = constants || {
-        actions: [
-            {
-                value: 1,
-                label: "Delete",
-                targeted: false
-            },
-            {
-                value: 2,
-                label: "Move to",
-                targeted: true
-            },
-        ],
-        targets: [
-            {
-                value: 1,
-                label: "Standard storage"
-            },
-            {
-                value: 2,
-                label: "Frozen storage"
-            },
-            {
-                value: 3,
-                label: "Bin"
-            }
-        ]
-    }
+    const [timingUnit, setTimingUnit] = React.useState(input ? timingUnitFor(input.timing) : 1)
+    const [actionID, setActionID] = React.useState(input && input.action ? input.action.id : 1)
+    const [actionTargetID, setActionTargetID] = React.useState(input && input.target ? input.target.id : 0)
+    const [isTargeted, setIsTargeted] = React.useState(input && input.action && input.action.targeted)
 
     const createRule = () => {
         let timingValue = timing * timingUnit
+        let action = constants.actions.filter((act) => act.id === actionID)[0]
+        let actionTarget = actionTargetID && constants.targets.filter((tgt) => tgt.id === actionTargetID)[0]
+        let desc = "After " + timingValue + " days " + action.name.toLowerCase()
+        if (isTargeted) {
+            desc += (" " + actionTarget.name.toLowerCase())
+        }
+        desc += "."
         return {
+            id: input ? input.id : null,
             name: name,
-            description: "After " + timingValue + " days " + action.label.toLower() + (actionTarget && " " + actionTarget.label.toLower()),
+            description: desc,
             timing: timingValue,
-            action: action.value,
-            target: actionTarget.value
+            action: {
+                id: actionID
+            },
+            target: actionTargetID ? {
+                id: actionTargetID
+            }: null
         }
     }
 
+    const handleActionChange = React.useCallback((id) => {
+        setIsTargeted(id && constants.actions.filter((act) => act.id === id)[0].targeted)
+        setActionID(id)
+    }, [constants])
+
     return (
         <Dialog
+            PaperProps={{ style: { overflowY: 'visible', zIndex: 1 } }}
             open={open}
+            fullWidth
             scroll="paper"
             onClose={onCancel}
-            className={classes.dialog}
         >
             <DialogTitle>{input ? "Change" : "Create"} rule</DialogTitle>
-            <DialogContent>
+            <DialogContent style={{ overflowY: 'visible' }}>
                 <TextField
                     type="text"
                     name="rule"
@@ -127,90 +110,70 @@ function RuleDialog({ classes, onSave, onCancel, open, input, constants }) {
                     value={name}
                     error={nameError}
                     onChange={e => {
-                        setNameError(name === '')
+                        setNameError(e.target.value === '')
                         setName(e.target.value)
                     }}
                     fullWidth
                     required
+                    sx={{ mb: 4, mt: 1, backgroundColor: "#fff", borderRadius: 1 }}
+                />
+                <TextField
+                    fullWidth
+                    type="number"
+                    name="timing"
+                    autoComplete="timing"
+                    variant='outlined'
+                    color='primary'
+                    label="Timing"
+                    value={timing}
+                    error={timingError}
+                    InputProps={{ inputProps: { min: 1, max: 31 } }}
+                    onChange={e => {
+                        setTimingError(e.target.value === '')
+                        setTiming(e.target.value)
+                    }}
+                    required
                     sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
                 />
-                <FormControl sx={{ m: 1, minWidth: 120 }}>
-                    <TextField
-                        type="text"
-                        name="timing"
-                        autoComplete="timing"
-                        variant='outlined'
-                        color='primary'
-                        label="Timing"
-                        value={timing}
-                        error={timingError}
-                        onChange={e => {
-                            setTimingError(timing === '')
-                            setTiming(e.target.value)
-                        }}
+                <FormLabel id="timing-unit-helper-label">Timing Unit</FormLabel>
+                <Select
+                    fullWidth
+                    labelId="timing-unit-helper-label"
+                    id="timing-unit-select"
+                    value={timingUnit}
+                    onChange={e => {
+                        setTimingUnit(e.target.value)
+                    }}
+                >
+                    {timingUnits.map(({ value, label }, index) => (<MenuItem key={index} value={value}>{label}</MenuItem>))}
+                </Select>
+                <InputLabel id="action-helper-label">Action</InputLabel>
+                <Select
+                    fullWidth
+                    labelId="action-helper-label"
+                    id="action-select"
+                    value={actionID}
+                    onChange={e => {
+                        handleActionChange(e.target.value)
+                    }}
+                >
+                    {constants && constants.actions && constants.actions.map(({ id, name }, index) => (<MenuItem key={index} value={id}>{name}</MenuItem>))}
+                </Select>
+                {isTargeted &&
+                <>
+                    <InputLabel id="action-target-helper-label">Target</InputLabel>
+                    <Select
                         fullWidth
-                        required
-                        sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
-                    />
-                    <FormHelperText>When the action should happen</FormHelperText>
-                </FormControl>
-                <FormControl sx={{ m: 1, minWidth: 120 }}>
-                    <InputLabel id="timing-unit-helper-label">Timing</InputLabel>
-                    <Select
-                        labelId="timing-unit-helper-label"
-                        id="timing-unit-select"
-                        value={timingUnit}
-                        label="Timing Unit"
+                        labelId="action-target-helper-label"
+                        id="action-target-select"
+                        value={actionTargetID}
                         onChange={e => {
-                            setTimingUnit(e.target.value)
+                            setActionTargetID(e.target.value)
                         }}
                     >
-                        {timingUnits.map(unit => {
-                            return (<MenuItem key={unit.value + unit.label} value={unit.value}>
-                                <em>{unit.label}</em>
-                            </MenuItem>)
-                        })}
+                        {constants.targets.map(({ id, name }, index) => (<MenuItem key={index} value={id}>{name}</MenuItem>))}
                     </Select>
-                </FormControl>
-                <FormControl sx={{ m: 1, minWidth: 120 }}>
-                    <InputLabel id="action-helper-label">Action</InputLabel>
-                    <Select
-                        labelId="action-helper-label"
-                        id="action-select"
-                        value={action}
-                        label="Action"
-                        onChange={e => {
-                            setAction(e.target.value)
-                        }}
-                    >
-                        {options.actions.map(action => {
-                            return (<MenuItem key={action.value + action.label} value={action}>
-                                <em>{action.label}</em>
-                            </MenuItem>)
-                        })}
-                    </Select>
-                    <FormHelperText>What action should happen</FormHelperText>
-                </FormControl>
-                {action && action.targeted &&
-                    <FormControl sx={{ m: 1, minWidth: 120 }}>
-                        <InputLabel id="action-target-helper-label">Target</InputLabel>
-                        <Select
-                            labelId="action-target-helper-label"
-                            id="action-target-select"
-                            value={actionTarget}
-                            label="Target"
-                            onChange={e => {
-                                setActionTarget(e.target.value)
-                            }}
-                        >
-                            {options.actions.map(target => {
-                                return (<MenuItem key={target.value + target.label} value={target}>
-                                    <em>{target.label}</em>
-                                </MenuItem>)
-                            })}
-                        </Select>
-                        <FormHelperText>What is the target of the action</FormHelperText>
-                    </FormControl>
+                </>
                 }
             </DialogContent>
             <DialogActions className={classes.dialogActions}>

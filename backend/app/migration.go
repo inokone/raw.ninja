@@ -12,6 +12,8 @@ import (
 	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
 	"github.com/inokone/photostorage/photo/descriptor"
+	"github.com/inokone/photostorage/ruleset"
+	"github.com/inokone/photostorage/ruleset/rule"
 )
 
 // Migrate executes the necessary database initialization and migration
@@ -46,7 +48,8 @@ func Migrate(path string) {
 		}
 	}
 
-	if err := db.AutoMigrate(&photo.Photo{}, &role.Role{}, &user.User{}, &descriptor.Descriptor{}, &image.Metadata{}, &account.Account{}, &collection.Collection{}); err != nil {
+	if err := db.AutoMigrate(&photo.Photo{}, &role.Role{}, &user.User{}, &descriptor.Descriptor{}, &image.Metadata{}, &account.Account{},
+		&collection.Collection{}, &rule.Rule{}, &ruleset.RuleSet{}); err != nil {
 		log.Err(err).Msg("Database migration failed. Application spinning down.")
 		os.Exit(1)
 	}
@@ -56,13 +59,13 @@ func Migrate(path string) {
 	if rCount > 0 {
 		log.Info().Msg("Roles already present, skipping ...")
 	} else {
-		res = db.Exec("INSERT INTO roles (role_type, quota, display_name) VALUES (0, -1, 'Admin')")
+		res = db.Exec("INSERT INTO roles (role_type, quota, display_name) VALUES (1, -1, 'Admin')")
 		if res.Error != nil {
 			log.Err(res.Error).Msg("Database migration failed. Application spinning down.")
 			os.Exit(1)
 		}
 
-		res = db.Exec("INSERT INTO roles (role_type, quota, display_name) VALUES (1, 524288000, 'Free Tier')") // 500 Mb limit for free tier
+		res = db.Exec("INSERT INTO roles (role_type, quota, display_name) VALUES (2, 524288000, 'Free Tier')") // 500 Mb limit for free tier
 		if res.Error != nil {
 			log.Error().Err(res.Error).Msg("Database migration failed. Application spinning down.")
 			os.Exit(1)

@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, FormHelperText, MenuItem } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField} from "@mui/material";
 import withStyles from '@mui/styles/withStyles';
 
 const styles = theme => ({
@@ -47,7 +47,7 @@ function RuleSetDialog({ classes, onSave, onCancel, open, input }) {
                     }}
                     fullWidth
                     required
-                    sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
+                    sx={{ mb: 4, mt: 1, backgroundColor: "#fff", borderRadius: 1 }}
                 />
                 <TextField
                     type="text"
@@ -85,7 +85,7 @@ function RuleSetDialog({ classes, onSave, onCancel, open, input }) {
                 </Button>
             </DialogActions>
         </Dialog>
-    );
+    )
 }
 
 RuleSetDialog.propTypes = {

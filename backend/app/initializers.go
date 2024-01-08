@@ -15,6 +15,8 @@ import (
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
+	"github.com/inokone/photostorage/ruleset"
+	"github.com/inokone/photostorage/ruleset/rule"
 	"github.com/inokone/photostorage/web"
 
 	"github.com/rs/zerolog"
@@ -64,6 +66,8 @@ func initStorers(c common.ImageStoreConfig) {
 	storers.Roles = role.NewGORMStorer(db)
 	storers.Accounts = account.NewGORMStorer(db)
 	storers.Collections = collection.NewGORMStorer(db)
+	storers.Rules = rule.NewGORMStorer(db)
+	storers.RuleSets = ruleset.NewGORMStorer(db)
 }
 
 func initServices(c common.ImageStoreConfig, storers web.Storers) {

@@ -12,6 +12,8 @@ import (
 	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/mail"
 	"github.com/inokone/photostorage/photo"
+	"github.com/inokone/photostorage/ruleset"
+	"github.com/inokone/photostorage/ruleset/rule"
 	"github.com/inokone/photostorage/search"
 	"github.com/inokone/photostorage/stats"
 	"github.com/inokone/photostorage/upload"
@@ -25,6 +27,8 @@ type Storers struct {
 	Accounts    account.Storer
 	Images      image.Storer
 	Collections collection.Storer
+	Rules       rule.Storer
+	RuleSets    ruleset.Storer
 }
 
 // Services is a struct to collect all `Service` entities used by the application
@@ -48,6 +52,8 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 		r        = role.NewController(st.Roles)
 		al       = album.NewController(st.Collections, loader)
 		up       = upload.NewController(st.Collections, uploader, loader)
+		rs       = ruleset.NewController(st.RuleSets, st.Rules)
+		ru       = rule.NewController(st.Rules)
 	)
 
 	v1.GET("healthcheck", common.Healthcheck)
@@ -113,6 +119,23 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 	{
 		g.GET("/", r.List)
 		g.PUT("/:id", r.Update)
+	}
+
+	g = v1.Group("/rules", m.Validate)
+	{
+		g.POST("/", ru.Create)
+		g.GET("/", ru.List)
+		g.GET("/constants", ru.Constants)
+		g.GET("/:id", ru.Get)
+	}
+
+	g = v1.Group("/rulesets", m.Validate)
+	{
+		g.POST("/", rs.Create)
+		g.GET("/", rs.List)
+		g.GET("/:id", rs.Get)
+		g.PUT("/:id", rs.Update)
+		g.DELETE("/:id", rs.Delete)
 	}
 
 	g = v1.Group("/statistics", m.Validate)

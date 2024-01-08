@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { Card, Typography, CardContent } from "@mui/material";
+import { Card, Typography, CardContent, CardActions, Button } from "@mui/material";
 import RuleDialog from './RuleDialog';
+import { useTheme } from '@mui/styles';
 
-const RuleCard = ({ rule, setRule, constants }) => {
+const RuleCard = ({ rule, setRule, constants, onDelete }) => {
+    const theme = useTheme();
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
     const handleEditDialogOpen = React.useCallback(() => {
@@ -21,11 +23,20 @@ const RuleCard = ({ rule, setRule, constants }) => {
     return (
         <>
         <RuleDialog constants={constants} open={isEditDialogOpen} onCancel={handleEditDialogClose} onSave={handleEditDialogSave} input={rule} />
-        <Card style={{ flex: 1 }} sx={{ position: 'relative', cursor: "pointer", margin: 1, bgcolor: "lightgrey" }} onClick={handleEditDialogOpen}>
-            <CardContent>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary">{rule.name}</Typography>
-                <Typography variant="body2">{rule.description}</Typography>
-            </CardContent>
+            <Card style={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+            }} sx={{ width: '220px', height: '100px', position: 'relative', cursor: "pointer", margin: 1, bgcolor: theme.palette.common.white }}>
+                <Typography sx={{ fontSize: 17, margin: 1 }} color="text.secondary" onClick={handleEditDialogOpen}>{rule.name}</Typography>
+                <CardContent onClick={handleEditDialogOpen}>
+                    <Typography variant="body2">{rule.description}</Typography>
+                </CardContent>
+                <CardActions disableSpacing sx={{ mt: "auto" }}>
+                    <Button color="secondary" onClick={onDelete}>
+                        Delete
+                    </Button>
+                </CardActions>
         </Card>
         </>
     );

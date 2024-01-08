@@ -6,6 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ProgressDisplay from '../Common/ProgressDisplay';
 import PhotoGallery from './PhotoGallery';
 import SelectionActions from './SelectionActions';
+import DeleteDialog from '../Common/DeleteDialog';
 
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
@@ -37,6 +38,7 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
     const [loading, setLoading] = React.useState(false)
     const [images, setImages] = React.useState(null)
     const [open, setOpen] = React.useState(false)
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
 
     const dateOf = (data) => {
         return new Date(data).toLocaleDateString()
@@ -97,15 +99,7 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
         setOpen(false)
     }
 
-    const batchDelete = () => {
-        let selectedIDs = images.filter((img) => img.selected).map((img) => img.id);
-        // hacky way, batch delete backend option would be much better
-        selectedIDs.forEach(id => {
-            deletePhoto(id)
-        })
-    }
-
-    const deletePhoto = (id) => {
+    const deletePhoto = React.useCallback((id) => {
         fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + id, {
             method: "DELETE",
             mode: "cors",
@@ -118,7 +112,15 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
             }
             navigate(0)
         });
-    }
+    }, [navigate])
+
+    const batchDelete = React.useCallback(() => {
+        let selectedIDs = images.filter((img) => img.selected).map((img) => img.id);
+        // hacky way, batch delete backend option would be much better
+        selectedIDs.forEach(id => {
+            deletePhoto(id)
+        })
+    },[deletePhoto, images])
 
     const createAlbum = () => {
         let selectedIDs = images.filter((img) => img.selected).map((img) => img.id);
@@ -207,6 +209,18 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
     }, [onDataLoaded, asPhoto])
 
 
+    const onDeleteClick = React.useCallback((photos) => {
+        setIsDeleteDialogOpen(true);
+    }, [setIsDeleteDialogOpen]);
+
+    const handleDeleteDialogClose = React.useCallback(() => {
+        setIsDeleteDialogOpen(false);
+    }, [setIsDeleteDialogOpen]);
+
+    const handleDeleteDialogAccept = React.useCallback(() => {
+        batchDelete()
+        setIsDeleteDialogOpen(false);
+    }, [setIsDeleteDialogOpen, batchDelete]);
 
     React.useEffect(() => {
         const loadImages = () => {
@@ -236,7 +250,8 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <SelectionActions open={open} handleCreate={createAlbum} handleDelete={batchDelete} handleClear={clearSelection} />
+            <SelectionActions open={open} handleCreate={createAlbum} handleDelete={onDeleteClick} handleClear={clearSelection} />
+            <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="the selected photos" />
             <Main open={open}>
                 {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                 {loading && <ProgressDisplay />}
