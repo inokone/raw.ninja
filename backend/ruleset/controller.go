@@ -36,6 +36,7 @@ func NewController(sets Storer, rules rule.Storer) Controller {
 // @Description Creates a lifecycle rule set for the user
 // @Accept json
 // @Produce json
+// @Param data body ruleset.CreateRuleSet true "The data to use for creating the ruleset"
 // @Success 201 {object} ruleset.Resp
 // @Failure 400 {object} common.StatusMessage
 // @Failure 415 {object} common.StatusMessage
@@ -90,6 +91,8 @@ func (c Controller) Create(g *gin.Context) {
 // @Description Updates a lifecycle rule set for the user
 // @Accept json
 // @Produce json
+// @Param id path int true "ID of the role to update"
+// @Param data body ruleset.Resp true "The ruleset to be updated"
 // @Success 201 {object} ruleset.Resp
 // @Failure 400 {object} common.StatusMessage
 // @Failure 415 {object} common.StatusMessage
@@ -134,7 +137,7 @@ func (c Controller) Update(g *gin.Context) {
 		return
 	}
 
-	g.JSON(http.StatusOK, res)
+	g.JSON(http.StatusCreated, res)
 }
 
 // Get is the REST handler for retrieving a rule set by ID.

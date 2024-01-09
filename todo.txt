@@ -23,12 +23,7 @@ Functionality:
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
     - Add lifecycle rules - with eventbridge trigger and lambdas
-    - fix all return objects and statuses for POST requests (201 and created object)
-    - fix method names for List/Load to By("the search criteria")
-    - make captcha more lax (!!!)
-    - fix parameters and response types for swagger
     - Fix layout on wide screen
-    - First login should not shot statistics display
     - Info buttons everywhere
     - Documentation on quota - welcome page and everywhere else
     - Deleted/Bin folder (shared ruleset?)
@@ -80,14 +75,8 @@ Functionality:
     - HATEOAS - links for objects
     - Create secondary image (~FHD size), optional on user preferences - for better image display
     - Add tooltips and info icons everywhere
-    - Have a "rows" type of view for photos - photo with details next to it, potentially dwonload and favorite buttons
     - Add filtering, ordering and pagination for images
     - Add batch uploading files
-    - Add personal lifecycle rules
-      - archive files after Y days
-      - delete files after X days
-      - keep favorites for indefinite
-      - needs user preferences & CRONs
     - Implement advanced search (fulltext search with ES)
 
 Backend:
@@ -98,5 +87,3 @@ Backend:
 - Think about integration tests
 - Create microservices architecture
 - Kubernetes IaC for microservices
-- Free database: Elephantsql or Planetscale
-- Free edge location: Vercel

@@ -61,6 +61,7 @@ func (c Controller) List(g *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "ID of the role information to patch"
+// @Param data body role.ProfileRole true "The new version of the role to use for update"
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Router /roles/:id [put]

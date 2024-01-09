@@ -35,6 +35,7 @@ func NewController(albums collection.Storer, loader *photo.LoadService) Controll
 // @Description Creates an album collection
 // @Accept json
 // @Produce json
+// @Param data body collection.CreateAlbum true "Data provided for creating the album"
 // @Success 201 {object} collection.Resp
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage

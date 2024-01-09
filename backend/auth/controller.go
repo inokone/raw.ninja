@@ -51,6 +51,7 @@ func NewController(users user.Storer, auths account.Storer, jwt JWTHandler, c co
 // @Description Logs in the user, sets up the JWT authorization
 // @Accept json
 // @Produce json
+// @Param data body user.Credentials true "Credentials provided for the login"
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Failure 403 {object} common.StatusMessage

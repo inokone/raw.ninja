@@ -121,6 +121,7 @@ func (c Controller) Patch(g *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "ID of the user information to patch"
+// @Param data body user.SetEnabled true "Whether the user is enabled to log in and upload photos"
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Router /users/:id/enabled [put]
@@ -156,6 +157,7 @@ func (c Controller) SetEnabled(g *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "ID of the user information to patch"
+// @Param data body user.Profile true "The new version of the user information to use for update"
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Router /users/:id [put]

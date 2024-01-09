@@ -46,6 +46,7 @@ func NewController(users user.Storer, accounts Storer, sender mail.Service, conf
 // @Description Signs the user up for the application
 // @Accept json
 // @Produce json
+// @Param data body user.Registration true "User data provided for the signup"
 // @Success 201 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
@@ -122,6 +123,7 @@ func (c Controller) confirmMail(usr *user.User) error {
 // @Description Resends email confirmation for an email address.
 // @Accept json
 // @Produce json
+// @Param data body account.ConfirmationResend true "The email to send the confirmation to"
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
@@ -238,6 +240,7 @@ func (c Controller) Confirm(g *gin.Context) {
 // @Description Send a password reset email to a user
 // @Accept json
 // @Produce json
+// @Param data body account.Recovery true "The email to send the account recovery to"
 // @Success 202 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
@@ -292,6 +295,7 @@ func (c Controller) recoverMail(usr *user.User) error {
 // @Description Resets the password of the logged in user
 // @Accept json
 // @Produce json
+// @Param data body account.PasswordReset true "The token and new password to reset the current set password"
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
@@ -360,6 +364,7 @@ func (c Controller) ResetPassword(g *gin.Context) {
 // @Description Resets the password of the logged in user
 // @Accept json
 // @Produce json
+// @Param data body account.PasswordChange true "The new and old passwords, required to update the password"
 // @Success 200 {object} common.StatusMessage
 // @Failure 400 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage

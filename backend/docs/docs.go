@@ -67,6 +67,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "User login endpoint",
+                "parameters": [
+                    {
+                        "description": "Credentials provided for the login",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.Credentials"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -125,6 +136,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "Reset password endpoint",
+                "parameters": [
+                    {
+                        "description": "The new and old passwords, required to update the password",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/account.PasswordChange"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -157,6 +179,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "Reset password endpoint",
+                "parameters": [
+                    {
+                        "description": "The token and new password to reset the current set password",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/account.PasswordReset"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -189,6 +222,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "Recover account endpoint",
+                "parameters": [
+                    {
+                        "description": "The email to send the account recovery to",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/account.Recovery"
+                        }
+                    }
+                ],
                 "responses": {
                     "202": {
                         "description": "Accepted",
@@ -221,6 +265,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "Resends email confirmation endpoint",
+                "parameters": [
+                    {
+                        "description": "The email to send the confirmation to",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/account.ConfirmationResend"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -253,6 +308,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "User registration endpoint",
+                "parameters": [
+                    {
+                        "description": "User data provided for the signup",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.Registration"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -318,9 +384,20 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "Endpoint for creating an album collection.",
+                "parameters": [
+                    {
+                        "description": "Data provided for creating the album",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/collection.CreateAlbum"
+                        }
+                    }
+                ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/collection.Resp"
                         }
@@ -393,6 +470,45 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "ID of Collection to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/collection.Resp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Patches an album by the ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Endpoint for patching an album by ID.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of Collection to patch",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -536,10 +652,19 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID of the photo information to collect",
+                        "description": "ID of the photo to update",
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "The new version of the photo to use for update",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/photo.Response"
+                        }
                     }
                 ],
                 "responses": {
@@ -727,7 +852,7 @@ const docTemplate = `{
             }
         },
         "/roles/:id": {
-            "patch": {
+            "put": {
                 "description": "Updates the settings of a role",
                 "consumes": [
                     "application/json"
@@ -743,6 +868,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "The new version of the role to use for update",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/role.ProfileRole"
+                        }
                     }
                 ],
                 "responses": {
@@ -754,6 +888,386 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/rules/": {
+            "get": {
+                "description": "Returns the list of rules for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "endpoint for retrieving rules of a user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/rule.Resp"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a lifecycle rule for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rule"
+                ],
+                "summary": "Rule creation endpoint",
+                "parameters": [
+                    {
+                        "description": "Data provided for creating the lifecycle rule",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rule.CreateRule"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/rule.Resp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "415": {
+                        "description": "Unsupported Media Type",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/rules/:id": {
+            "get": {
+                "description": "Returns a rule by the ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Endpoint for retrieving a rule by ID.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of rule to retrieve",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rule.Resp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/rules/constants": {
+            "get": {
+                "description": "Returns the constants used for rule creation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Endpoint for retrieving constants for rule creation.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rule.Constants"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/rulesets/": {
+            "get": {
+                "description": "Returns a list of rule sets for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "endpoint for retrieving rule sets of a user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ruleset.Resp"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a lifecycle rule set for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rule"
+                ],
+                "summary": "Rule set creation endpoint",
+                "parameters": [
+                    {
+                        "description": "The data to use for creating the ruleset",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ruleset.CreateRuleSet"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/ruleset.Resp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "415": {
+                        "description": "Unsupported Media Type",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/rulesets/:id": {
+            "get": {
+                "description": "Returns a rule set by the ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Endpoint fore retrieving a rule set by ID.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of rule set to retrieve",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ruleset.Resp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates a lifecycle rule set for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rule"
+                ],
+                "summary": "Rule set updating endpoint",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the role to update",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The ruleset to be updated",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ruleset.Resp"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/ruleset.Resp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "415": {
+                        "description": "Unsupported Media Type",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a rule set by the ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Endpoint fore deleting a rule set by ID.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of rule set to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/common.StatusMessage"
                         }
@@ -1068,6 +1582,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "The new version of the user information to use for update",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.Profile"
+                        }
                     }
                 ],
                 "responses": {
@@ -1101,6 +1624,50 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/:id/enabled": {
+            "put": {
+                "description": "Updates the target user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "User enable/disable endpoint",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the user information to patch",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Whether the user is enabled to log in and upload photos",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.SetEnabled"
+                        }
                     }
                 ],
                 "responses": {
@@ -1167,10 +1734,85 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "account.ConfirmationResend": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "account.PasswordChange": {
+            "type": "object",
+            "required": [
+                "new",
+                "old"
+            ],
+            "properties": {
+                "new": {
+                    "type": "string"
+                },
+                "old": {
+                    "type": "string"
+                }
+            }
+        },
+        "account.PasswordReset": {
+            "type": "object",
+            "required": [
+                "password",
+                "token"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "account.Recovery": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "collection.CreateAlbum": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user": {
+                    "type": "string"
+                }
+            }
+        },
         "collection.Resp": {
             "type": "object",
             "properties": {
-                "descriptor": {
+                "created_at": {
                     "type": "string"
                 },
                 "id": {
@@ -1241,6 +1883,12 @@ const docTemplate = `{
                 },
                 "thumbnail": {
                     "type": "string"
+                },
+                "thumbnail_height": {
+                    "type": "integer"
+                },
+                "thumbnail_width": {
+                    "type": "integer"
                 },
                 "uploaded": {
                     "type": "string"
@@ -1336,6 +1984,128 @@ const docTemplate = `{
                 }
             }
         },
+        "rule.Action": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "targeted": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "rule.Constants": {
+            "type": "object",
+            "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rule.Action"
+                    }
+                },
+                "targets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rule.Target"
+                    }
+                }
+            }
+        },
+        "rule.CreateRule": {
+            "type": "object",
+            "properties": {
+                "action_id": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "target_id": {
+                    "type": "integer"
+                },
+                "timing": {
+                    "type": "integer"
+                }
+            }
+        },
+        "rule.Resp": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "$ref": "#/definitions/rule.Action"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "target": {
+                    "$ref": "#/definitions/rule.Target"
+                },
+                "timing": {
+                    "type": "integer"
+                }
+            }
+        },
+        "rule.Target": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "ruleset.CreateRuleSet": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "ruleset.Resp": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rule.Resp"
+                    }
+                }
+            }
+        },
         "stats.AppStats": {
             "type": "object",
             "properties": {
@@ -1365,6 +2135,9 @@ const docTemplate = `{
         "stats.UserStats": {
             "type": "object",
             "properties": {
+                "albums": {
+                    "type": "integer"
+                },
                 "available_space": {
                     "type": "integer"
                 },
@@ -1395,8 +2168,33 @@ const docTemplate = `{
                 "role": {
                     "type": "string"
                 },
+                "uploads": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
                 "used_space": {
                     "type": "integer"
+                }
+            }
+        },
+        "user.Credentials": {
+            "type": "object",
+            "required": [
+                "captcha_token",
+                "email",
+                "password"
+            ],
+            "properties": {
+                "captcha_token": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
                 }
             }
         },
@@ -1423,6 +2221,31 @@ const docTemplate = `{
                 }
             }
         },
+        "user.Registration": {
+            "type": "object",
+            "required": [
+                "captcha_token",
+                "email",
+                "password"
+            ],
+            "properties": {
+                "captcha_token": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "user.RoleUser": {
             "type": "object",
             "properties": {
@@ -1431,6 +2254,17 @@ const docTemplate = `{
                 },
                 "users": {
                     "type": "integer"
+                }
+            }
+        },
+        "user.SetEnabled": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
                 }
             }
         }

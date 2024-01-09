@@ -30,6 +30,7 @@ func NewController(rules Storer) Controller {
 // @Description Creates a lifecycle rule for the user
 // @Accept json
 // @Produce json
+// @Param data body rule.CreateRule true "Data provided for creating the lifecycle rule"
 // @Success 201 {object} rule.Resp
 // @Failure 400 {object} common.StatusMessage
 // @Failure 415 {object} common.StatusMessage

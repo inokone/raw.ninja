@@ -142,7 +142,8 @@ func (c Controller) Get(g *gin.Context) {
 // @Description Updates tags and favorite setting for RAW file
 // @Accept json
 // @Produce json
-// @Param id path int true "ID of the photo information to collect"
+// @Param id path int true "ID of the photo to update"
+// @Param data body photo.Response true "The new version of the photo to use for update"
 // @Success 200 {object} common.StatusMessage
 // @Failure 404 {object} common.StatusMessage
 // @Failure 500 {object} common.StatusMessage
