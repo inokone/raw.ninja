@@ -12,7 +12,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 
 const drawerWidth = 60;
 
-const SelectionActions = ({ open, handleCreate, handleDelete, handleClear }) => {
+const SelectionActionBar = ({ open, handleCreate, handleDelete, handleClear }) => {
     const theme = useTheme();
 
     return (
@@ -70,4 +70,4 @@ const SelectionActions = ({ open, handleCreate, handleDelete, handleClear }) => 
     );
 }
 
-export default SelectionActions
+export default SelectionActionBar

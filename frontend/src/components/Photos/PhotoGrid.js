@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import ProgressDisplay from '../Common/ProgressDisplay';
 import PhotoGallery from './PhotoGallery';
-import SelectionActions from './SelectionActions';
+import SelectionActionBar from './SelectionActionBar';
 import DeleteDialog from '../Common/DeleteDialog';
 
 
@@ -250,7 +250,7 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <SelectionActions open={open} handleCreate={createAlbum} handleDelete={onDeleteClick} handleClear={clearSelection} />
+            <SelectionActionBar open={open} handleCreate={createAlbum} handleDelete={onDeleteClick} handleClear={clearSelection} />
             <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="the selected photos" />
             <Main open={open}>
                 {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
