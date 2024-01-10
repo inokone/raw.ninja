@@ -103,7 +103,7 @@ const AlbumDisplay = ({ user }) => {
                 onCancel={handleEditAlbumDialogClose}
                 input={{ name: data.name, tags: data.tags }}
             />}
-            <PhotoGrid populator={populate} data={[]} onDataLoaded={handleDataLoaded} />
+            <PhotoGrid populator={populate} data={[]} onDataLoaded={handleDataLoaded} selectionActionOverride={[]}/>
         </>
     )
 }

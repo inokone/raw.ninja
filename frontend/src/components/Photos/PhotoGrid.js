@@ -226,6 +226,12 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOv
         setDeleteDialogOpen(false);
     }, [setDeleteDialogOpen, batchDelete]);
 
+    const clearAction = {
+        icon: <ClearIcon sx={{ color: theme.palette.background.paper }} />,
+        tooltip: "Clear selection",
+        action: clearSelection
+    }
+
     const defaultSelectionActions = [
         {
             icon: <CollectionsIcon sx={{ color: theme.palette.background.paper }} />,
@@ -236,15 +242,12 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOv
             icon: <DeleteIcon sx={{ color: theme.palette.background.paper }} />,
             tooltip: "Delete selected photos",
             action: onDeleteClick
-        }
+        },
+        clearAction
     ]
 
-    const selectionActions = selectionActionOverride ? selectionActionOverride : defaultSelectionActions
-    selectionActions.push({
-        icon: <ClearIcon sx={{ color: theme.palette.background.paper }} />,
-        tooltip: "Clear selection",
-        action: clearSelection
-    })
+    const selectionActions = selectionActionOverride ? selectionActionOverride.concat([clearAction]) : defaultSelectionActions
+
 
 
     React.useEffect(() => {

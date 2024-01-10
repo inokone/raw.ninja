@@ -111,7 +111,7 @@ const Login = ({ setUser }) => {
                             }}
                             required
                             disabled={loading}
-                            autocomplete="username"
+                            autoComplete="username"
                             variant="outlined"
                             color="primary"
                             type="email"
@@ -130,7 +130,7 @@ const Login = ({ setUser }) => {
                             }}
                             required
                             disabled={loading}
-                            autocomplete="password"
+                            autoComplete="password"
                             variant="outlined"
                             color="primary"
                             type="password"
