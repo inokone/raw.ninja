@@ -2,12 +2,15 @@ import * as React from 'react';
 import { Alert, Box, Fab } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import ProgressDisplay from '../Common/ProgressDisplay';
 import PhotoGallery from './PhotoGallery';
 import SelectionActionBar from './SelectionActionBar';
 import DeleteDialog from '../Common/DeleteDialog';
-
+import CollectionsIcon from '@mui/icons-material/Collections';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ClearIcon from '@mui/icons-material/Clear';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -32,13 +35,14 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     }),
 );
 
-const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
+const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOverride }) => {
+    const theme = useTheme();
     const navigate = useNavigate();
     const [error, setError] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [images, setImages] = React.useState(null)
-    const [open, setOpen] = React.useState(false)
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+    const [isSelectionBarOpen, setSelectionBarOpen] = React.useState(false)
+    const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
     const dateOf = (data) => {
         return new Date(data).toLocaleDateString()
@@ -89,14 +93,14 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
             }
         });
         setImages(newImages)
-        setOpen(selectedCount > 0)
+        setSelectionBarOpen(selectedCount > 0)
     }
 
     const clearSelection = () => {
         let newImages = images.slice()
         newImages.forEach(i => { i.selected = false });
         setImages(newImages)
-        setOpen(false)
+        setSelectionBarOpen(false)
     }
 
     const deletePhoto = React.useCallback((id) => {
@@ -210,17 +214,38 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
 
 
     const onDeleteClick = React.useCallback((photos) => {
-        setIsDeleteDialogOpen(true);
-    }, [setIsDeleteDialogOpen]);
+        setDeleteDialogOpen(true);
+    }, [setDeleteDialogOpen]);
 
     const handleDeleteDialogClose = React.useCallback(() => {
-        setIsDeleteDialogOpen(false);
-    }, [setIsDeleteDialogOpen]);
+        setDeleteDialogOpen(false);
+    }, [setDeleteDialogOpen]);
 
     const handleDeleteDialogAccept = React.useCallback(() => {
         batchDelete()
-        setIsDeleteDialogOpen(false);
-    }, [setIsDeleteDialogOpen, batchDelete]);
+        setDeleteDialogOpen(false);
+    }, [setDeleteDialogOpen, batchDelete]);
+
+    const defaultSelectionActions = [
+        {
+            icon: <CollectionsIcon sx={{ color: theme.palette.background.paper }} />,
+            tooltip: "Create collection from selection",
+            action: createAlbum
+        },
+        {
+            icon: <DeleteIcon sx={{ color: theme.palette.background.paper }} />,
+            tooltip: "Delete selected photos",
+            action: onDeleteClick
+        }
+    ]
+
+    const selectionActions = selectionActionOverride ? selectionActionOverride : defaultSelectionActions
+    selectionActions.push({
+        icon: <ClearIcon sx={{ color: theme.palette.background.paper }} />,
+        tooltip: "Clear selection",
+        action: clearSelection
+    })
+
 
     React.useEffect(() => {
         const loadImages = () => {
@@ -250,9 +275,9 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded }) => {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <SelectionActionBar open={open} handleCreate={createAlbum} handleDelete={onDeleteClick} handleClear={clearSelection} />
+            <SelectionActionBar open={isSelectionBarOpen} actions={selectionActions} />
             <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="the selected photos" />
-            <Main open={open}>
+            <Main open={isSelectionBarOpen}>
                 {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
                 {loading && <ProgressDisplay />}
                 {images && <PhotoGallery photos={images} setPhoto={setPhoto} setSelected={setSelected} />}

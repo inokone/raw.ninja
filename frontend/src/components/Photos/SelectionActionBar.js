@@ -3,16 +3,13 @@ import { useTheme } from '@mui/material/styles';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Tooltip from '@mui/material/Tooltip';
-import CollectionsIcon from '@mui/icons-material/Collections';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ClearIcon from '@mui/icons-material/Clear';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 
 const drawerWidth = 60;
 
-const SelectionActionBar = ({ open, handleCreate, handleDelete, handleClear }) => {
+const SelectionActionBar = ({ open, actions }) => {
     const theme = useTheme();
 
     return (
@@ -37,36 +34,18 @@ const SelectionActionBar = ({ open, handleCreate, handleDelete, handleClear }) =
             open={open}
         >
             <List sx={{ marginTop: '48px', width: drawerWidth }}>
+                {actions.map((action) => (
                 <ListItem key="collection" disablePadding>
-                    <Tooltip title="Create collection from selection">
-                        <ListItemButton onClick={() => handleCreate()}>
+                    <Tooltip title={action.tooltip}>
+                        <ListItemButton onClick={action.action}>
                             <ListItemIcon>
-                                <CollectionsIcon sx={{ color: theme.palette.background.paper }} />
+                                {action.icon}
                             </ListItemIcon>
                         </ListItemButton>
                     </Tooltip>
-                </ListItem>
-                <ListItem key="delete" disablePadding>
-                    <Tooltip title="Delete selected photos">
-                        <ListItemButton onClick={() => handleDelete()}>
-                            <ListItemIcon>
-                                <DeleteIcon sx={{ color: theme.palette.background.paper }} />
-                            </ListItemIcon>
-                        </ListItemButton>
-                    </Tooltip>
-                </ListItem>
-                <ListItem key="clear" disablePadding>
-                    <Tooltip title="Clear selection">
-                        <ListItemButton onClick={() => handleClear()}>
-                            <ListItemIcon>
-                                <ClearIcon sx={{ color: theme.palette.background.paper }} />
-                            </ListItemIcon>
-                        </ListItemButton>
-                    </Tooltip>
-                </ListItem>
+                </ListItem>))}
             </List>
         </Drawer>
-
     );
 }
 
