@@ -23,9 +23,6 @@ Functionality:
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
     - Fix profile menu font
-    - Improve PhotoGrid
-      - Is selection enabled
-      - Limit of images
     - Album improvements (based on improved photogrid)
       - Create "delete album"
       - Add photos to existing album
@@ -40,6 +37,8 @@ Functionality:
         - thumbnails
         - NEW fullscreen
 
+    - Improve PhotoGrid
+      - Limit of images
     - Revamp profile page
     - Deleted/Bin folder (shared ruleset?)
     - Display image count + used space per user on admin page

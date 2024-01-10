@@ -5,7 +5,7 @@ import withStyles from '@mui/styles/withStyles';
 
 const styles = theme => ({
     dialogActions: {
-        justifyContent: "flex-start",
+        justifyContent: "flex-end",
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         paddingRight: theme.spacing(2)
@@ -79,18 +79,18 @@ function EditAlbumDialog(props) {
             </DialogContent>
             <DialogActions className={classes.dialogActions}>
                 <Button
-                    onClick={() => onSave(name, tags)}
-                    variant="contained"
-                    color="primary"
-                >
-                    Save
-                </Button>
-                <Button
                     onClick={onCancel}
                     variant="contained"
                     color="secondary"
                 >
                     Cancel
+                </Button>
+                <Button
+                    onClick={() => onSave(name, tags)}
+                    variant="contained"
+                    color="primary"
+                >
+                    Save
                 </Button>
             </DialogActions>
         </Dialog>

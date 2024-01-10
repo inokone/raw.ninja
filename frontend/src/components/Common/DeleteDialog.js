@@ -5,7 +5,7 @@ import withStyles from '@mui/styles/withStyles';
 
 const styles = theme => ({
     dialogActions: {
-        justifyContent: "flex-start",
+        justifyContent: "flex-end",
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         paddingRight: theme.spacing(2)
@@ -30,22 +30,22 @@ function DeleteDialog({ classes, onDelete, onCancel, open, name }) {
         >
             <DialogTitle></DialogTitle>
             <DialogContent style={{ overflowY: 'visible' }}>
-                <Typography>Are you sure you want to delete {name}?</Typography>
+                <Typography align='center'>Are you sure you want to delete {name}?</Typography>
             </DialogContent>
             <DialogActions className={classes.dialogActions}>
-                <Button
-                    onClick={onDelete}
-                    variant="contained"
-                    color="primary"
-                >
-                    Delete
-                </Button>
                 <Button
                     onClick={onCancel}
                     variant="contained"
                     color="secondary"
                 >
                     Cancel
+                </Button>               
+                <Button
+                    onClick={onDelete}
+                    variant="contained"
+                    color="primary"
+                >
+                    Delete
                 </Button>
             </DialogActions>
         </Dialog>

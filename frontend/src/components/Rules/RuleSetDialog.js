@@ -5,7 +5,7 @@ import withStyles from '@mui/styles/withStyles';
 
 const styles = theme => ({
     dialogActions: {
-        justifyContent: "flex-start",
+        justifyContent: "flex-end",
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         paddingRight: theme.spacing(2)
@@ -67,6 +67,13 @@ function RuleSetDialog({ classes, onSave, onCancel, open, input }) {
             </DialogContent>
             <DialogActions className={classes.dialogActions}>
                 <Button
+                    onClick={onCancel}
+                    variant="contained"
+                    color="secondary"
+                >
+                    Cancel
+                </Button>
+                <Button
                     onClick={() => onSave({
                         name: name,
                         description: description
@@ -75,13 +82,6 @@ function RuleSetDialog({ classes, onSave, onCancel, open, input }) {
                     color="primary"
                 >
                     Save
-                </Button>
-                <Button
-                    onClick={onCancel}
-                    variant="contained"
-                    color="secondary"
-                >
-                    Cancel
                 </Button>
             </DialogActions>
         </Dialog>
