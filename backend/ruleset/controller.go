@@ -118,6 +118,12 @@ func (c Controller) Update(g *gin.Context) {
 		return
 	}
 
+	if err = authorize(g, rs.UserID); err != nil {
+		log.Err(err).Msg("Failed to retrieve rule set!")
+		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Unauthorized!"})
+		return
+	}
+
 	rs, err = c.service.Update(usr, &ur)
 	if err != nil {
 		switch err.(type) {
@@ -166,7 +172,7 @@ func (c Controller) Get(g *gin.Context) {
 	rs, err = c.sets.ByID(id)
 	if err != nil {
 		log.Err(err).Msg("Failed to retrieve rule set!")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 404, Message: "Failed to retrieve rule set!"})
+		g.AbortWithStatusJSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Failed to retrieve rule set!"})
 		return
 	}
 	if err = authorize(g, rs.UserID); err != nil {
@@ -251,7 +257,7 @@ func (c Controller) Delete(g *gin.Context) {
 	rs, err = c.sets.ByID(id)
 	if err != nil {
 		log.Err(err).Msg("Failed to delete rule set!")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 404, Message: "Failed to delete rule set!"})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Failed to delete rule set!"})
 		return
 	}
 	if err = authorize(g, rs.UserID); err != nil {
@@ -262,7 +268,7 @@ func (c Controller) Delete(g *gin.Context) {
 
 	if err = c.sets.Delete(id); err != nil {
 		log.Err(err).Msg("Failed to delete rule set!")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 404, Message: "Failed to delete rule set!"})
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Failed to delete rule set!"})
 		return
 	}
 

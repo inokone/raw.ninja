@@ -24,9 +24,8 @@ Functionality:
     ----
     - Fix profile menu font
     - Album improvements (based on improved photogrid)
-      - Create "delete album"
       - Add photos to existing album
-      - Remove photos from album (watch out for thumbnails)
+    - Add authorize() to update rule set
     - Add lifecycle rules - with eventbridge trigger and lambdas
     - Fix layout on wide screen
     - Info buttons everywhere

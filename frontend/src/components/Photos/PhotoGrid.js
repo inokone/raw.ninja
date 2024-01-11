@@ -36,13 +36,13 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 );
 
 const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOverride }) => {
-    const theme = useTheme();
-    const navigate = useNavigate();
+    const theme = useTheme()
+    const navigate = useNavigate()
     const [error, setError] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [images, setImages] = React.useState(null)
     const [isSelectionBarOpen, setSelectionBarOpen] = React.useState(false)
-    const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+    const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
 
     const dateOf = (data) => {
         return new Date(data).toLocaleDateString()
@@ -278,7 +278,7 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOv
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <SelectionActionBar open={isSelectionBarOpen} actions={selectionActions} />
+            <SelectionActionBar open={isSelectionBarOpen} items={images} actions={selectionActions} />
             <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="the selected photos" />
             <Main open={isSelectionBarOpen}>
                 {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}

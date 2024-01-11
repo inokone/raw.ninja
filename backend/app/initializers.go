@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 
 	"github.com/inokone/photostorage/auth/account"
 	"github.com/inokone/photostorage/auth/role"
@@ -44,7 +45,9 @@ func initDb(c common.RDBConfig) error {
 	} else {
 		cs += fmt.Sprintf("sslrootcert=%v sslmode=%v", c.SSLCert, c.SSLMode)
 	}
-	gormDb, err := gorm.Open(postgres.Open(cs), &gorm.Config{})
+	gormDb, err := gorm.Open(postgres.Open(cs), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,7 @@
 package collection
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -19,6 +20,14 @@ func NewService(s Storer) *Service {
 		s: s,
 	}
 }
+
+// InvalidPhotoID is an error for invalid, malformed of non-existing IDs of photos
+type InvalidPhotoID struct {
+	ID string
+}
+
+// Error is the string representation of an `InvalidPhotoID` error
+func (e InvalidPhotoID) Error() string { return fmt.Sprintf("invalid photo ID [%v]", e.ID) }
 
 // CreateUpload is a method of `Service` creating a persisted upload type collection
 func (s Service) CreateUpload(usr user.User, photoIDs []uuid.UUID) (*Collection, error) {
@@ -79,4 +88,49 @@ func (s Service) SetProperties(collectionID uuid.UUID, name string, tags []strin
 	c.Tags = tags
 	c.Name = name
 	return s.s.Update(c)
+}
+
+// Update manages changes of a collection. Current supported fields are name, tags and photos
+func (s Service) Update(cl *Collection, cr Resp) (*Collection, error) {
+	var err error
+	if cr.Tags != nil {
+		cl.Tags = cr.Tags
+	}
+	if len(cr.Name) > 0 {
+		cl.Name = cr.Name
+	}
+	// update the photos
+	if cr.Photos != nil {
+		cl.Photos, err = s.updatePhotos(cr.Photos)
+		if err != nil {
+			return nil, err
+		}
+	}
+	// check whether the thumbnail of the album is still associated to the album
+	if len(cl.Photos) > 0 {
+		cl.ThumbnailID = &cl.Photos[0].ID
+	} else {
+		cl.ThumbnailID = nil
+	}
+	err = s.s.Update(cl)
+	return cl, err
+}
+
+func (s Service) updatePhotos(updated []photo.Response) ([]photo.Photo, error) {
+	var (
+		err error
+		id  uuid.UUID
+		ids []uuid.UUID
+	)
+
+	ids = make([]uuid.UUID, len(updated))
+	for i, rl := range updated {
+		id, err = uuid.Parse(rl.ID)
+		if err != nil {
+			return nil, InvalidPhotoID{rl.ID}
+		}
+		ids[i] = id
+	}
+
+	return createPhotos(ids), nil
 }

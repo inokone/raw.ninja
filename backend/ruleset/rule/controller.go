@@ -107,7 +107,7 @@ func (c Controller) Get(g *gin.Context) {
 	r, err = c.rules.ByID(id)
 	if err != nil {
 		log.Err(err).Msg("Failed to retrieve rule!")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 404, Message: "Failed to retrieve rule!"})
+		g.AbortWithStatusJSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Failed to retrieve rule!"})
 		return
 	}
 	if err = authorize(g, r.UserID); err != nil {

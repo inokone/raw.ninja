@@ -9,7 +9,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 
 const drawerWidth = 60;
 
-const SelectionActionBar = ({ open, actions }) => {
+const SelectionActionBar = ({ open, items, actions }) => {
     const theme = useTheme();
 
     return (
@@ -35,9 +35,9 @@ const SelectionActionBar = ({ open, actions }) => {
         >
             <List sx={{ marginTop: '48px', width: drawerWidth }}>
                 {actions.map((action) => (
-                <ListItem key="collection" disablePadding>
+                <ListItem disablePadding key={action.tooltip}>
                     <Tooltip title={action.tooltip}>
-                        <ListItemButton onClick={action.action}>
+                        <ListItemButton onClick={() => action.action(items)}>
                             <ListItemIcon>
                                 {action.icon}
                             </ListItemIcon>

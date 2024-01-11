@@ -1,13 +1,17 @@
 import * as React from 'react';
+import { useTheme } from '@mui/material/styles';
 import { useLocation, useNavigate } from "react-router-dom";
-import { Stack, Chip, Typography, Alert } from "@mui/material";
+import { Stack, Chip, Typography, Alert, IconButton } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import PhotoGrid from '../Photos/PhotoGrid';
 import EditAlbumDialog from './EditAlbumDialog';
+import DeleteDialog from '../Common/DeleteDialog';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const AlbumDisplay = ({ user }) => {
+    const theme = useTheme();
     const navigate = useNavigate()
     const location = useLocation()
     const path = location.pathname
@@ -17,6 +21,9 @@ const AlbumDisplay = ({ user }) => {
     const [error, setError] = React.useState()
     const [success, setSuccess] = React.useState(false)
     const [isHovering, setIsHovering] = React.useState(false)
+    const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
+    const [isDeleteAlbumDialogOpen, setDeleteAlbumDialogOpen] = React.useState(false)
+    const [deleteItems, setDeleteItems] = React.useState(null)
 
     const populate = () => {
         if (!user) {
@@ -31,7 +38,7 @@ const AlbumDisplay = ({ user }) => {
         })
     }
 
-    const update = React.useCallback((name, tags) => {
+    const update = React.useCallback((name, tags, photos) => {
         return fetch(REACT_APP_API_PREFIX + '/api/v1' + path, {
             method: "PATCH",
             mode: "cors",
@@ -39,6 +46,7 @@ const AlbumDisplay = ({ user }) => {
             body: JSON.stringify({
                 "name": name,
                 "tags": tags,
+                "photos": photos,
             })
         }).then(response => {
             response.json().then(content => {
@@ -81,31 +89,101 @@ const AlbumDisplay = ({ user }) => {
         setIsHovering(false);
     };
 
+    const handleDeleteAlbumClick = React.useCallback((items) => {
+        setDeleteAlbumDialogOpen(true);
+    }, [setDeleteAlbumDialogOpen]);
+
+    const handleDeleteAlbumDialogClose = React.useCallback(() => {
+        setDeleteAlbumDialogOpen(false);
+    }, [setDeleteAlbumDialogOpen]);
+
+    const deleteAlbum = React.useCallback(() => {
+        return fetch(REACT_APP_API_PREFIX + '/api/v1' + path, {
+            method: "DELETE",
+            mode: "cors",
+            credentials: "include"
+        }).then(response => {
+            response.json().then(content => {
+                if (!response.ok) {
+                    setError(content.message)
+                } else {
+                    navigate('/albums')
+                }
+            });
+        }).catch(() => setError("Network communication error. Maybe backend is down?"))
+    }, [navigate, path])
+
+    const handleDeleteAlbumDialogAccept = React.useCallback(() => {
+        deleteAlbum()
+        setDeleteAlbumDialogOpen(false);
+    }, [setDeleteAlbumDialogOpen, deleteAlbum]);
+
+    const onDeleteClick = React.useCallback((items) => {
+        setDeleteDialogOpen(true);
+        setDeleteItems(items)
+    }, [setDeleteDialogOpen, setDeleteItems]);
+
+    const handleDeleteDialogClose = React.useCallback(() => {
+        setDeleteDialogOpen(false);
+        setDeleteItems(null);
+    }, [setDeleteDialogOpen, setDeleteItems]);
+
+    const deleteFromAlbum = React.useCallback((items) => {
+        let keptItems = items.filter(photo => !photo.selected).map(item => ({id: item.id}))
+        update(null, null, keptItems)
+    }, [update])
+
+    const handleDeleteDialogAccept = React.useCallback(() => {
+        deleteFromAlbum(deleteItems)
+        setDeleteDialogOpen(false);
+        setDeleteItems(null);
+    }, [setDeleteDialogOpen, deleteFromAlbum, setDeleteItems, deleteItems]);
+
+    const selectionActions = [
+        {
+            icon: <DeleteIcon sx={{ color: theme.palette.background.paper }} />,
+            tooltip: "Remove photos from album",
+            action: onDeleteClick
+        }
+    ]
+
     return (
         <>
             {title &&
-                <Stack sx={{ marginBottom: 2, marginTop: 2 }} justifyContent={'center'} alignItems={'baseline'} direction="row" spacing={1} onClick={handleEditAlbumDialogOpen}
+                <Stack sx={{ marginBottom: 2, marginTop: 2 }} justifyContent={'center'} alignItems={'baseline'} direction="row" spacing={1}
                     onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
                     <Typography variant='h4'>{title}</Typography>
-                    {isHovering && <EditIcon />}
+                    {isHovering && 
+                        <>
+                            <IconButton onClick={handleEditAlbumDialogOpen}>
+                                <EditIcon />
+                            </IconButton>
+                        <IconButton onClick={handleDeleteAlbumClick}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </>}
+                    <DeleteDialog open={isDeleteAlbumDialogOpen} onCancel={handleDeleteAlbumDialogClose} onDelete={handleDeleteAlbumDialogAccept} name="the album" />
                 </Stack>
             }
-            {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
+            {error && <Alert sx={{ mb: 4, maxWidth: "sm", marginLeft: "auto", marginRight: "auto" }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Updated successfully!</Alert>}
             {data && data.tags && <Stack sx={{ marginBottom: 4 }} justifyContent={'center'} direction="row" spacing={1} onClick={handleEditAlbumDialogOpen}>
                 {data.tags.map(tag => {
                     return (<Chip key={tag} label={tag} />)
                 })}
             </Stack>}
-            {data && <EditAlbumDialog
-                open={isEditAlbumDialogOpen}
-                onSave={handleEditAlbumDialogSave}
-                onCancel={handleEditAlbumDialogClose}
-                input={{ name: data.name, tags: data.tags }}
-            />}
-            <PhotoGrid populator={populate} data={[]} onDataLoaded={handleDataLoaded} selectionActionOverride={[]}/>
-        </>
-    )
+            {data && 
+            <>
+                <EditAlbumDialog
+                        open={isEditAlbumDialogOpen}
+                        onSave={handleEditAlbumDialogSave}
+                        onCancel={handleEditAlbumDialogClose}
+                        input={{ name: data.name, tags: data.tags }}
+                     />
+                <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="the selected photos from the album" />
+            </>}
+            <PhotoGrid populator={populate} data={[]} onDataLoaded={handleDataLoaded} selectionActionOverride={selectionActions} />
+        </>)
 }
 
 export default AlbumDisplay;

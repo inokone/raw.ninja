@@ -120,7 +120,7 @@ func (c Controller) Get(g *gin.Context) {
 	cl, err = c.albums.ByID(id)
 	if err != nil {
 		log.Err(err).Msg("Failed to retrieve album!")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 404, Message: "Failed to retrieve album!"})
+		g.AbortWithStatusJSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Failed to retrieve album!"})
 		return
 	}
 	if err = authorize(g, cl.UserID); err != nil {
@@ -174,22 +174,14 @@ func (c Controller) Patch(g *gin.Context) {
 	}
 	cl, err = c.albums.ByID(id)
 	if err != nil {
-		log.Err(err).Msg("Failed to patch album!")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 404, Message: "Failed to patch album!"})
+		g.AbortWithStatusJSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Album not found!"})
 		return
 	}
 	if err = authorize(g, cl.UserID); err != nil {
-		log.Err(err).Msg("Failed to patch album!")
 		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Unauthorized!"})
 		return
 	}
-	if cr.Tags != nil {
-		cl.Tags = cr.Tags
-	}
-	if len(cr.Name) > 0 {
-		cl.Name = cr.Name
-	}
-	err = c.albums.Update(cl)
+	cl, err = c.service.Update(cl, cr)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown issue, contact administrator!"})
 		log.Err(err).Msg("Failed to patch album!")
@@ -246,7 +238,6 @@ func (c Controller) List(g *gin.Context) {
 			return
 		}
 	}
-
 	g.JSON(http.StatusOK, res)
 }
 

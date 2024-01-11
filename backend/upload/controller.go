@@ -138,7 +138,7 @@ func (c Controller) Get(g *gin.Context) {
 	cl, err = c.uploads.ByID(id)
 	if err != nil {
 		log.Err(err).Msg("Failed to retrieve upload!")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 404, Message: "Failed to retrieve upload!"})
+		g.AbortWithStatusJSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Failed to retrieve upload!"})
 		return
 	}
 	if err = authorize(g, cl.UserID); err != nil {
