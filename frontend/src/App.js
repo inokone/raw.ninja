@@ -31,6 +31,7 @@ import AlbumDisplay from './components/Album/AlbumDisplay';
 import AlbumList from './components/Album/AlbumList';
 import RuleSets from './components/Rules/RuleSets';
 import RuleSet from './components/Rules/RuleSet';
+import AddPhotos from './components/Album/AddPhotos';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -108,6 +109,7 @@ const App = () => {
                   <Route path="/photos" element={<PhotoList user={user} />} />
                   <Route path="/albums" element={<AlbumList user={user} />} />
                   <Route path="/albums/create" element={<CreateAlbum user={user} />} />
+                  <Route path="/albums/:albumId/add" element={<AddPhotos user={user} />} />
                   <Route path="/albums/:albumId" element={<AlbumDisplay user={user} />} />
                   <Route path="/editor/:photoId" element={<Photopea />} />
                   <Route path="/photos/:photosId" element={<PhotoDisplay user={user} />} />

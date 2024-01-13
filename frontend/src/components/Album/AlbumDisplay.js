@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { useLocation, useNavigate } from "react-router-dom";
-import { Stack, Chip, Typography, Alert, IconButton } from "@mui/material";
+import { Stack, Chip, Typography, Alert, IconButton, Tooltip, Box, Fab } from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import PhotoGrid from '../Photos/PhotoGrid';
 import EditAlbumDialog from './EditAlbumDialog';
 import DeleteDialog from '../Common/DeleteDialog';
@@ -24,6 +26,7 @@ const AlbumDisplay = ({ user }) => {
     const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
     const [isDeleteAlbumDialogOpen, setDeleteAlbumDialogOpen] = React.useState(false)
     const [deleteItems, setDeleteItems] = React.useState(null)
+
 
     const populate = () => {
         if (!user) {
@@ -118,6 +121,15 @@ const AlbumDisplay = ({ user }) => {
         setDeleteAlbumDialogOpen(false);
     }, [setDeleteAlbumDialogOpen, deleteAlbum]);
 
+    const onAddClick = React.useCallback(() => {
+        navigate(path + '/add', { 
+            state: {
+                album: data,
+                sourcePath: path,
+            }
+        })
+    }, [navigate, path, data]);
+
     const onDeleteClick = React.useCallback((items) => {
         setDeleteDialogOpen(true);
         setDeleteItems(items)
@@ -147,6 +159,24 @@ const AlbumDisplay = ({ user }) => {
         }
     ]
 
+    const albumActions = [
+        {
+            icon: <EditIcon />,
+            tooltip: "Edit album properties",
+            action: handleEditAlbumDialogOpen
+        },
+        {
+            icon: <AddPhotoAlternateIcon />,
+            tooltip: "Add photos to the album",
+            action: onAddClick
+        },
+        {
+            icon: <DeleteIcon />,
+            tooltip: "Delete album - photos are not deleted",
+            action: handleDeleteAlbumClick
+        }
+    ]
+
     return (
         <>
             {title &&
@@ -155,12 +185,13 @@ const AlbumDisplay = ({ user }) => {
                     <Typography variant='h4'>{title}</Typography>
                     {isHovering && 
                         <>
-                            <IconButton onClick={handleEditAlbumDialogOpen}>
-                                <EditIcon />
-                            </IconButton>
-                        <IconButton onClick={handleDeleteAlbumClick}>
-                                <DeleteIcon />
-                            </IconButton>
+                            {albumActions.map((action => (
+                                <Tooltip key={action.tooltip} title={action.tooltip}>
+                                    <IconButton onClick={action.action}>
+                                        {action.icon}
+                                    </IconButton>
+                                </Tooltip>
+                            )))}
                         </>}
                     <DeleteDialog open={isDeleteAlbumDialogOpen} onCancel={handleDeleteAlbumDialogClose} onDelete={handleDeleteAlbumDialogAccept} name="the album" />
                 </Stack>
@@ -183,6 +214,16 @@ const AlbumDisplay = ({ user }) => {
                 <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="the selected photos from the album" />
             </>}
             <PhotoGrid populator={populate} data={[]} onDataLoaded={handleDataLoaded} selectionActionOverride={selectionActions} />
+            <Box sx={{
+                '& > :not(style)': { m: 1 },
+                position: "fixed",
+                bottom: 16,
+                right: 16
+            }}>
+                <Fab onClick={onAddClick} color="primary" aria-label="add">
+                    <AddIcon />
+                </Fab>
+            </Box>
         </>)
 }
 
