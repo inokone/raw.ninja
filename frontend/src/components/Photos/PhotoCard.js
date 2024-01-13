@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const PhotoCard = ({ photo, setPhoto, setSelected, onClick, imageProps: { src, alt, style, width, height, ...restImageProps } }) => {
+const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, imageProps: { src, alt, style, width, height, ...restImageProps } }) => {
   const navigate = useNavigate();
   const classes = useStyles();
   const [isHovering, setIsHovering] = React.useState(false);
@@ -71,7 +71,7 @@ const PhotoCard = ({ photo, setPhoto, setSelected, onClick, imageProps: { src, a
   const handleFavoriteClick = (photo) => {
     const updatedPhoto = { ...photo };
     updatedPhoto.favorite = !photo.favorite
-    setPhoto(updatedPhoto)
+    updatePhoto(updatedPhoto)
   }
 
   const handleSelectClick = (photo) => {

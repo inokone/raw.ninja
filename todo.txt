@@ -22,7 +22,6 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Fix profile menu font
     - Album improvements (based on improved photogrid)
       - Add photos to existing album
     - Add authorize() to update rule set
@@ -35,6 +34,7 @@ Functionality:
         - raw
         - thumbnails
         - NEW fullscreen
+    - Add props validation and declaration for react components
 
     - Improve PhotoGrid
       - Limit of images

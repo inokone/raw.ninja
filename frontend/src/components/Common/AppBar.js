@@ -194,15 +194,15 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
                 >
                   <MenuItem key="upload" onClick={() => handleMenuClick('upload')}>
                     <CloudUploadIcon sx={{ mr: 1 }} />
-                    <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Upload</Typography>
+                    <Typography textAlign="center">Upload</Typography>
                   </MenuItem>
                   <MenuItem key="photos" onClick={() => handleMenuClick('photos')}>
                     <ViewModuleIcon sx={{ mr: 1 }} />
-                    <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Photos</Typography>
+                    <Typography textAlign="center">Photos</Typography>
                   </MenuItem>
                   <MenuItem key="albums" onClick={() => handleMenuClick('albums')}>
                     <CollectionsIcon sx={{ mr: 1 }} />
-                    <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>Albums</Typography>
+                    <Typography textAlign="center">Albums</Typography>
                   </MenuItem>
                 </Menu>
               </Box>
@@ -229,8 +229,8 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
                   onClose={handleCloseUserMenu}
                 >
                   {Object.entries(profileMenu()).map(([setting, path], i) => (
-                    <MenuItem key={setting} onClick={() => handleUserClick(path)} sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>
-                      <Typography textAlign="center" sx={{ fontFamily: ['"Montserrat"', 'Open Sans'].join(',') }}>{setting}</Typography>
+                    <MenuItem key={setting} onClick={() => handleUserClick(path)}>
+                      <Typography textAlign="center">{setting}</Typography>
                     </MenuItem>
                   ))}
                 </Menu>

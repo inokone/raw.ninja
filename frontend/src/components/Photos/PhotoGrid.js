@@ -1,39 +1,15 @@
 import * as React from 'react';
 import { Alert, Box, Fab } from "@mui/material";
-import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import ProgressDisplay from '../Common/ProgressDisplay';
-import PhotoGallery from './PhotoGallery';
-import SelectionActionBar from './SelectionActionBar';
 import DeleteDialog from '../Common/DeleteDialog';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ClearIcon from '@mui/icons-material/Clear';
+import SelectableGallery from './SelectableGallery';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
-
-const drawerWidth = 60;
-
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme, open }) => ({
-        flexGrow: 1,
-        padding: theme.spacing(1),
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        marginLeft: `-${drawerWidth}px`,
-        ...(open && {
-            transition: theme.transitions.create('margin', {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-            marginLeft: 0,
-        }),
-    }),
-);
 
 const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOverride }) => {
     const theme = useTheme()
@@ -41,14 +17,13 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOv
     const [error, setError] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [images, setImages] = React.useState(null)
-    const [isSelectionBarOpen, setSelectionBarOpen] = React.useState(false)
     const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
 
     const dateOf = (data) => {
         return new Date(data).toLocaleDateString()
     }
 
-    const setPhoto = (photo) => {
+    const updateImage = (photo) => {
         let image = photo.base
         image.descriptor.favorite = photo.favorite
         fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id, {
@@ -79,28 +54,6 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOv
             .catch(error => {
                 setError(error.message)
             });
-    }
-
-    const setSelected = (photo) => {
-        let newImages = images.slice()
-        let selectedCount = 0
-        newImages.forEach(i => {
-            if (i.id === photo.id) {
-                i.selected = photo.selected
-            }
-            if (i.selected) {
-                selectedCount++
-            }
-        });
-        setImages(newImages)
-        setSelectionBarOpen(selectedCount > 0)
-    }
-
-    const clearSelection = () => {
-        let newImages = images.slice()
-        newImages.forEach(i => { i.selected = false });
-        setImages(newImages)
-        setSelectionBarOpen(false)
     }
 
     const deletePhoto = React.useCallback((id) => {
@@ -226,12 +179,6 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOv
         setDeleteDialogOpen(false);
     }, [setDeleteDialogOpen, batchDelete]);
 
-    const clearAction = {
-        icon: <ClearIcon sx={{ color: theme.palette.background.paper }} />,
-        tooltip: "Clear selection",
-        action: clearSelection
-    }
-
     const defaultSelectionActions = [
         {
             icon: <CollectionsIcon sx={{ color: theme.palette.background.paper }} />,
@@ -242,13 +189,10 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOv
             icon: <DeleteIcon sx={{ color: theme.palette.background.paper }} />,
             tooltip: "Delete selected photos",
             action: onDeleteClick
-        },
-        clearAction
+        }
     ]
 
-    const selectionActions = selectionActionOverride ? selectionActionOverride.concat([clearAction]) : defaultSelectionActions
-
-
+    const selectionActions = selectionActionOverride ? selectionActionOverride : defaultSelectionActions
 
     React.useEffect(() => {
         const loadImages = () => {
@@ -278,13 +222,10 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOv
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <SelectionActionBar open={isSelectionBarOpen} items={images} actions={selectionActions} />
             <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="the selected photos" />
-            <Main open={isSelectionBarOpen}>
-                {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
-                {loading && <ProgressDisplay />}
-                {images && <PhotoGallery photos={images} setPhoto={setPhoto} setSelected={setSelected} />}
-            </Main>
+            {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
+            {loading && <ProgressDisplay />}
+            {images && <SelectableGallery images={images} setImages={setImages} updateImage={updateImage} selectionActionOverride={selectionActions}/>}
             {fabAction &&
                 <Box onClick={fabAction} sx={{
                     '& > :not(style)': { m: 1 },
