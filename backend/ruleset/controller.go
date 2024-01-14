@@ -105,6 +105,7 @@ func (c Controller) Update(g *gin.Context) {
 		err error
 		usr *user.User
 		res Resp
+		id  uuid.UUID
 	)
 
 	usr, err = currentUser(g)
@@ -118,6 +119,18 @@ func (c Controller) Update(g *gin.Context) {
 		return
 	}
 
+	id, err = uuid.Parse(ur.ID)
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: fmt.Sprintf("Invalid rule set ID: %v", ur.ID)})
+		return
+	}
+
+	rs, err = c.sets.ByID(id)
+	if err != nil {
+		log.Err(err).Msg("Failed to retrieve rule set!")
+		g.AbortWithStatusJSON(http.StatusNotFound, common.StatusMessage{Code: 404, Message: "Failed to retrieve rule set!"})
+		return
+	}
 	if err = authorize(g, rs.UserID); err != nil {
 		log.Err(err).Msg("Failed to retrieve rule set!")
 		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Unauthorized!"})

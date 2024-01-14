@@ -22,7 +22,6 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Add authorize() to update rule set
     - Add lifecycle rules - with eventbridge trigger and lambdas
     - Fix layout on wide screen
     - Fix editor sometimes not loading image

@@ -29,7 +29,7 @@ func App(path string) {
 		log.Error().Err(err).Msg("Failed to load application configuration.")
 		os.Exit(1)
 	}
-	if err = initDb(config.Database); err != nil {
+	if err = initDb(config.Database, config.Log); err != nil {
 		log.Error().AnErr("DatabaseError", err).Msg("Failed to set up connection to database. Application spinning down.")
 		os.Exit(1)
 	}

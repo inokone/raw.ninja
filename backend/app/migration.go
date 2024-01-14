@@ -25,7 +25,7 @@ func Migrate(path string) {
 		os.Exit(1)
 	}
 
-	if err = initDb(config.Database); err != nil {
+	if err = initDb(config.Database, config.Log); err != nil {
 		log.Err(err).Msg("Failed to set up connection to database. Application spinning down.")
 		os.Exit(1)
 	}

@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"gorm.io/driver/postgres"
@@ -38,7 +39,7 @@ func initConf(s string) error {
 	return nil
 }
 
-func initDb(c common.RDBConfig) error {
+func initDb(c common.RDBConfig, l common.LogConfig) error {
 	cs := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v ", c.Host, c.Username, c.Password, c.Database, c.Port)
 	if c.SSLMode == "disable" {
 		cs += "sslmode=disable"
@@ -46,7 +47,7 @@ func initDb(c common.RDBConfig) error {
 		cs += fmt.Sprintf("sslrootcert=%v sslmode=%v", c.SSLCert, c.SSLMode)
 	}
 	gormDb, err := gorm.Open(postgres.Open(cs), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(levelFor(l.LogLevel)),
 	})
 	if err != nil {
 		return err
@@ -60,6 +61,22 @@ func initDb(c common.RDBConfig) error {
 	sqlDB.SetConnMaxLifetime(c.ConnMaxLifetime)
 	db = gormDb
 	return nil
+}
+
+func levelFor(level string) logger.LogLevel {
+	l := strings.ToLower(strings.TrimSpace(level))
+	switch l {
+	default:
+		return logger.Warn
+	case "debug":
+		return logger.Info
+	case "info":
+		return logger.Info
+	case "warn":
+		return logger.Warn
+	case "error":
+		return logger.Error
+	}
 }
 
 func initStorers(c common.ImageStoreConfig) {
