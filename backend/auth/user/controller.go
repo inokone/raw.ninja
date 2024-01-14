@@ -37,21 +37,6 @@ func (c Controller) Profile(g *gin.Context) {
 	g.JSON(http.StatusOK, usr.AsProfile())
 }
 
-// Reset resets the password of the logged in user - not implemented yet
-// @Summary Reset password endpoint
-// @Schemes
-// @Description Resets the password of the logged in user
-// @Accept json
-// @Produce json
-// @Failure 501 {object} common.StatusMessage
-// @Router /users/reset [post]
-func (c Controller) Reset(g *gin.Context) {
-	g.AbortWithStatusJSON(http.StatusNotImplemented, common.StatusMessage{
-		Code:    501,
-		Message: "Functionality has not been implemented yet!",
-	})
-}
-
 // List lists the users of the application.
 // @Summary List users endpoint
 // @Schemes

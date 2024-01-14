@@ -147,6 +147,7 @@ func (c Controller) Update(g *gin.Context) {
 		case *InvalidRuleID:
 			g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{Code: 400, Message: fmt.Sprintf("Invalid rule set ID: %v", ur.ID)})
 		}
+		return
 	}
 
 	res, err = rs.AsResp()
