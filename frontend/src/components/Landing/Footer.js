@@ -97,7 +97,7 @@ const socialIcons = [
             </svg>
         ),
         label: "Facebook",
-        href: "https://facebook.com",
+        href: "https://www.facebook.com/people/RAWNinja/61555415170733/",
     },
     {
         icon: (
@@ -113,7 +113,7 @@ const socialIcons = [
             </svg>
         ),
         label: "LinkedIn",
-        href: "https://www.linkedin.com/",
+        href: "https://www.linkedin.com/company/raw-ninja",
     },
     {
         icon: (
@@ -129,20 +129,25 @@ const socialIcons = [
             </svg>
         ),
         label: "Twitter",
-        href: "https://www.twitter.com/",
+        href: "https://twitter.com/rawninjaltd",
     },
 ];
 
 function Footer(props) {
     const { classes, theme } = props;
     const isWidthUpMd = useMediaQuery(theme.breakpoints.up("md"));
+    const [contactUs, setContactUs] = React.useState(null)
+
+    const handleContactUs = React.useCallback(() => {
+        console.log("Not implemented yet! Message: " + contactUs)
+    }, [contactUs])
 
     return (
         <footer>
             <div className={classes.footerInner}>
                 <Grid container spacing={isWidthUpMd ? 10 : 5}>
                     <Grid item xs={12} md={6} lg={4}>
-                        <form>
+                        <form onSubmit={handleContactUs}>
                             <Box display="flex" flexDirection="column">
                                 <Box mb={1}>
                                     <TextField
@@ -152,6 +157,9 @@ function Footer(props) {
                                         InputProps={{
                                             className: classes.whiteBg,
                                             "aria-label": "Get in Touch",
+                                        }}
+                                        onChange={e => {
+                                            setContactUs(e.target.value)
                                         }}
                                         rows={4}
                                         fullWidth
