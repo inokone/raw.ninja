@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import { Card, Typography, CardContent, CardActions, Button } from "@mui/material";
 import { useTheme } from '@mui/styles';
 
@@ -30,5 +31,11 @@ const RuleSetCard = ({ ruleSet, onClick, onDelete }) => {
         </Card>
     );
 }
+
+RuleSetCard.propTypes = {
+    ruleSet: PropTypes.object.isRequired,
+    onClick: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+};
 
 export default RuleSetCard;

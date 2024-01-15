@@ -1,5 +1,6 @@
 import { useState } from "react";
 import * as React from 'react';
+import PropTypes from "prop-types";
 import { useNavigate } from 'react-router-dom';
 import { Box } from "@mui/material";
 
@@ -21,7 +22,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-export default function PhotoGallery({ photos, updatePhoto, setSelected }) {
+const PhotoGallery = ({ photos, updatePhoto, setSelected }) => {
     const navigate = useNavigate();
     const [index, setIndex] = useState(-1);
 
@@ -80,3 +81,11 @@ export default function PhotoGallery({ photos, updatePhoto, setSelected }) {
         </Box>
     );
 }
+
+PhotoGallery.propTypes = {
+    photos: PropTypes.array.isRequired,
+    updatePhoto: PropTypes.func.isRequired,
+    setSelected: PropTypes.func.isRequired
+};
+
+export default PhotoGallery;

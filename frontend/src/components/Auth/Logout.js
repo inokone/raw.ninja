@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from "react-router-dom"
 import ProgressDisplay from '../Common/ProgressDisplay';
-
+import PropTypes from "prop-types";
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -32,6 +32,10 @@ const Logout = ({ setUser }) => {
 
 
     return <ProgressDisplay />;
+};
+
+Logout.propTypes = {
+    setUser: PropTypes.func.isRequired
 };
 
 export default Logout;

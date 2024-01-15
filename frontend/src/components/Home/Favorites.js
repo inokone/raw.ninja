@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import PhotoGrid from '../Photos/PhotoGrid';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
@@ -30,5 +31,10 @@ const Favorites = ({ user, onDataLoaded }) => {
         </React.Fragment>
     )
 }
+
+Favorites.propTypes = {
+    user: PropTypes.object.isRequired,
+    onDataLoaded: PropTypes.func
+};
 
 export default Favorites;

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import PhotoGallery from './PhotoGallery';
@@ -69,5 +70,12 @@ const SelectableGallery = ({ images, setImages, updateImage, selectionActionOver
         </>
     );
 }
+
+SelectableGallery.propTypes = {
+    images: PropTypes.object.isRequired,
+    setImages: PropTypes.func.isRequired,
+    updateImage: PropTypes.func.isRequired,
+    selectionActionOverride: PropTypes.array
+};
 
 export default SelectableGallery;

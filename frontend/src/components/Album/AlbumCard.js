@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Card, CardMedia, Box, Typography, Tooltip, Grid } from "@mui/material";
 import noimage from './no-image.svg';
 import CollectionsIcon from '@mui/icons-material/Collections';
-
+import PropTypes from "prop-types";
 
 const AlbumCard = ({ album, onClick }) => {
 
@@ -58,5 +58,11 @@ const AlbumCard = ({ album, onClick }) => {
         </Card>
     );
 }
+
+AlbumCard.propTypes = {
+    album: PropTypes.object.isRequired,
+    onClick: PropTypes.func.isRequired
+};
+
 
 export default AlbumCard;

@@ -9,7 +9,7 @@ import DeleteDialog from '../Common/DeleteDialog';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const RuleSets = ({ user }) => {
+const RuleSets = () => {
     const navigate = useNavigate()
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)

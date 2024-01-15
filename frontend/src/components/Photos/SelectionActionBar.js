@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import { useTheme } from '@mui/material/styles';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -48,5 +49,11 @@ const SelectionActionBar = ({ open, items, actions }) => {
         </Drawer>
     );
 }
+
+SelectionActionBar.propTypes = {
+    open: PropTypes.bool.isRequired,
+    items: PropTypes.array.isRequired,
+    actions: PropTypes.array.isRequired
+};
 
 export default SelectionActionBar

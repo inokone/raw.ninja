@@ -18,8 +18,7 @@ const styles = theme => ({
     }
 });
 
-function EditAlbumDialog(props) {
-    const { classes, onSave, onCancel, open, input } = props;
+function EditAlbumDialog({ classes, onSave, onCancel, open, input }) {
     const [name, setName] = React.useState(input.name)
     const [nameError, setNameError] = React.useState(false)
     const [tags, setTags] = React.useState(input.tags)
@@ -101,7 +100,8 @@ EditAlbumDialog.propTypes = {
     classes: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired
+    open: PropTypes.bool.isRequired,
+    input: PropTypes.object
 };
 
 export default withStyles(styles, { withTheme: true })(EditAlbumDialog);

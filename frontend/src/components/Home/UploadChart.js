@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Line } from "react-chartjs-2";
 import { Chart, CategoryScale, LinearScale, LineElement, Title, Tooltip, PointElement } from "chart.js";
 import { useTheme } from '@mui/styles';
@@ -73,6 +74,10 @@ const UploadChart = ({ uploads }) => {
             options={options(theme)}
         />
     );
+};
+
+UploadChart.propTypes = {
+    uploads: PropTypes.array
 };
 
 export default UploadChart;

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import PhotoGrid from '../Photos/PhotoGrid';
 import { useLocation } from "react-router-dom";
 import { Typography } from '@mui/material';
@@ -35,5 +36,9 @@ const UploadDisplay = ({ user }) => {
         </>
     )
 }
+
+UploadDisplay.propTypes = {
+    user: PropTypes.object.isRequired,
+};
 
 export default UploadDisplay;

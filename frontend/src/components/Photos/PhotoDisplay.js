@@ -51,4 +51,8 @@ const PhotoDisplay = () => {
     </React.Fragment>
   );
 }
+
+PhotoDisplay.propTypes = {
+};
+
 export default PhotoDisplay; 

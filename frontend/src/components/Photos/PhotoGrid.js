@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import { Alert, Box, Fab } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
@@ -12,7 +13,7 @@ import { convertPhotos, convertPhoto } from './PhotoConverter';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOverride }) => {
+const PhotoGrid = ({ populator, fabAction, onDataLoaded, selectionActionOverride }) => {
     const theme = useTheme()
     const navigate = useNavigate()
     const [error, setError] = React.useState(null)
@@ -141,7 +142,7 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOv
         if (!images && !error && !loading) {
             loadImages()
         }
-    }, [data, populator, images, error, loading, processPhotos])
+    }, [populator, images, error, loading, processPhotos])
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -164,5 +165,12 @@ const PhotoGrid = ({ populator, data, fabAction, onDataLoaded, selectionActionOv
         </Box >
     );
 }
+
+PhotoGrid.propTypes = {
+    populator: PropTypes.func.isRequired,
+    fabAction: PropTypes.func.isRequired,
+    onDataLoaded: PropTypes.func.isRequired,
+    selectionActionOverride: PropTypes.array
+};
 
 export default PhotoGrid;

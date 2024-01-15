@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import { useLocation } from "react-router-dom";
 import { Box, Fab, Typography, Alert, Stack } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -195,5 +196,9 @@ const RuleSets = ({ user }) => {
         </>
     )
 }
+
+RuleSets.propTypes = {
+    user: PropTypes.object.isRequired,
+};
 
 export default RuleSets;

@@ -245,6 +245,8 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
 ResponsiveAppBar.propTypes = {
   theme: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
+  setQuery: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired
 };
 
 export default withStyles(styles, { withTheme: true })(ResponsiveAppBar);

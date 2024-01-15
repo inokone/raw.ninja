@@ -3,7 +3,7 @@ import AppStats from './AppStats';
 import UserTable from './UserTable';
 import RoleTable from './RoleTable';
 import { Typography, Box } from "@mui/material";
-
+import PropTypes from "prop-types";
 
 const Admin = ({ user }) => {
 
@@ -27,5 +27,9 @@ const Admin = ({ user }) => {
         </React.Fragment>
     )
 }
+
+Admin.propTypes = {
+    user: PropTypes.object.isRequired
+};
 
 export default Admin;

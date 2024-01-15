@@ -1,6 +1,7 @@
 
 
 import * as React from 'react';
+import PropTypes from "prop-types";
 import { useNavigate } from 'react-router-dom';
 import PhotoGrid from '../Photos/PhotoGrid';
 
@@ -30,5 +31,9 @@ const PhotoList = ({ user }) => {
     <PhotoGrid populator={populate} data={[]} fabAction={onFabClick}></PhotoGrid>
   )
 }
+
+PhotoList.propTypes = {
+  user: PropTypes.object.isRequired
+};
 
 export default PhotoList;

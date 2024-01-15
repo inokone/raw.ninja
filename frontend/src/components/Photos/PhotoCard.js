@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import StarIcon from '@mui/icons-material/Star';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -7,7 +8,7 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 import { useNavigate } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   favorite: {
     color: 'white',
     cursor: "pointer",
@@ -156,4 +157,12 @@ const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, imageProps: { src
     </Box>
   );
 }
+
+PhotoCard.propTypes = {
+  photo: PropTypes.object.isRequired,
+  updatePhoto: PropTypes.func.isRequired,
+  setSelected: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired
+};
+
 export default PhotoCard;

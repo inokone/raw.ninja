@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from "prop-types";
 import Typography from '@mui/material/Typography';
 import { Grid, Box } from "@mui/material";
 
@@ -162,4 +163,9 @@ const MetadataDisplay = ({ metadata }) => {
     </React.Fragment>
   );
 }
+
+MetadataDisplay.propTypes = {
+  metadata: PropTypes.object.isRequired,
+}
+
 export default MetadataDisplay; 

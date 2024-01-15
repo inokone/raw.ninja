@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { Box, Alert, Grid } from '@mui/material';
 import ProgressDisplay from '../Common/ProgressDisplay';
@@ -6,7 +7,7 @@ import AlbumCard from '../Album/AlbumCard';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const Uploads = ({ user, onDataLoaded }) => {
+const Uploads = ({ onDataLoaded }) => {
     const navigate = useNavigate()
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
@@ -74,5 +75,9 @@ const Uploads = ({ user, onDataLoaded }) => {
         </>
     )
 }
+
+Uploads.propTypes = {
+    onDataLoaded: PropTypes.func
+};
 
 export default Uploads;

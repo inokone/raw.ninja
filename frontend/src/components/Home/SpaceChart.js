@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Doughnut } from "react-chartjs-2";
 import { Chart, ArcElement, Title, Tooltip } from "chart.js";
 import { useTheme } from '@mui/styles';
@@ -94,6 +95,11 @@ const SpaceChart = ({ usedSpace, quota }) => {
                 theme.palette.primary.light)]}
         />
     );
+};
+
+SpaceChart.propTypes = {
+    usedSpace: PropTypes.number.isRequired,
+    quota: PropTypes.number.isRequired
 };
 
 export default SpaceChart;

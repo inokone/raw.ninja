@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import { Grid, Alert } from '@mui/material';
 import ProgressDisplay from '../Common/ProgressDisplay';
 import SpaceChart from './SpaceChart';
@@ -71,5 +72,9 @@ const Statistics = ({ onDataLoaded }) => {
         </>
     )
 }
+
+Statistics.propTypes = {
+    onDataLoaded: PropTypes.func
+};
 
 export default Statistics;

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { TextField, Button, Alert, Box, Container } from "@mui/material";
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
@@ -91,5 +92,10 @@ const UserDetails = ({ user }) => {
         </React.Fragment>
     );
 }
+
+
+UserDetails.propTypes = {
+    user: PropTypes.object.isRequired
+};
 
 export default UserDetails;

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import { Card, Typography, CardContent, CardActions, Button } from "@mui/material";
 import RuleDialog from './RuleDialog';
 import { useTheme } from '@mui/styles';
@@ -41,5 +42,12 @@ const RuleCard = ({ rule, setRule, constants, onDelete }) => {
         </>
     );
 }
+
+RuleCard.propTypes = {
+    rule: PropTypes.object.isRequired,
+    setRule: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    constants: PropTypes.object.isRequired
+};
 
 export default RuleCard;

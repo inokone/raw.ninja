@@ -1,6 +1,6 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import PhotoGrid from '../Photos/PhotoGrid';
-
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -19,5 +19,9 @@ const SearchResult = ({ query }) => {
     <PhotoGrid populator={populate} data={query}></PhotoGrid>
   )
 }
+
+SearchResult.propTypes = {
+  query: PropTypes.string.isRequired,
+};
 
 export default SearchResult;

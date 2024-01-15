@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from "prop-types";
 import FairWarningDialog from '../Common/FairWarningDialog';
 import Uploads from './Uploads';
 import Favorites from './Favorites';
@@ -38,7 +39,7 @@ const Dashboard = ({ user }) => {
             onClose={handleWarningDialogClose}
           />
           {isNewUser &&
-            <Box maxWidth='lg'>
+            <Box maxWidth='lg' sx={{marginLeft: 'auto', marginRight: 'auto'}}>
               <Typography variant='h2' sx={{ marginBottom: 8, marginTop: 2 }}>{"Welcome to RAW.Ninja!"}</Typography>
               <Typography align='left' sx={{ margin: 2 }}>We're excited to have you on board as a new member of our photo-centric community.</Typography>
               <Typography align='left' sx={{ margin: 2 }}>Your journey with us begins now, as you embark on a seamless experience for storing and managing your raw photos. Dive into our user-friendly platform to securely upload and organize your precious data in their purest form. Explore the possibilities of preserving your visual stories, and if you ever have questions or need assistance, our team is here to help.</Typography>
@@ -60,5 +61,9 @@ const Dashboard = ({ user }) => {
     </React.Fragment>
   )
 }
+
+Dashboard.propTypes = {
+  user: PropTypes.object.isRequired
+};
 
 export default Dashboard;

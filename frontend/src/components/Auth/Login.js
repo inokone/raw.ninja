@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef } from "react"; 
+import PropTypes from "prop-types";
 import { TextField, Button, Alert, Box, Container, Typography } from "@mui/material";
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import ReCAPTCHA from "react-google-recaptcha"
@@ -155,5 +156,9 @@ const Login = ({ setUser }) => {
         </React.Fragment>
     );
 }
+
+Login.propTypes = {
+    setUser: PropTypes.func.isRequired
+};
 
 export default Login;

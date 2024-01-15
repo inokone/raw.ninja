@@ -4,7 +4,6 @@ import './App.css';
 import ResponsiveAppBar from './components/Common/AppBar';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/Home/Dashboard';
-import Preferences from './components/Preferences/Preferences';
 import Admin from './components/Admin/Admin';
 import Upload from './components/Upload/Upload';
 import PhotoList from './components/Photos/PhotoList';
@@ -114,10 +113,8 @@ const App = () => {
                   <Route path="/editor/:photoId" element={<Photopea />} />
                   <Route path="/photos/:photosId" element={<PhotoDisplay user={user} />} />
                   <Route path="/uploads/:uploadId" element={<UploadDisplay user={user} />} />
-                  <Route path="/users/:userId" element={<Preferences user={user} />} />
                   <Route path="/rulesets" element={<RuleSets user={user} />} />
                   <Route path="/rulesets/:ruleSetId" element={<RuleSet user={user} />} />
-                  <Route path="/users/:userId" element={<Preferences user={user} />} />
                   <Route path="/profile" element={<UserProfile user={user} />} />
                   <Route path="/search" element={<SearchResult query={query} />} />
                 </Route>

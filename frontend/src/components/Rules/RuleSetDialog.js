@@ -92,7 +92,8 @@ RuleSetDialog.propTypes = {
     classes: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired
+    open: PropTypes.bool.isRequired,
+    input: PropTypes.object
 };
 
 export default withStyles(styles, { withTheme: true })(RuleSetDialog);

@@ -1,5 +1,6 @@
 import { Box, CircularProgress, Typography } from '@mui/material';
 import React from 'react';
+import PropTypes from "prop-types";
 
 const ProgressDisplay = ({ text }) => {
 
@@ -12,4 +13,9 @@ const ProgressDisplay = ({ text }) => {
                     style={{ padding: "5px" }} />
            </Box>;
 };
+
+ProgressDisplay.propTypes = {
+    text: PropTypes.string
+};
+
 export default ProgressDisplay;

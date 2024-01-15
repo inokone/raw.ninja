@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from "prop-types";
 import Image from 'mui-image'
 import { Button, Tooltip, Box, Typography, IconButton, Alert } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2';
@@ -6,7 +7,6 @@ import MetadataDisplay from './MetadataDisplay';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as PeaLogo } from '../../photopea.svg'
-
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -147,4 +147,13 @@ const DetailedPhotoCard = ({ image, setImage, closable, onClose }) => {
     </React.Fragment>
   );
 }
+
+
+DetailedPhotoCard.propTypes = {
+  image: PropTypes.object.isRequired,
+  setImage: PropTypes.func.isRequired,
+  closable: PropTypes.bool,
+  onClose: PropTypes.func
+};
+
 export default DetailedPhotoCard; 

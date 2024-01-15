@@ -9,6 +9,7 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import PhotoGrid from '../Photos/PhotoGrid';
 import EditAlbumDialog from './EditAlbumDialog';
 import DeleteDialog from '../Common/DeleteDialog';
+import PropTypes from "prop-types";
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -226,5 +227,9 @@ const AlbumDisplay = ({ user }) => {
             </Box>
         </>)
 }
+
+AlbumDisplay.propTypes = {
+    user: PropTypes.object.isRequired
+};
 
 export default AlbumDisplay;

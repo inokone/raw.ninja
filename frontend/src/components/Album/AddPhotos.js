@@ -4,7 +4,7 @@ import { Typography, Alert, Button, Box } from "@mui/material";
 import SelectableGallery from '../Photos/SelectableGallery';
 import ProgressDisplay from '../Common/ProgressDisplay';
 import { convertPhoto, convertPhotos } from '../Photos/PhotoConverter';
-
+import PropTypes from "prop-types";
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -132,5 +132,9 @@ const AddPhotos = ({ user }) => {
             </Box>
         </>)
 }
+
+AddPhotos.propTypes = {
+    user: PropTypes.object.isRequired
+};
 
 export default AddPhotos;

@@ -77,7 +77,7 @@ func (c Controller) Signup(g *gin.Context) {
 		})
 		return
 	}
-	usr.RoleID = 1
+	usr.RoleID = 2
 	if err = c.users.Store(usr); err != nil {
 		log.Err(err).Msg("Could not store user")
 		g.AbortWithStatusJSON(http.StatusBadRequest, common.StatusMessage{

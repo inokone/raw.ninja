@@ -1,6 +1,7 @@
 import { Bar } from "react-chartjs-2";
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip } from "chart.js";
 import { useTheme } from '@mui/styles';
+import PropTypes from "prop-types";
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
@@ -54,6 +55,12 @@ const AggregatedChart = ({ photos, favorites, albums }) => {
             options={options}
         />
     );
+};
+
+AggregatedChart.propTypes = {
+    photos: PropTypes.number,
+    favorites: PropTypes.number,
+    albums: PropTypes.number
 };
 
 export default AggregatedChart;

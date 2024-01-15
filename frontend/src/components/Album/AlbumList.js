@@ -7,7 +7,7 @@ import AlbumCard from './AlbumCard';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const AlbumList = ({ user }) => {
+const AlbumList = () => {
     const navigate = useNavigate()
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
