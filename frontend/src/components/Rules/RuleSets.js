@@ -149,7 +149,7 @@ const RuleSets = () => {
             {loading && <ProgressDisplay />}
             <RuleSetDialog open={isEditDialogOpen} onCancel={handleEditDialogClose} onSave={handleEditDialogSave} />
             <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="this rule set" />
-            {!loading && (!ruleSets || ruleSets.length === 0) && 
+            {ruleSets && ruleSets.length === 0 && 
                 <RuleDocs />
             }
             {!loading && ruleSets !== null && ruleSets.length > 0 &&

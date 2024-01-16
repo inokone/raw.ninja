@@ -26,17 +26,13 @@ Functionality:
     - Fix layout on wide screen
     - Fix editor sometimes not loading image
     - Info buttons everywhere
-    - Documentation on quota
-    - fix send message button on landing page
     - Make image.Service serve just a single image, and have one image service per size
       - 3 levels for images (instead of 2)
         - raw
         - thumbnails
         - NEW fullscreen
     - add albums and uploads to search
-    - splash screen for "No Photos"
-    - splash screen for "No Albums"
-    - splash screen for "No Rule sets - detailing quota"
+    - fix send message button on landing page
 
     - Improve PhotoGrid
       - Limit of images
