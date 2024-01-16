@@ -6,6 +6,7 @@ import ProgressDisplay from '../Common/ProgressDisplay';
 import RuleSetCard from './RuleSetCard';
 import RuleSetDialog from './RuleSetDialog';
 import DeleteDialog from '../Common/DeleteDialog';
+import RuleDocs from './RuleDocs';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -146,27 +147,32 @@ const RuleSets = () => {
         <>
             {error && <Alert sx={{ mb: 1 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay />}
-            {ruleSets !== null && !loading &&
+            <RuleSetDialog open={isEditDialogOpen} onCancel={handleEditDialogClose} onSave={handleEditDialogSave} />
+            <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="this rule set" />
+            {!loading && (!ruleSets || ruleSets.length === 0) && 
+                <RuleDocs />
+            }
+            {!loading && ruleSets !== null && ruleSets.length > 0 &&
                 <>
-                    <RuleSetDialog open={isEditDialogOpen} onCancel={handleEditDialogClose} onSave={handleEditDialogSave} />
-                    <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="this rule set" />
                     <Typography variant='h4' sx={{ marginBottom: 4, marginTop: 2 }} >Lifecycle Rule Sets</Typography>
                     <Grid container spacing={2} sx={{ padding: 1 }}>
                         {ruleSets.map((ruleSet) => {
                             return (<Grid item key={ruleSet.id} xs={12} sm={6} md={4} lg={2} xl={1}><RuleSetCard ruleSet={ruleSet} onClick={() => onRuleSetClick(ruleSet.id)} onDelete={() => onDeleteClick(ruleSet.id)} /></Grid>)
                         })}
                     </Grid>
-                    <Box sx={{
-                        '& > :not(style)': { m: 1 },
-                        position: "fixed",
-                        bottom: 16,
-                        right: 16
-                    }}>
-                        <Fab onClick={onFabClick} color="primary" aria-label="add">
-                            <AddIcon />
-                        </Fab>
-                    </Box>
                 </>}
+            {!loading &&
+            <Box sx={{
+                '& > :not(style)': { m: 1 },
+                position: "fixed",
+                bottom: 16,
+                right: 16
+            }}>
+                <Fab onClick={onFabClick} color="primary" aria-label="add">
+                    <AddIcon />
+                </Fab>
+            </Box>
+            }
         </>
     )
 }

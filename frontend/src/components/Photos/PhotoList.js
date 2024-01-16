@@ -4,11 +4,13 @@ import * as React from 'react';
 import PropTypes from "prop-types";
 import { useNavigate } from 'react-router-dom';
 import PhotoGrid from '../Photos/PhotoGrid';
+import PhotoDocs from './PhotosDocs';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const PhotoList = ({ user }) => {
   const navigate = useNavigate();
+  const [empty, setEmpty] = React.useState(false)
 
   const onFabClick = () => {
     navigate("/upload")
@@ -27,8 +29,17 @@ const PhotoList = ({ user }) => {
     })
   }
 
+  const handleLoaded = (data) => {
+    if (!data || data.length === 0) {
+      setEmpty(true)
+    }
+  }
+
   return (
-    <PhotoGrid populator={populate} data={[]} fabAction={onFabClick}></PhotoGrid>
+    <>
+      {empty && <PhotoDocs />}
+      <PhotoGrid populator={populate} onDataLoaded={handleLoaded} fabAction={onFabClick}></PhotoGrid>
+    </>
   )
 }
 

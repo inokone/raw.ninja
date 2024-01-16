@@ -4,6 +4,7 @@ import { Box, Fab, Typography, Alert, Grid } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ProgressDisplay from '../Common/ProgressDisplay';
 import AlbumCard from './AlbumCard';
+import AlbumDocs from './AlbumDocs';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -58,7 +59,7 @@ const AlbumList = () => {
         <>
             {error && <Alert sx={{ mb: 1 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay />}
-            {albums !== null &&
+            {albums !== null && albums.length > 0 &&
                 <>
                     <Typography variant='h4' sx={{ marginBottom: 4, marginTop: 2 }} >Albums</Typography>
                     <Grid container>
@@ -66,17 +67,20 @@ const AlbumList = () => {
                             return (<Grid item key={album.id} xs={6} md={4} lg={2} xl={2}><AlbumCard album={album} onClick={onAlbumClick} /></Grid>)
                         })}
                     </Grid>
-                    <Box sx={{
-                        '& > :not(style)': { m: 1 },
-                        position: "fixed",
-                        bottom: 16,
-                        right: 16
-                    }}>
-                        <Fab onClick={onFabClick} color="primary" aria-label="add">
-                            <AddIcon />
-                        </Fab>
-                    </Box>
                 </>}
+            {!loading && (!albums || albums.length === 0) &&
+                <AlbumDocs />
+            }
+            {!loading && <Box sx={{
+                '& > :not(style)': { m: 1 },
+                position: "fixed",
+                bottom: 16,
+                right: 16
+            }}>
+                <Fab onClick={onFabClick} color="primary" aria-label="add">
+                    <AddIcon />
+                </Fab>
+            </Box>}
         </>
     )
 }

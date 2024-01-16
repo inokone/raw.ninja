@@ -27,7 +27,7 @@ const Favorites = ({ user, onDataLoaded }) => {
 
     return (
         <React.Fragment>
-            <PhotoGrid populator={populate} data={[]} onDataLoaded={handleDataLoaded}/>
+            <PhotoGrid populator={populate} onDataLoaded={handleDataLoaded}/>
         </React.Fragment>
     )
 }

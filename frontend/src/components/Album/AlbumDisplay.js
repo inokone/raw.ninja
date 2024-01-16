@@ -214,7 +214,7 @@ const AlbumDisplay = ({ user }) => {
                      />
                 <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="the selected photos from the album" />
             </>}
-            <PhotoGrid populator={populate} data={[]} onDataLoaded={handleDataLoaded} selectionActionOverride={selectionActions} />
+            <PhotoGrid populator={populate} onDataLoaded={handleDataLoaded} selectionActionOverride={selectionActions} />
             <Box sx={{
                 '& > :not(style)': { m: 1 },
                 position: "fixed",

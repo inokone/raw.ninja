@@ -32,7 +32,7 @@ const UploadDisplay = ({ user }) => {
     return (
         <>
             {title && <Typography sx={{ marginBottom: 4, marginTop: 2 }} variant='h4'>Upload {title}</Typography>}
-            <PhotoGrid populator={populate} data={[]} onDataLoaded={handleDataLoaded}></PhotoGrid>
+            <PhotoGrid populator={populate} onDataLoaded={handleDataLoaded}></PhotoGrid>
         </>
     )
 }

@@ -16,7 +16,7 @@ const SearchResult = ({ query }) => {
   }
 
   return (
-    <PhotoGrid populator={populate} data={query}></PhotoGrid>
+    <PhotoGrid populator={populate}></PhotoGrid>
   )
 }
 
