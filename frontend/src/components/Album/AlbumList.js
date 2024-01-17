@@ -4,7 +4,7 @@ import { Box, Fab, Typography, Alert, Grid } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ProgressDisplay from '../Common/ProgressDisplay';
 import AlbumCard from './AlbumCard';
-import AlbumDocs from './AlbumDocs';
+import AlbumDocs from '../Docs/AlbumDocs';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 

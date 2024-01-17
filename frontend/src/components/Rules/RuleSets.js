@@ -6,7 +6,7 @@ import ProgressDisplay from '../Common/ProgressDisplay';
 import RuleSetCard from './RuleSetCard';
 import RuleSetDialog from './RuleSetDialog';
 import DeleteDialog from '../Common/DeleteDialog';
-import RuleDocs from './RuleDocs';
+import RuleDocs from '../Docs/RuleDocs';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 

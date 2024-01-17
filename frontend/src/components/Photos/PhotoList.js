@@ -4,7 +4,7 @@ import * as React from 'react';
 import PropTypes from "prop-types";
 import { useNavigate } from 'react-router-dom';
 import PhotoGrid from '../Photos/PhotoGrid';
-import PhotoDocs from './PhotosDocs';
+import PhotoDocs from '../Docs/PhotoDocs';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 

@@ -1,11 +1,13 @@
 import * as React from 'react';
 
 import { Box, Typography, List, ListItem } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { Link } from 'react-router-dom';
 
 const RuleDocs = () => {
     return (
         <Box maxWidth='md' sx={{ bgcolor: 'white', borderRadius: '8px', marginLeft: 'auto', marginRight: 'auto', marginTop: 2, paddingTop: 2, paddingBottom: 4 }}>
-            <Typography variant='h4' sx={{ marginBottom: 6, marginTop: 2 }}>Optimize Your Photo Storage with Lifecycle Rules</Typography>
+            <Typography variant='h4' sx={{ marginBottom: 6, marginTop: 2 }}>Optimize your storage with Lifecycle Rules</Typography>
             <Typography variant='h5' align='left' sx={{ margin: 2 }}>Introduction</Typography>
             <Typography align='left' sx={{ margin: 2, marginBottom: 6 }}>RAW.Ninja empowers you to manage your photos effectively and efficiently. With the introduction of lifecycle rules, you can automate the management of your photo storage, optimizing your quota and ensuring you only pay for the storage you actually need.</Typography>
             <Typography variant='h5' align='left' sx={{ margin: 2 }}>What are Lifecycle Rules?</Typography>
@@ -19,6 +21,12 @@ const RuleDocs = () => {
             <Typography variant='h5' align='left' sx={{ margin: 2 }}>Creating Lifecycle Rules</Typography>
             <Typography align='left' sx={{ margin: 2 }}>To create a lifecycle rule, follow these steps:</Typography>
             <List sx={{ listStyleType: 'numeric', pl: 6 }}>
+                <ListItem sx={{ display: 'list-item' }}><Typography align='left'>Navigate to the <Link to="/rulesets">Rules</Link> page using your profile menu.</Typography></ListItem>
+                <ListItem sx={{ display: 'list-item' }}><div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                }}><Typography align='left'>Click on the </Typography><AddIcon fontSize='small' sx={{marginLeft: '3px', marginRight: '3px'}}/><Typography> button on the bottom right corner of the page.</Typography></div></ListItem>
                 <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>Define the Timing:</b> Determine the trigger for the rule, the age of a photo.</Typography></ListItem>
                 <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>Specify the Action:</b> Decide whether the rule should move the photo to a cheaper storage tier or delete it altogether.</Typography></ListItem>
                 <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>Combine Rules:</b> Combine up to three lifecycle rules into a rule set to apply multiple actions to different types of photos.</Typography></ListItem>

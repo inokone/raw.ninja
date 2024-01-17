@@ -31,6 +31,7 @@ import AlbumList from './components/Album/AlbumList';
 import RuleSets from './components/Rules/RuleSets';
 import RuleSet from './components/Rules/RuleSet';
 import AddPhotos from './components/Album/AddPhotos';
+import Docs from './components/Docs/Docs';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -117,6 +118,7 @@ const App = () => {
                   <Route path="/rulesets/:ruleSetId" element={<RuleSet user={user} />} />
                   <Route path="/profile" element={<UserProfile user={user} />} />
                   <Route path="/search" element={<SearchResult query={query} />} />
+                  <Route path="/docs" element={<Docs />} />
                 </Route>
                 <Route element={<ProtectedRoute user={user} target="admin" redirect="/" />}>
                   <Route path="/admin" element={<Admin user={user} />} />

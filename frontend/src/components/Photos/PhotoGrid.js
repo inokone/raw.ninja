@@ -106,7 +106,7 @@ const PhotoGrid = ({ populator, fabAction, onDataLoaded, selectionActionOverride
     const defaultSelectionActions = [
         {
             icon: <CollectionsIcon sx={{ color: theme.palette.background.paper }} />,
-            tooltip: "Create collection from selection",
+            tooltip: "Create album from selection",
             action: createAlbum
         },
         {

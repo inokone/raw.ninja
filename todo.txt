@@ -22,20 +22,20 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Add lifecycle rules - with eventbridge trigger and lambdas
-    - Fix layout on wide screen
+    - Add lifecycle rules
+      - Disable Bin option
+      - Implement Frozen option
+      - eventbridge trigger
+      - lambda processor, iterating through rules and photos associated to these
     - Fix editor sometimes not loading image
-    - Info buttons everywhere
     - Make image.Service serve just a single image, and have one image service per size
       - 3 levels for images (instead of 2)
         - raw
         - thumbnails
         - NEW fullscreen
-    - add albums and uploads to search
+    - add albums and uploads to search, fix search reload
     - fix send message button on landing page
 
-    - Improve PhotoGrid
-      - Limit of images
     - Revamp profile page
     - Deleted/Bin folder (shared ruleset?)
     - Display image count + used space per user on admin page

@@ -22,10 +22,10 @@ import withStyles from "@mui/styles/withStyles";
 import PropTypes from "prop-types";
 import Logo from './Logo';
 
-
 const settings = {
   Profile: 'profile',
   Rules: 'rulesets',
+  Help: 'docs',
   Logout: 'logout'
 };
 
