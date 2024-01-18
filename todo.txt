@@ -22,20 +22,23 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
+    - Fix editor sometimes not loading image
+          - Add react photo editor for backup (somehow)
+
     - Add lifecycle rules
       - Disable Bin option
       - Implement Frozen option
       - eventbridge trigger
       - lambda processor, iterating through rules and photos associated to these
-    - Fix editor sometimes not loading image
     - Make image.Service serve just a single image, and have one image service per size
       - 3 levels for images (instead of 2)
         - raw
         - thumbnails
         - NEW fullscreen
     - add albums and uploads to search, fix search reload
-    - fix send message button on landing page
+    - add encryption for credentials in login and register
 
+    - fix send message button on landing page
     - Revamp profile page
     - Deleted/Bin folder (shared ruleset?)
     - Display image count + used space per user on admin page

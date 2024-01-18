@@ -77,7 +77,7 @@ const UploadChart = ({ uploads }) => {
 };
 
 UploadChart.propTypes = {
-    uploads: PropTypes.array
+    uploads: PropTypes.object
 };
 
 export default UploadChart;

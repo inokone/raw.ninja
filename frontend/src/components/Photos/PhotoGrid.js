@@ -168,7 +168,7 @@ const PhotoGrid = ({ populator, fabAction, onDataLoaded, selectionActionOverride
 
 PhotoGrid.propTypes = {
     populator: PropTypes.func.isRequired,
-    fabAction: PropTypes.func.isRequired,
+    fabAction: PropTypes.func,
     onDataLoaded: PropTypes.func.isRequired,
     selectionActionOverride: PropTypes.array
 };

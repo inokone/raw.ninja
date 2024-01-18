@@ -72,7 +72,7 @@ const SelectableGallery = ({ images, setImages, updateImage, selectionActionOver
 }
 
 SelectableGallery.propTypes = {
-    images: PropTypes.object.isRequired,
+    images: PropTypes.any.isRequired,
     setImages: PropTypes.func.isRequired,
     updateImage: PropTypes.func.isRequired,
     selectionActionOverride: PropTypes.array

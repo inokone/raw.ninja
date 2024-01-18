@@ -21,7 +21,7 @@ const SearchResult = ({ query }) => {
 }
 
 SearchResult.propTypes = {
-  query: PropTypes.string.isRequired,
+  query: PropTypes.string,
 };
 
 export default SearchResult;
