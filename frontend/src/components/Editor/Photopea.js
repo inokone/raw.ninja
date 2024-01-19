@@ -7,9 +7,9 @@ const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const format = "jpg"
 
-const settings = () => {
+const settings = (imageURL) => {
     return encodeURIComponent(JSON.stringify({
-        files: [],
+        files: [imageURL],
         environment: {
             theme: 1,
             vmode: 1,
@@ -26,23 +26,12 @@ const settings = () => {
     }))
 }
 
-const setEditorImage = (image) => {
-    let pp = document.getElementById("pp");
-    if (pp) {
-        var wnd = document.getElementById("pp").contentWindow;
-        wnd.postMessage(image, "*");
-    } else {
-        console.log("PhotoPea is not initialized, can not set image")
-    }
-}
-
 const Photopea = () => {
+    const { state } = useLocation();
     const navigate = useNavigate()
-    const location = useLocation()
     const [image, setImage] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
-    const [initialzing, setInitialzing] = React.useState(false)
     const [saving, setSaving] = React.useState(false)
     const [counter, setCounter] = React.useState(0)
 
@@ -52,7 +41,7 @@ const Photopea = () => {
         formData.append(
             'files[]',
             new Blob([data], { type: getMimeTypeFromArrayBuffer(data) }),
-            "edited-" + new Date().toISOString().split('T')[0] + "." + format);
+            state.photo_name + "-edited." + format);
         const requestOptions = {
             method: 'POST',
             mode: "cors",
@@ -60,7 +49,8 @@ const Photopea = () => {
             body: formData,
         };
 
-        const url = REACT_APP_API_PREFIX + '/api/v1/photos/';
+        console.log(formData)
+        const url = REACT_APP_API_PREFIX + '/api/v1/uploads/';
         fetch(url, requestOptions)
             .then(response => {
                 if (response.ok) {
@@ -71,13 +61,13 @@ const Photopea = () => {
             })
             .then(data => {
                 setSaving(false)
-                navigate('/photos/' + data.photo_ids[0])
+                navigate('/uploads/' + data)
             })
             .catch(error => {
                 console.error('Error:', error);
                 setSaving(false)
             });
-    }, [navigate])
+    }, [navigate, state])
 
     function getMimeTypeFromArrayBuffer(arrayBuffer) {
         const uint8arr = new Uint8Array(arrayBuffer)
@@ -105,14 +95,13 @@ const Photopea = () => {
     }
 
     const handleEditorMessage = React.useCallback((e) => {
-        if (e.data.source === "react-devtools-content-script" || e.data.source === "react-devtools-bridge") {
+        if (["react-devtools-content-script", "react-devtools-bridge", "react-devtools-backend-manager"].indexOf(e.data.source) >= 0) {
             return
         }
         if (e.data === "done") {
-            setCounter(counter + 1)
-            if (counter === 1) {
-                setInitialzing(false)
-            } else if (counter === 2) {
+            let cnt = counter + 1
+            setCounter(cnt)
+            if (cnt === 2) {
                 // image loaded, fit to screen
                 var wnd = document.getElementById("pp").contentWindow;
                 wnd.postMessage("app.UI.fitTheArea()", "*")
@@ -129,12 +118,15 @@ const Photopea = () => {
 
     const loadImage = React.useCallback(() => {
         setCounter(0)
-        let id = location.pathname.split('/').slice(-1)
         setLoading(true)
-        fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + id + '/raw', {
-            method: "GET",
+        fetch(REACT_APP_API_PREFIX + '/api/v1/onetime/', {
+            method: "POST",
             mode: "cors",
-            credentials: "include"
+            credentials: "include",
+            body: JSON.stringify({
+                original_id: state.photo_id,
+                one_time: false
+            })
         })
             .then(response => {
                 if (!response.ok) {
@@ -143,17 +135,13 @@ const Photopea = () => {
                         setLoading(false)
                     })
                 } else {
-                    response.blob().then(content => {
-                        content.arrayBuffer().then(img => {
-                            setLoading(false)
-                            setInitialzing(true)
-                            setImage(img)
-                            setEditorImage(img)
-                        })
+                    response.json().then(content => {
+                        setImage(REACT_APP_API_PREFIX + '/api/public/v1/onetime/raw/' + content.id)
+                        setLoading(false)
                     })
                 }
             })
-    }, [location])
+    }, [state])
 
     React.useEffect(() => {
         window.addEventListener("message", handleEditorMessage);
@@ -169,9 +157,8 @@ const Photopea = () => {
         <div className="iframe-container">
             {loading && <ProgressDisplay />}
             {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
-            {initialzing && <Alert sx={{ mb: 1 }} onClose={() => { setInitialzing(false) }}>Loading image...</Alert>}
             {saving && <Alert sx={{ mb: 1 }} onClose={() => { setSaving(false) }}>Saving modifications...</Alert>}
-            <iframe title="Editor" width="100%" id="pp" src={"https://photopea.com#" + settings()}
+            <iframe title="Editor" width="100%" id="pp" src={"https://photopea.com#" + settings(image)}
                 frameBorder="no" border="0" scrolling="no" height='800' />
         </div>
     );

@@ -10,6 +10,7 @@ import (
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/collection"
 	"github.com/inokone/photostorage/image"
+	"github.com/inokone/photostorage/onetime"
 	"github.com/inokone/photostorage/photo"
 	"github.com/inokone/photostorage/photo/descriptor"
 	"github.com/inokone/photostorage/ruleset"
@@ -49,7 +50,7 @@ func Migrate(path string) {
 	}
 
 	if err := db.AutoMigrate(&photo.Photo{}, &role.Role{}, &user.User{}, &descriptor.Descriptor{}, &image.Metadata{}, &account.Account{},
-		&collection.Collection{}, &rule.Rule{}, &ruleset.RuleSet{}); err != nil {
+		&collection.Collection{}, &rule.Rule{}, &ruleset.RuleSet{}, &onetime.Access{}); err != nil {
 		log.Err(err).Msg("Database migration failed. Application spinning down.")
 		os.Exit(1)
 	}

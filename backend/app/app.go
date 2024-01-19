@@ -40,11 +40,11 @@ func App(path string) {
 
 	// Setup middleware
 	r.Use(gin.Recovery())
-	cc := cors.DefaultConfig()
-	cc.AllowOrigins = []string{"https://raw.ninja", "https://rawninja.net", config.Auth.FrontendRoot}
-	cc.AllowHeaders = []string{"Authorization", "Origin", "Content-Length", "Content-Type"}
-	cc.AllowCredentials = true
-	r.Use(cors.New(cc))
+
+	restrictedCORS := cors.DefaultConfig()
+	restrictedCORS.AllowOrigins = []string{"https://raw.ninja", "https://rawninja.net", config.Auth.FrontendRoot}
+	restrictedCORS.AllowHeaders = []string{"Authorization", "Origin", "Content-Length", "Content-Type"}
+	restrictedCORS.AllowCredentials = true
 
 	r.Use(web.LoggingMiddleware)
 	r.MaxMultipartMemory = 8 << 20
@@ -54,9 +54,13 @@ func App(path string) {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// Set up routes
-	v1 := r.Group("/api/v1")
+	public := r.Group("/api/public/v1")
+	public.Use(cors.Default())
+	web.InitPublic(public, storers, services, *config)
 
-	web.Init(v1, storers, services, *config)
+	r.Use(cors.New(restrictedCORS))
+	private := r.Group("/api/v1")
+	web.InitPrivate(private, storers, services, *config)
 
 	p := fmt.Sprintf("0.0.0.0:%d", config.Web.Port)
 	if len(config.Auth.TLSCert) > 0 {

@@ -16,6 +16,7 @@ import (
 	"github.com/inokone/photostorage/collection"
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/image"
+	"github.com/inokone/photostorage/onetime"
 	"github.com/inokone/photostorage/photo"
 	"github.com/inokone/photostorage/ruleset"
 	"github.com/inokone/photostorage/ruleset/rule"
@@ -88,6 +89,7 @@ func initStorers(c common.ImageStoreConfig) {
 	storers.Collections = collection.NewGORMStorer(db)
 	storers.Rules = rule.NewGORMStorer(db)
 	storers.RuleSets = ruleset.NewGORMStorer(db)
+	storers.OneTime = onetime.NewGORMStorer(db)
 }
 
 func initServices(c common.ImageStoreConfig, storers web.Storers) {

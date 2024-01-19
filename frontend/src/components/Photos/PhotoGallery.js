@@ -29,7 +29,13 @@ const PhotoGallery = ({ photos, updatePhoto, setSelected }) => {
     const handleFullscreenClick = (photo) => setIndex(photos.indexOf(photo));
 
     const handleEditClick = (photo) => {
-        navigate('/editor/' + photo.id + '?format=' + photo.format)
+        navigate('/editor/' + photo.id + '?format=' + photo.format, {
+            state: {
+                photo_id: photo.id,
+                photo_format: photo.format,
+                photo_name: photo.title
+            }
+        })
     }
 
     const handleDeleteClick = (photo) => {

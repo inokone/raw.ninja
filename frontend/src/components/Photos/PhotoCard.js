@@ -93,7 +93,13 @@ const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, imageProps: { src
   }
 
   const handleEditClick = () => {
-    navigate('/editor/' + photo.id + '?format=' + photo.format)
+    navigate('/editor/' + photo.id + '?format=' + photo.format, {
+      state: {
+        photo_id: photo.id,
+        photo_format: photo.format,
+        photo_name: photo.title
+      }
+    })
   }
 
   return (

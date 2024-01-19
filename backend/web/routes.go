@@ -11,6 +11,7 @@ import (
 	"github.com/inokone/photostorage/common"
 	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/mail"
+	"github.com/inokone/photostorage/onetime"
 	"github.com/inokone/photostorage/photo"
 	"github.com/inokone/photostorage/ruleset"
 	"github.com/inokone/photostorage/ruleset/rule"
@@ -29,6 +30,7 @@ type Storers struct {
 	Collections collection.Storer
 	Rules       rule.Storer
 	RuleSets    ruleset.Storer
+	OneTime     onetime.Storer
 }
 
 // Services is a struct to collect all `Service` entities used by the application
@@ -37,7 +39,7 @@ type Services struct {
 }
 
 // Init is a function to initialize handler mapping for URLs
-func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
+func InitPrivate(private *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 	var (
 		mailer   = mail.NewService(c.Mail)
 		uploader = photo.NewUploadService(st.Photos, st.Images, c.Store)
@@ -54,17 +56,18 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 		up       = upload.NewController(st.Collections, uploader, loader)
 		rs       = ruleset.NewController(st.RuleSets, st.Rules)
 		ru       = rule.NewController(st.Rules)
+		ot       = onetime.NewController(st.OneTime, st.Images)
 	)
 
-	v1.GET("healthcheck", common.Healthcheck)
+	private.GET("healthcheck", common.Healthcheck)
 
-	g := v1.Group("/auth")
+	g := private.Group("/auth")
 	{
 		g.POST("/login", a.Login)
 		g.GET("/logout", a.Logout)
 	}
 
-	g = v1.Group("/account")
+	g = private.Group("/account")
 	{
 		g.POST("/signup", ac.Signup)
 		g.GET("/confirm", ac.Confirm)
@@ -75,7 +78,7 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 		g.GET("/profile", m.Validate, u.Profile)
 	}
 
-	g = v1.Group("/photos", m.Validate)
+	g = private.Group("/photos", m.Validate)
 	{
 		g.GET("/", p.List)
 		g.GET("/:id", p.Get)
@@ -85,14 +88,19 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 		g.GET("/:id/thumbnail", p.Thumbnail)
 	}
 
-	g = v1.Group("/uploads", m.Validate)
+	g = private.Group("/onetime", m.Validate)
+	{
+		g.POST("/", ot.Create)
+	}
+
+	g = private.Group("/uploads", m.Validate)
 	{
 		g.POST("/", up.Upload)
 		g.GET("/", up.List)
 		g.GET("/:id", up.Get)
 	}
 
-	g = v1.Group("/albums", m.Validate)
+	g = private.Group("/albums", m.Validate)
 	{
 		g.POST("/", al.Create)
 		g.PATCH("/:id", al.Patch)
@@ -101,13 +109,13 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 		g.DELETE("/:id", al.Delete)
 	}
 
-	g = v1.Group("/search", m.Validate)
+	g = private.Group("/search", m.Validate)
 	{
 		g.GET("", sea.Search)
 		g.GET("/favorites", sea.Favorites)
 	}
 
-	g = v1.Group("/users")
+	g = private.Group("/users")
 	{
 		g.GET("/", m.ValidateAdmin, u.List)
 		g.PUT("/:id", m.Validate, u.Update)
@@ -115,13 +123,13 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 		g.PUT("/:id/enabled", m.ValidateAdmin, u.SetEnabled)
 	}
 
-	g = v1.Group("/roles", m.ValidateAdmin)
+	g = private.Group("/roles", m.ValidateAdmin)
 	{
 		g.GET("/", r.List)
 		g.PUT("/:id", r.Update)
 	}
 
-	g = v1.Group("/rules", m.Validate)
+	g = private.Group("/rules", m.Validate)
 	{
 		g.POST("/", ru.Create)
 		g.GET("/", ru.List)
@@ -129,7 +137,7 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 		g.GET("/:id", ru.Get)
 	}
 
-	g = v1.Group("/rulesets", m.Validate)
+	g = private.Group("/rulesets", m.Validate)
 	{
 		g.POST("/", rs.Create)
 		g.GET("/", rs.List)
@@ -138,9 +146,19 @@ func Init(v1 *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 		g.DELETE("/:id", rs.Delete)
 	}
 
-	g = v1.Group("/statistics", m.Validate)
+	g = private.Group("/statistics", m.Validate)
 	{
 		g.GET("/user", sts.UserStats)
 		g.GET("/app", m.ValidateAdmin, sts.AppStats)
+	}
+}
+
+// Init is a function to initialize handler mapping for URLs
+func InitPublic(public *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
+	ot := onetime.NewController(st.OneTime, st.Images)
+
+	g := public.Group("/onetime")
+	{
+		g.GET("/raw/:id", ot.Raw)
 	}
 }
