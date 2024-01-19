@@ -1,13 +1,14 @@
 import * as React from 'react';
-import PropTypes from "prop-types";
 import PhotoGrid from '../Photos/PhotoGrid';
+import { useLocation } from 'react-router-dom'; 
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const SearchResult = ({ query }) => {
+const SearchResult = () => {
+  const { state } = useLocation()
 
   const populate = () => {
-    let url = REACT_APP_API_PREFIX + '/api/v1/search?query=' + query;
+    let url = REACT_APP_API_PREFIX + '/api/v1/search?query=' + state.query;
     return fetch(url, {
       method: "GET",
       mode: "cors",
@@ -16,12 +17,8 @@ const SearchResult = ({ query }) => {
   }
 
   return (
-    <PhotoGrid populator={populate}></PhotoGrid>
+    <PhotoGrid key={state.query} populator={populate}/>
   )
 }
-
-SearchResult.propTypes = {
-  query: PropTypes.string,
-};
 
 export default SearchResult;

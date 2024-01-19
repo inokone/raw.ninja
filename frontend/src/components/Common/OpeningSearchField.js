@@ -45,9 +45,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const handleQueryChange = (event, setQuery, navigate) => {
-  setQuery(event.target.value)
-  navigate("/search");
+const handleQueryChange = (event, navigate) => {
+  navigate("/search", {
+    state: {
+      query: event.target.value
+    }
+  });
 }
 
 const OpeningSearchField = ({ setQuery }) => {
@@ -62,7 +65,7 @@ const OpeningSearchField = ({ setQuery }) => {
       name="photosearch"
       autoComplete="photosearch"
       inputProps={{ 'aria-label': 'search' }}
-      onChange={e => handleQueryChange(e, setQuery, navigate)}
+      onChange={e => handleQueryChange(e, navigate)}
     />
   </Search>);
 }

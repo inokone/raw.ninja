@@ -37,7 +37,6 @@ const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
 const App = () => {
   const [user, setUser] = useState(null);
-  const [query, setQuery] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCookieRulesDialogOpen, setIsCookieRulesDialogOpen] = useState(false);
 
@@ -91,7 +90,7 @@ const App = () => {
             open={isCookieRulesDialogOpen}
             onClose={handleCookieRulesDialogClose}
           />
-          <ResponsiveAppBar user={user} setQuery={setQuery} />
+          <ResponsiveAppBar user={user} />
           <header className="App-header">
             <div className="wrapper">
               <Routes>
@@ -117,7 +116,7 @@ const App = () => {
                   <Route path="/rulesets" element={<RuleSets user={user} />} />
                   <Route path="/rulesets/:ruleSetId" element={<RuleSet user={user} />} />
                   <Route path="/profile" element={<UserProfile user={user} />} />
-                  <Route path="/search" element={<SearchResult query={query} />} />
+                  <Route path="/search" element={<SearchResult />} />
                   <Route path="/docs" element={<Docs />} />
                 </Route>
                 <Route element={<ProtectedRoute user={user} target="admin" redirect="/" />}>

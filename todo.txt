@@ -22,6 +22,16 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
+    - add albums and uploads to search, fix search reload
+    - Add OpenID for Google/Facebook/Apple (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
+    - Automate IaC
+      - Frontend on S3, later possibly CloudFront
+      - CloudFormation with
+        - Backend docker uploaded to ECR
+        - Backend running in ECS from ECR
+        - ALB deployed by CF
+        - CloudWatch logs by CF
+        - Credentials should come from AWS Systems Manager Parameter Store
     - Add lifecycle rules
       - Disable Bin option
       - Implement Frozen option
@@ -32,32 +42,20 @@ Functionality:
         - raw
         - thumbnails
         - NEW fullscreen
-    - add albums and uploads to search, fix search reload
     - add encryption for credentials in login and register
-
     - fix send message button on landing page
     - Revamp profile page
     - Deleted/Bin folder (shared ruleset?)
     - Display image count + used space per user on admin page
     - Display multiple image groups (by date or smg)
-    - Automate IaC
-      - Frontend on S3, later possibly CloudFront
-      - CloudFormation with
-        - Backend docker uploaded to ECR
-        - Backend running in ECS from ECR
-        - ALB deployed by CF
-        - CloudWatch logs by CF
-        - Credentials should come from AWS Systems Manager Parameter Store
     - Status message object should have no status, object should be kept though - KISS
     - Extract services from controllers. controllers should be about conversion between DB to JSON object
     - Encrypt settings file on EC2 - store private key to somewhere else - e.g. Google passwords 
     - Host frontend on S3 + cloudfront (https://aws.plainenglish.io/how-to-host-your-react-application-in-aws-s3-c0940cd4377b)
-    - Add OpenID for Google/Facebook (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
     - Add history/audit - with SNS and DynamoDB
     - Create dark mode
     - Whitelist only CloudFlare domain !!!
     - Fix editing users and roles on admin page
-    - Fix search filter page reload
     - Show quota on profile dropdown maybe?
   - Next steps:
     - Testing (handlers and unit testing) - Backend and Frontend

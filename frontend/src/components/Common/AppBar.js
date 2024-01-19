@@ -51,7 +51,7 @@ const styles = theme => ({
   },
 });
 
-const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
+const ResponsiveAppBar = ({ theme, classes, user }) => {
   const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -143,7 +143,7 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
           <Box sx={{ flexGrow: 1 }} />
           {isAuthenticated() &&
             <React.Fragment>
-              <Box sx={{ display: { xs: 'none', md: 'flex' } }}><OpeningSearchField setQuery={setQuery} /></Box>
+              <Box sx={{ display: { xs: 'none', md: 'flex' } }}><OpeningSearchField /></Box>
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                 <Button
                   key="upload"
@@ -245,7 +245,6 @@ const ResponsiveAppBar = ({ theme, classes, user, setQuery }) => {
 ResponsiveAppBar.propTypes = {
   theme: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
-  setQuery: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired
 };
 
