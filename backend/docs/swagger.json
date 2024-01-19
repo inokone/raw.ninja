@@ -549,6 +549,105 @@
                 }
             }
         },
+        "/onetime/": {
+            "post": {
+                "description": "Creates a one time access for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rule"
+                ],
+                "summary": "One time access creation endpoint",
+                "parameters": [
+                    {
+                        "description": "Data provided for creating the one time access",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/onetime.CreateAccess"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/onetime.Resp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "415": {
+                        "description": "Unsupported Media Type",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/onetime/raw/:id": {
+            "get": {
+                "description": "Returns the RAW file for the provided one time access ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "Download RAW file endpoint via one time access",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "one time access ID of the RAW photo to download",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.StatusMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/photos": {
             "get": {
                 "description": "Returns all photo descriptors for the current user",
@@ -1704,26 +1803,6 @@
                     }
                 }
             }
-        },
-        "/users/reset": {
-            "post": {
-                "description": "Resets the password of the logged in user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Reset password endpoint",
-                "responses": {
-                    "501": {
-                        "description": "Not Implemented",
-                        "schema": {
-                            "$ref": "#/definitions/common.StatusMessage"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -1943,6 +2022,25 @@
                 },
                 "width": {
                     "type": "integer"
+                }
+            }
+        },
+        "onetime.CreateAccess": {
+            "type": "object",
+            "properties": {
+                "one_time": {
+                    "type": "boolean"
+                },
+                "original_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "onetime.Resp": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
                 }
             }
         },

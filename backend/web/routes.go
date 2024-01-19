@@ -38,7 +38,7 @@ type Services struct {
 	Load photo.LoadService
 }
 
-// Init is a function to initialize handler mapping for URLs
+// InitPrivate is a function to initialize handler mapping for URLs protected with CORS
 func InitPrivate(private *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
 	var (
 		mailer   = mail.NewService(c.Mail)
@@ -153,8 +153,8 @@ func InitPrivate(private *gin.RouterGroup, st Storers, se Services, c common.App
 	}
 }
 
-// Init is a function to initialize handler mapping for URLs
-func InitPublic(public *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
+// InitPublic is a function to initialize handler mapping for URLs not protected with CORS
+func InitPublic(public *gin.RouterGroup, st Storers) {
 	ot := onetime.NewController(st.OneTime, st.Images)
 
 	g := public.Group("/onetime")
