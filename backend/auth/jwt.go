@@ -19,12 +19,12 @@ var unatuhorized = common.StatusMessage{Code: 401, Message: "Unauthorized!"}
 
 // JWTHandler is a struct for issuing and validating JWT tokens.
 type JWTHandler struct {
-	conf  common.AuthConfig
+	conf  *common.AuthConfig
 	users user.Storer
 }
 
 // NewJWTHandler creates a new `JWTHandler`.
-func NewJWTHandler(users user.Storer, conf common.AuthConfig) JWTHandler {
+func NewJWTHandler(users user.Storer, conf *common.AuthConfig) JWTHandler {
 	return JWTHandler{
 		conf:  conf,
 		users: users,

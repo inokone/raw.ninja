@@ -22,7 +22,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const PhotoGallery = ({ photos, updatePhoto, setSelected }) => {
+const PhotoGallery = ({ photos, updatePhoto, setSelected, displayTitle }) => {
     const navigate = useNavigate();
     const [index, setIndex] = useState(-1);
 
@@ -62,7 +62,7 @@ const PhotoGallery = ({ photos, updatePhoto, setSelected }) => {
                 targetRowHeight={200}
                 spacing={3}
                 renderPhoto={({ photo, imageProps }) => (
-                    <PhotoCard photo={photo} updatePhoto={updatePhoto} setSelected={setSelected} imageProps={imageProps} onClick={() => handleFullscreenClick(photo)} />
+                    <PhotoCard displayTitle={displayTitle} photo={photo} updatePhoto={updatePhoto} setSelected={setSelected} imageProps={imageProps} onClick={() => handleFullscreenClick(photo)} />
                 )}
             />
 
@@ -91,7 +91,8 @@ const PhotoGallery = ({ photos, updatePhoto, setSelected }) => {
 PhotoGallery.propTypes = {
     photos: PropTypes.array.isRequired,
     updatePhoto: PropTypes.func.isRequired,
-    setSelected: PropTypes.func.isRequired
+    setSelected: PropTypes.func.isRequired,
+    displayTitle: PropTypes.bool
 };
 
 export default PhotoGallery;

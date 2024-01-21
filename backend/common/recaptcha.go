@@ -14,8 +14,8 @@ type RecaptchaValidator struct {
 }
 
 // NewRecaptchaValidator is a function creating a new `RecaptchaValidator` based on the API secret
-func NewRecaptchaValidator(secret string) RecaptchaValidator {
-	return RecaptchaValidator{secret}
+func NewRecaptchaValidator(secret string) *RecaptchaValidator {
+	return &RecaptchaValidator{secret}
 }
 
 // Verify is a method of `RecaptchaValidator` verifying the captch token from the frontend

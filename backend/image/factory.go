@@ -13,7 +13,7 @@ const (
 )
 
 // NewStorer is a factory method of `Storer` based on configuration
-func NewStorer(config common.ImageStoreConfig) Storer {
+func NewStorer(config *common.ImageStoreConfig) Storer {
 	standard := strings.ToLower(strings.TrimSpace(config.Type))
 	if standard == localType {
 		result, err := NewLocalStorer(config.Path)

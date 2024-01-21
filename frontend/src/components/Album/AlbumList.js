@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useNavigate } from "react-router-dom";
-import { Box, Fab, Typography, Alert, Grid } from '@mui/material';
+import { Box, Fab, Typography, Alert } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ProgressDisplay from '../Common/ProgressDisplay';
-import AlbumCard from './AlbumCard';
 import AlbumDocs from '../Docs/AlbumDocs';
+import Collections from './Collections';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -41,12 +41,12 @@ const AlbumList = () => {
         });
     }
 
-    const onAlbumClick = (id) => {
-        navigate("/albums/" + id)
+    const handleFabClick = (id) => {
+        navigate("/albums/create")
     }
 
-    const onFabClick = (id) => {
-        navigate("/albums/create")
+    const handleAlbumClick = (id) => {
+        navigate("/albums/" + id)
     }
 
     React.useEffect(() => {
@@ -61,12 +61,8 @@ const AlbumList = () => {
             {loading && <ProgressDisplay />}
             {albums !== null && albums.length > 0 &&
                 <>
-                    <Typography variant='h4' sx={{ marginBottom: 4, marginTop: 2 }} >Albums</Typography>
-                    <Grid container>
-                        {albums.map((album) => {
-                            return (<Grid item key={album.id} xs={6} md={4} lg={2} xl={2}><AlbumCard album={album} onClick={onAlbumClick} /></Grid>)
-                        })}
-                    </Grid>
+                    <Typography variant='h4' sx={{ marginBottom: 4, marginTop: 2 }}>Albums</Typography>
+                    <Collections collections={albums} onClick={handleAlbumClick}/>
                 </>}
             {!loading && (!albums || albums.length === 0) &&
                 <AlbumDocs />
@@ -77,7 +73,7 @@ const AlbumList = () => {
                 bottom: 16,
                 right: 16
             }}>
-                <Fab onClick={onFabClick} color="primary" aria-label="add">
+                <Fab onClick={handleFabClick} color="primary" aria-label="add">
                     <AddIcon />
                 </Fab>
             </Box>}

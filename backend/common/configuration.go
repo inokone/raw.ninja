@@ -67,12 +67,12 @@ type LogConfig struct {
 
 // AppConfig is the holder of all configurations for the application
 type AppConfig struct {
-	Database RDBConfig
-	Store    ImageStoreConfig
-	Auth     AuthConfig
-	Log      LogConfig
-	Mail     MailConfig
-	Web      WebConfig
+	Database *RDBConfig
+	Store    *ImageStoreConfig
+	Auth     *AuthConfig
+	Log      *LogConfig
+	Mail     *MailConfig
+	Web      *WebConfig
 }
 
 // LoadConfig is a function loading the configuration from app.env file in the runtime directory or environment variables.
@@ -120,5 +120,5 @@ func LoadConfig(path string) (*AppConfig, error) {
 	if err = viper.Unmarshal(&ml); err != nil {
 		return nil, err
 	}
-	return &AppConfig{Database: db, Store: is, Auth: au, Log: lg, Mail: ml, Web: wb}, nil
+	return &AppConfig{Database: &db, Store: &is, Auth: &au, Log: &lg, Mail: &ml, Web: &wb}, nil
 }

@@ -40,7 +40,7 @@ func initConf(s string) error {
 	return nil
 }
 
-func initDb(c common.RDBConfig, l common.LogConfig) error {
+func initDb(c *common.RDBConfig, l *common.LogConfig) error {
 	cs := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v ", c.Host, c.Username, c.Password, c.Database, c.Port)
 	if c.SSLMode == "disable" {
 		cs += "sslmode=disable"
@@ -80,7 +80,7 @@ func levelFor(level string) logger.LogLevel {
 	}
 }
 
-func initStorers(c common.ImageStoreConfig) {
+func initStorers(c *common.ImageStoreConfig) {
 	storers.Photos = photo.NewGORMStorer(db)
 	storers.Images = image.NewStorer(c)
 	storers.Users = user.NewGORMStorer(db)
@@ -92,7 +92,7 @@ func initStorers(c common.ImageStoreConfig) {
 	storers.OneTime = onetime.NewGORMStorer(db)
 }
 
-func initServices(c common.ImageStoreConfig, storers web.Storers) {
+func initServices(c *common.ImageStoreConfig, storers web.Storers) {
 	services.Load = *photo.NewLoadService(storers.Photos, storers.Images, c)
 }
 

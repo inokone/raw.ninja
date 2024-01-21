@@ -39,21 +39,22 @@ type Services struct {
 }
 
 // InitPrivate is a function to initialize handler mapping for URLs protected with CORS
-func InitPrivate(private *gin.RouterGroup, st Storers, se Services, c common.AppConfig) {
+func InitPrivate(private *gin.RouterGroup, st Storers, se Services, c *common.AppConfig) {
 	var (
 		mailer   = mail.NewService(c.Mail)
+		colls    = collection.NewService(st.Collections)
 		uploader = photo.NewUploadService(st.Photos, st.Images, c.Store)
 		loader   = photo.NewLoadService(st.Photos, st.Images, c.Store)
 		p        = photo.NewController(st.Photos, st.Images, c.Store)
 		m        = auth.NewJWTHandler(st.Users, c.Auth)
 		a        = auth.NewController(st.Users, st.Accounts, m, c.Auth)
 		ac       = account.NewController(st.Users, st.Accounts, mailer, c.Auth)
-		sea      = search.NewController(st.Photos, se.Load)
+		sea      = search.NewController(st.Photos, se.Load, colls)
 		sts      = stats.NewController(st.Photos, st.Users, st.Collections, c.Store)
 		u        = user.NewController(st.Users)
 		r        = role.NewController(st.Roles)
-		al       = album.NewController(st.Collections, loader)
-		up       = upload.NewController(st.Collections, uploader, loader)
+		al       = album.NewController(st.Collections, loader, colls)
+		up       = upload.NewController(st.Collections, uploader, loader, colls)
 		rs       = ruleset.NewController(st.RuleSets, st.Rules)
 		ru       = rule.NewController(st.Rules)
 		ot       = onetime.NewController(st.OneTime, st.Images)

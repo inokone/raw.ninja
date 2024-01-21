@@ -14,6 +14,13 @@ const (
 	GROUP BY c.id
 	ORDER by c.created_at DESC`
 
+	searchQuery = `SELECT c.id as ID, c.name as Name, c.tags as Tags, c.created_at as Created, count(p.photo_id) as Photos, c.thumbnail_id as Thumbnail
+	FROM collections c 
+	LEFT JOIN collection_photos p ON c.id = p.collection_id 
+	WHERE user_id = ? and type = ? and c.deleted_at IS NULL and c.name LIKE ? or ? LIKE ANY(c.tags)
+	GROUP BY c.id
+	ORDER by c.created_at DESC`
+
 	statQuery = `SELECT c.created_at as Created, c.type as Type, count(p.photo_id) as Photos
 	FROM collections c 
 	LEFT JOIN collection_photos p ON c.id = p.collection_id 
@@ -40,6 +47,7 @@ type Storer interface {
 	Writer
 	Loader
 	Stats(usr *user.User) ([]Stat, error)
+	Search(usrID uuid.UUID, ct Type, query string) ([]ListItem, error)
 }
 
 // GORMStorer is the `Storer` implementation based on GORM library.
@@ -96,5 +104,15 @@ func (s *GORMStorer) Delete(id uuid.UUID) error {
 func (s *GORMStorer) Stats(usr *user.User) ([]Stat, error) {
 	var collection []Stat
 	res := s.db.Raw(statQuery, usr.ID).Scan(&collection)
+	return collection, res.Error
+}
+
+// Search is a method of the `GORMStorer` struct. Takes a user and query string to search `Collection` objects matching these criteria.
+func (s *GORMStorer) Search(usrID uuid.UUID, ct Type, query string) ([]ListItem, error) {
+	var (
+		q          = "%" + query + "%"
+		collection []ListItem
+	)
+	res := s.db.Raw(searchQuery, usrID, ct, q, q).Scan(&collection)
 	return collection, res.Error
 }

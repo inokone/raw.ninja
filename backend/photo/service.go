@@ -23,11 +23,11 @@ import (
 type UploadService struct {
 	photos Storer
 	images image.Storer
-	config common.ImageStoreConfig
+	config *common.ImageStoreConfig
 }
 
 // NewUploadService creates an `UploadService` instance based on storers and configuration
-func NewUploadService(photos Storer, images image.Storer, config common.ImageStoreConfig) *UploadService {
+func NewUploadService(photos Storer, images image.Storer, config *common.ImageStoreConfig) *UploadService {
 	return &UploadService{
 		photos: photos,
 		images: images,
@@ -179,11 +179,11 @@ func createPhoto(user user.User, filename, extension string, raw []byte) (*Photo
 type LoadService struct {
 	photos Storer
 	images image.Storer
-	cfg    common.ImageStoreConfig
+	cfg    *common.ImageStoreConfig
 }
 
 // NewLoadService creates a `LoadService` instance based on the storers and configuration.
-func NewLoadService(photos Storer, images image.Storer, cfg common.ImageStoreConfig) *LoadService {
+func NewLoadService(photos Storer, images image.Storer, cfg *common.ImageStoreConfig) *LoadService {
 	return &LoadService{
 		photos: photos,
 		images: images,

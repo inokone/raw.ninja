@@ -17,11 +17,11 @@ type Controller struct {
 	photos photo.Storer
 	users  user.Storer
 	albums collection.Storer
-	config common.ImageStoreConfig
+	config *common.ImageStoreConfig
 }
 
 // NewController creates a new `Controller` instance based on the photo persistence provided in the parameters.
-func NewController(photos photo.Storer, users user.Storer, albums collection.Storer, config common.ImageStoreConfig) Controller {
+func NewController(photos photo.Storer, users user.Storer, albums collection.Storer, config *common.ImageStoreConfig) Controller {
 	return Controller{
 		photos: photos,
 		users:  users,

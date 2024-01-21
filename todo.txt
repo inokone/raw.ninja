@@ -22,7 +22,6 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Add albums and uploads to search
     - Add OpenID for Google/Facebook/Apple (https://codesandbox.io/s/react-zuxv1?file=/src/SignIn.tsx:997-1177, https://firebase.google.com/docs/auth/web/google-signin)
     - Display image count + used space per user on admin page
     - Automate IaC
@@ -43,6 +42,7 @@ Functionality:
         - raw
         - thumbnails
         - NEW fullscreen
+    - Implement full search
     - add encryption for credentials in login and register
     - fix send message button on landing page
     - Revamp profile page

@@ -30,11 +30,11 @@ type Controller struct {
 	auths   account.Storer
 	jwt     JWTHandler
 	p       bluemonday.Policy
-	captcha common.RecaptchaValidator
+	captcha *common.RecaptchaValidator
 }
 
 // NewController creates a new `Controller`, based on the user persistence.
-func NewController(users user.Storer, auths account.Storer, jwt JWTHandler, c common.AuthConfig) Controller {
+func NewController(users user.Storer, auths account.Storer, jwt JWTHandler, c *common.AuthConfig) Controller {
 	p := bluemonday.StrictPolicy()
 	return Controller{
 		users:   users,

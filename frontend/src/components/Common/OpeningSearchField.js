@@ -4,7 +4,6 @@ import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from "prop-types";
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -69,10 +68,5 @@ const OpeningSearchField = ({ setQuery }) => {
     />
   </Search>);
 }
-
-OpeningSearchField.propTypes = {
-  setQuery: PropTypes.func.isRequired
-};
-
 
 export default OpeningSearchField

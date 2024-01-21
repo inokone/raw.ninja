@@ -24,13 +24,13 @@ var statusBadRequest common.StatusMessage = common.StatusMessage{Code: 400, Mess
 type Controller struct {
 	users    user.Storer
 	accounts Storer
-	sender   mail.Service
-	config   common.AuthConfig
-	captcha  common.RecaptchaValidator
+	sender   *mail.Service
+	config   *common.AuthConfig
+	captcha  *common.RecaptchaValidator
 }
 
 // NewController creates a new `Controller`, based on the user persistence and the authentication configuration parameters.
-func NewController(users user.Storer, accounts Storer, sender mail.Service, config common.AuthConfig) Controller {
+func NewController(users user.Storer, accounts Storer, sender *mail.Service, config *common.AuthConfig) Controller {
 	return Controller{
 		users:    users,
 		accounts: accounts,

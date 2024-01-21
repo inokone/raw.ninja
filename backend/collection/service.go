@@ -134,3 +134,13 @@ func (s Service) updatePhotos(updated []photo.Response) ([]photo.Photo, error) {
 
 	return createPhotos(ids), nil
 }
+
+// SearchAlbums searchews for album collections of a user based on a query string
+func (s Service) SearchAlbums(usrID uuid.UUID, query string) ([]ListItem, error) {
+	return s.s.Search(usrID, Album, query)
+}
+
+// SearchUploads searchews for upload collections of a user based on a query string
+func (s Service) SearchUploads(usrID uuid.UUID, query string) ([]ListItem, error) {
+	return s.s.Search(usrID, Upload, query)
+}

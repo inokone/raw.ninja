@@ -1431,7 +1431,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/photo.Response"
+                                "$ref": "#/definitions/search.QuickSearchResp"
                             }
                         }
                     },
@@ -1888,6 +1888,32 @@ const docTemplate = `{
                 }
             }
         },
+        "collection.ListResp": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photo_count": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "thumbnail": {
+                    "$ref": "#/definitions/image.PresignedRequest"
+                }
+            }
+        },
         "collection.Resp": {
             "type": "object",
             "properties": {
@@ -2200,6 +2226,32 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/rule.Resp"
+                    }
+                }
+            }
+        },
+        "search.QuickSearchResp": {
+            "type": "object",
+            "properties": {
+                "albums": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/collection.ListResp"
+                    }
+                },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/photo.Response"
+                    }
+                },
+                "query": {
+                    "type": "string"
+                },
+                "uploads": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/collection.ListResp"
                     }
                 }
             }

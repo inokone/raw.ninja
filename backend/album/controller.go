@@ -16,15 +16,15 @@ import (
 // Controller is a struct for all REST handlers related to albums in the application.
 type Controller struct {
 	albums  collection.Storer
-	service collection.Service
+	service *collection.Service
 	loader  *photo.LoadService
 }
 
 // NewController creates a new `Controller` instance based on the collection persistence provided in the parameter.
-func NewController(albums collection.Storer, loader *photo.LoadService) Controller {
+func NewController(albums collection.Storer, loader *photo.LoadService, service *collection.Service) Controller {
 	return Controller{
 		albums:  albums,
-		service: *collection.NewService(albums),
+		service: service,
 		loader:  loader,
 	}
 }

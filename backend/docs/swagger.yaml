@@ -49,6 +49,23 @@ definitions:
       user:
         type: string
     type: object
+  collection.ListResp:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      photo_count:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+      thumbnail:
+        $ref: '#/definitions/image.PresignedRequest'
+    type: object
   collection.Resp:
     properties:
       created_at:
@@ -252,6 +269,23 @@ definitions:
       rules:
         items:
           $ref: '#/definitions/rule.Resp'
+        type: array
+    type: object
+  search.QuickSearchResp:
+    properties:
+      albums:
+        items:
+          $ref: '#/definitions/collection.ListResp'
+        type: array
+      photos:
+        items:
+          $ref: '#/definitions/photo.Response'
+        type: array
+      query:
+        type: string
+      uploads:
+        items:
+          $ref: '#/definitions/collection.ListResp'
         type: array
     type: object
   stats.AppStats:
@@ -1302,7 +1336,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/photo.Response'
+              $ref: '#/definitions/search.QuickSearchResp'
             type: array
         "404":
           description: Not Found

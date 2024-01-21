@@ -4,7 +4,7 @@ import StarIcon from '@mui/icons-material/Star';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Brightness1Icon from '@mui/icons-material/Brightness1';
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 import { useNavigate } from 'react-router-dom';
 
@@ -56,7 +56,7 @@ const useStyles = makeStyles(() => ({
 
 }));
 
-const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, imageProps: { src, alt, style, width, height, ...restImageProps } }) => {
+const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, displayTitle, imageProps: { src, alt, style, width, height, ...restImageProps } }) => {
   const navigate = useNavigate();
   const classes = useStyles();
   const [isHovering, setIsHovering] = React.useState(false);
@@ -115,6 +115,17 @@ const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, imageProps: { src
         {...restImageProps}
         onClick={() => handleClick(photo)}
       />
+      {displayTitle &&
+        <Box sx={{
+          width: '100%', 
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,1) 100%)', 
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+      }}>
+        <Typography sx={{color: 'white'}}>{photo.title}</Typography>
+      </Box>
+      }
       {(photo.favorite || isHovering) && <Box sx={{
         background:
           'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
@@ -168,7 +179,8 @@ PhotoCard.propTypes = {
   photo: PropTypes.object.isRequired,
   updatePhoto: PropTypes.func.isRequired,
   setSelected: PropTypes.func.isRequired,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired,
+  displayTitle: PropTypes.bool
 };
 
 export default PhotoCard;

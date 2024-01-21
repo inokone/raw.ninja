@@ -18,7 +18,7 @@ var pt string
 
 // Service is a struct for a service sending mails for our users.
 type Service struct {
-	config       common.MailConfig
+	config       *common.MailConfig
 	dialer       *mail.Dialer
 	confirmation *template.Template
 	pwdReset     *template.Template
@@ -26,11 +26,11 @@ type Service struct {
 
 // NewService create a new `Service` entity based on the configuration.
 // If SMTP server is not configured the service will not return error, just logs it as a warning.
-func NewService(config common.MailConfig) Service {
+func NewService(config *common.MailConfig) *Service {
 	if len(config.SMTPAddress) == 0 {
 		log.Warn().Msg("SMTP is not set up, e-mail sending functionality will not work correctly!")
 	}
-	return Service{
+	return &Service{
 		config:       config,
 		dialer:       mail.NewDialer(config.SMTPAddress, config.SMTPPort, config.SMTPUser, config.SMTPPassword),
 		confirmation: mustLoadTemplate(ct),

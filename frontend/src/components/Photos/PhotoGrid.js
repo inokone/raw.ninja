@@ -13,7 +13,7 @@ import { convertPhotos, convertPhoto } from './PhotoConverter';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const PhotoGrid = ({ populator, fabAction, onDataLoaded, selectionActionOverride }) => {
+const PhotoGrid = ({ populator, fabAction, onDataLoaded, selectionActionOverride, displayTitle }) => {
     const theme = useTheme()
     const navigate = useNavigate()
     const [error, setError] = React.useState(null)
@@ -149,7 +149,7 @@ const PhotoGrid = ({ populator, fabAction, onDataLoaded, selectionActionOverride
             <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="the selected photos" />
             {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay />}
-            {images && <SelectableGallery images={images} setImages={setImages} updateImage={updateImage} selectionActionOverride={selectionActions}/>}
+            {images && <SelectableGallery images={images} setImages={setImages} updateImage={updateImage} selectionActionOverride={selectionActions} displayTitle={displayTitle} />}
             {fabAction &&
                 <Box onClick={fabAction} sx={{
                     '& > :not(style)': { m: 1 },
@@ -170,7 +170,8 @@ PhotoGrid.propTypes = {
     populator: PropTypes.func.isRequired,
     fabAction: PropTypes.func,
     onDataLoaded: PropTypes.func,
-    selectionActionOverride: PropTypes.array
+    selectionActionOverride: PropTypes.array,
+    displayTitle: PropTypes.bool
 };
 
 export default PhotoGrid;

@@ -24,13 +24,13 @@ var (
 type Controller struct {
 	photos Storer
 	images image.Storer
-	cfg    common.ImageStoreConfig
+	cfg    *common.ImageStoreConfig
 	s      UploadService
 	l      LoadService
 }
 
 // NewController creates a new `Controller` instance based on the photo persistence provided in the parameter.
-func NewController(photos Storer, images image.Storer, cfg common.ImageStoreConfig) Controller {
+func NewController(photos Storer, images image.Storer, cfg *common.ImageStoreConfig) Controller {
 	return Controller{
 		photos: photos,
 		images: images,

@@ -60,7 +60,7 @@ func App(path string) {
 
 	r.Use(cors.New(restrictedCORS))
 	private := r.Group("/api/v1")
-	web.InitPrivate(private, storers, services, *config)
+	web.InitPrivate(private, storers, services, config)
 
 	p := fmt.Sprintf("0.0.0.0:%d", config.Web.Port)
 	if len(config.Auth.TLSCert) > 0 {
