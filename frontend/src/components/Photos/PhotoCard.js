@@ -118,12 +118,14 @@ const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, displayTitle, ima
       {displayTitle &&
         <Box sx={{
           width: '100%', 
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,1) 100%)', 
+          background: 
+            'linear-gradient(to top, rgba(0,0,0, 1) 0%, ' +
+            'rgba(0,0,0, 1) 30%, rgba(0,0,0, .35) 100%)',
           position: 'absolute',
           bottom: 0,
           right: 0,
       }}>
-        <Typography sx={{color: 'white'}}>{photo.title}</Typography>
+        <Typography sx={{color: 'white', marginBottom: '2px', marginTop: '2px'}}>{photo.title}</Typography>
       </Box>
       }
       {(photo.favorite || isHovering) && <Box sx={{
