@@ -126,7 +126,7 @@ const AddPhotos = ({ user }) => {
             <Button variant='contained' color='secondary' onClick={handleCancelClick}>Cancel</Button>
             <Box sx={{ display: 'flex' }}>
             {loading && <ProgressDisplay />}
-            {error && <Alert sx={{ mb: 4, maxWidth: "sm", marginLeft: "auto", marginRight: "auto" }} onClose={() => setError(null)} severity="error">{error}</Alert>}
+            {error && <Alert sx={{ mb: 4, maxWidth: "sm", mx: "auto" }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Updated successfully!</Alert>}
             {images && <SelectableGallery images={images} setImages={setImages} updateImage={updateImage} />}
             </Box>
@@ -134,7 +134,7 @@ const AddPhotos = ({ user }) => {
 }
 
 AddPhotos.propTypes = {
-    user: PropTypes.object.isRequired
+    user: PropTypes.object
 };
 
 export default AddPhotos;

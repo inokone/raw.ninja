@@ -48,6 +48,10 @@ type AuthConfig struct {
 	FrontendRoot    string `mapstructure:"FRONTEND_ROOT"`
 	BackendRoot     string `mapstructure:"BACKEND_ROOT"`
 	RecaptchaSecret string `mapstructure:"RECAPTCHA_SECRET"`
+	GoogleKey       string `mapstructure:"GOOGLE_AUTH_KEY"`
+	GoogleSecret    string `mapstructure:"GOOGLE_AUTH_SECRET"`
+	FacebookKey     string `mapstructure:"FACEBOOK_AUTH_KEY"`
+	FacebookSecret  string `mapstructure:"FACEBOOK_AUTH_SECRET"`
 }
 
 // MailConfig is a configuration of e-mail massaging.

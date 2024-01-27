@@ -38,7 +38,7 @@ const UploadDisplay = ({ user }) => {
 }
 
 UploadDisplay.propTypes = {
-    user: PropTypes.object.isRequired,
+    user: PropTypes.object,
 };
 
 export default UploadDisplay;

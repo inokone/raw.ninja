@@ -536,6 +536,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/facebook": {
+            "get": {
+                "description": "Starts Facebook authentication process.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Login is the authentication endpoint. Starts Facebook authentication process.",
+                "responses": {}
+            }
+        },
+        "/auth/facebook/redirect": {
+            "get": {
+                "description": "Called by Facebook Auth when we have a result of the authentication process",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/html"
+                ],
+                "summary": "Redirect is the authentication callback endpoint. Authenticates/Registers users, sets up JWT token.",
+                "responses": {}
+            }
+        },
+        "/auth/google": {
+            "get": {
+                "description": "Starts Google authentication process.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Login is the authentication endpoint. Starts Google authentication process.",
+                "responses": {}
+            }
+        },
+        "/auth/google/redirect": {
+            "get": {
+                "description": "Called by Google Auth when we have a result of the authentication process",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/html"
+                ],
+                "summary": "Redirect is the authentication callback endpoint. Authenticates/Registers users, sets up JWT token.",
+                "responses": {}
+            }
+        },
         "/healthcheck": {
             "get": {
                 "description": "Returns the status and version of the application",
@@ -2365,6 +2417,9 @@ const docTemplate = `{
                 },
                 "role": {
                     "$ref": "#/definitions/role.ProfileRole"
+                },
+                "source": {
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"

@@ -361,6 +361,8 @@ definitions:
         type: string
       role:
         $ref: '#/definitions/role.ProfileRole'
+      source:
+        type: string
       status:
         type: string
     type: object
@@ -746,6 +748,48 @@ paths:
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: Endpoint for patching an album by ID.
+  /auth/facebook:
+    get:
+      consumes:
+      - application/json
+      description: Starts Facebook authentication process.
+      produces:
+      - application/json
+      responses: {}
+      summary: Login is the authentication endpoint. Starts Facebook authentication
+        process.
+  /auth/facebook/redirect:
+    get:
+      consumes:
+      - application/json
+      description: Called by Facebook Auth when we have a result of the authentication
+        process
+      produces:
+      - text/html
+      responses: {}
+      summary: Redirect is the authentication callback endpoint. Authenticates/Registers
+        users, sets up JWT token.
+  /auth/google:
+    get:
+      consumes:
+      - application/json
+      description: Starts Google authentication process.
+      produces:
+      - application/json
+      responses: {}
+      summary: Login is the authentication endpoint. Starts Google authentication
+        process.
+  /auth/google/redirect:
+    get:
+      consumes:
+      - application/json
+      description: Called by Google Auth when we have a result of the authentication
+        process
+      produces:
+      - text/html
+      responses: {}
+      summary: Redirect is the authentication callback endpoint. Authenticates/Registers
+        users, sets up JWT token.
   /healthcheck:
     get:
       consumes:

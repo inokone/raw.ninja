@@ -24,7 +24,7 @@ const ProtectedRoute = ({ user, target, redirect, children }) => {
 };
 
 ProtectedRoute.propTypes = {
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object,
   redirect: PropTypes.string.isRequired,
   target: PropTypes.string
 };

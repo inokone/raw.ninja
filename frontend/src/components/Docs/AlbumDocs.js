@@ -6,7 +6,7 @@ import { Box, Typography, List, ListItem } from '@mui/material';
 
 const AlbumDocs = () => {
     return (
-        <Box maxWidth='md' sx={{ bgcolor: 'white', borderRadius: '8px', marginLeft: 'auto', marginRight: 'auto', marginTop: 2, paddingTop: 2, paddingBottom: 4 }}>
+        <Box maxWidth='md' sx={{ bgcolor: 'white', borderRadius: '8px', mx: 'auto', marginTop: 2, paddingTop: 2, paddingBottom: 4 }}>
             <Typography variant='h4' sx={{ marginBottom: 6, marginTop: 2 }}>Organize your photos with Albums</Typography>
             <Typography variant='h5' align='left' sx={{ margin: 2 }}>Introduction</Typography>
             <Typography align='left' sx={{ margin: 2, marginBottom: 6 }}>RAW.Ninja empowers you to organize and manage your ever-growing collection of photos with ease. Introducing albums and lifecycle rules, powerful tools for creating customized photo organization and ensuring efficient storage utilization.</Typography>

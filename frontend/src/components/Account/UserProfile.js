@@ -139,11 +139,13 @@ const Profile = ({ user }) => {
       <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
         <UserDetails user={user} />
       </Box>
-
+      {user.source === 'credentials' &&
+      <>
       <Typography variant='h6'>Change Password</Typography>
       <Box sx={{ display: 'flex', justifyContent: 'center', borderRadius: '4px', pb: 4 }}>
         <ChangePassword user={user} />
       </Box>
+      </>}
     </React.Fragment>
   );
 }

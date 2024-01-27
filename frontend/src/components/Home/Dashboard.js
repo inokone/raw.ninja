@@ -60,7 +60,7 @@ const Dashboard = ({ user }) => {
 }
 
 Dashboard.propTypes = {
-  user: PropTypes.object.isRequired
+  user: PropTypes.object
 };
 
 export default Dashboard;

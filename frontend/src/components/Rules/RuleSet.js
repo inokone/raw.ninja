@@ -198,7 +198,7 @@ const RuleSets = ({ user }) => {
 }
 
 RuleSets.propTypes = {
-    user: PropTypes.object.isRequired,
+    user: PropTypes.object,
 };
 
 export default RuleSets;

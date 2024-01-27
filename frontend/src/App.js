@@ -21,7 +21,6 @@ import ProgressDisplay from './components/Common/ProgressDisplay';
 import RecoverPassword from './components/Account/RecoverPassword';
 import Photopea from './components/Editor/Photopea';
 import Landing from './components/Landing/Landing';
-import TermsOfUse from './components/Common/TermsOfUse';
 import CookieConsent from './components/Common/CookieConsent';
 import CookieRulesDialog from './components/Common/CookieRulesDialog';
 import UploadDisplay from './components/Upload/UploadDisplay';
@@ -32,6 +31,8 @@ import RuleSets from './components/Rules/RuleSets';
 import RuleSet from './components/Rules/RuleSet';
 import AddPhotos from './components/Album/AddPhotos';
 import Docs from './components/Docs/Docs';
+import PrivacyPolicy from './components/Docs/PrivacyPolicy';
+import TermsOfService from './components/Docs/TermsOfService';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -99,7 +100,8 @@ const App = () => {
                 <Route path="/password/reset" element={<ResetPassword />} />
                 <Route path="/password/recover" element={<RecoverPassword />} />
                 <Route path="/signup" element={<SignupForm />} />
-                <Route path="/terms" element={<TermsOfUse />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/" element={<Landing />} />
                 <Route path="/confirm" element={<EmailConfirmation />} />
                 <Route element={<ProtectedRoute user={user} redirect="/" />}>

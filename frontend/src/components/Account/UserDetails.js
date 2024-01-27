@@ -95,7 +95,7 @@ const UserDetails = ({ user }) => {
 
 
 UserDetails.propTypes = {
-    user: PropTypes.object.isRequired
+    user: PropTypes.object
 };
 
 export default UserDetails;

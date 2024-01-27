@@ -43,9 +43,17 @@ const RecoverPassword = () => {
 
     return (
         <React.Fragment>
-            <Container maxWidth="sm">
-                <Box style={{ flex: 1 }} sx={{ m: 4 }}>
-                    <Typography sx={{ mb: 2 }}>Please enter your email address so we can send you an email to reset your password.</Typography>
+            <Container sx={{
+                width: 356,
+                bgcolor: 'white',
+                borderRadius: 2,
+                boxShadow: '0 2px 8px 0 rgba(0, 0, 0, 0.24)',
+                py: 4,
+                mt: 6
+            }}>
+                <Box style={{ flex: 1 }} >
+                    <Typography pb={2} variant='h5'>Recover password</Typography>
+                    <Typography sx={{ fontSize: 14, mb: 2 }}>Please enter your email address so we can send you an email to reset your password.</Typography>
                     <TextField
                         label="Email"
                         onChange={e => {
@@ -56,14 +64,14 @@ const RecoverPassword = () => {
                         variant="outlined"
                         color="primary"
                         type="email"
-                        sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
+                        sx={{ mb: 2, backgroundColor: "#fff", borderRadius: 1 }}
                         fullWidth
                         value={email}
                         error={emailError}
                     />
                     {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Password reset email sent, check your inbox!</Alert>}
                     {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
-                    <Button sx={{ mb: 4 }} variant="contained" color="primary" onClick={handleClick}>Request Password Reset</Button>
+                    <Button sx={{ width: '100%' }} variant="contained" color="primary" onClick={handleClick}>Request Password Reset</Button>
                 </Box>
             </Container>
         </React.Fragment>

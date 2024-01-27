@@ -33,7 +33,7 @@ const Favorites = ({ user, onDataLoaded }) => {
 }
 
 Favorites.propTypes = {
-    user: PropTypes.object.isRequired,
+    user: PropTypes.object,
     onDataLoaded: PropTypes.func
 };
 

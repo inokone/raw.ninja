@@ -1,13 +1,13 @@
 import React from 'react';
 import { Paper, Typography, Box } from '@mui/material';
-import './TermsOfUse.css'
+import './TermsOfService.css'
 
-const TermsOfUse = () => {
+const TermsOfService = () => {
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ maxWidth: 'md', display: 'flex', mx: 'auto' }}>
             <Paper sx={{ textAlign: 'left', margin: '25px' }}>
-                <Typography variant='h4' sx={{ textAlign: 'center', margin: '20px' }}>RAW.Ninja<br />Terms of Use</Typography>
-                <p>These Terms of Use ("Terms") govern your use of the RAW.Ninja ("App") provided by RAW.Ninja LLC. ("Company"). By accessing or using the App, you agree to be bound by these Terms.</p>
+                <Typography variant='h4' sx={{ textAlign: 'center', margin: '20px' }}>RAW.Ninja<br />Terms of Service</Typography>
+                <p>These Terms of Service ("Terms") govern your use of the RAW.Ninja ("App") provided by RAW.Ninja LLC. ("Company"). By accessing or using the App, you agree to be bound by these Terms.</p>
                 <ol>
                     <li><strong>License and Use:</strong> Subject to your compliance with these Terms, Company grants you a limited, non-exclusive, non-transferable, revocable license to use the App solely for your personal or business purposes.</li>
                     <li><strong>User Conduct:</strong> You agree not to engage in any of the following activities:
@@ -33,4 +33,4 @@ const TermsOfUse = () => {
         </Box>);
 }
 
-export default TermsOfUse
+export default TermsOfService

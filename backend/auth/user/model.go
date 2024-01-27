@@ -80,6 +80,7 @@ func (u *User) AsProfile() Profile {
 		LastName:  u.LastName,
 		Role:      u.Role.AsProfileRole(),
 		Status:    string(u.Status),
+		Source:    u.Source,
 	}
 }
 
@@ -119,6 +120,7 @@ type Profile struct {
 	LastName  string           `json:"last_name"`
 	Role      role.ProfileRole `json:"role"`
 	Status    string           `json:"status"`
+	Source    string           `json:"source"`
 }
 
 // Registration is the JSON user representation for registration/signup process

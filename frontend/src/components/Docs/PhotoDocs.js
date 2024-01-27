@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 
 const PhotoDocs = () => {
     return (
-        <Box maxWidth='md' sx={{ bgcolor: 'white', borderRadius: '8px', marginLeft: 'auto', marginRight: 'auto', marginTop: 2, paddingTop: 2, paddingBottom: 4 }}>
+        <Box maxWidth='md' sx={{ bgcolor: 'white', borderRadius: '8px', mx: 'auto', marginTop: 2, paddingTop: 2, paddingBottom: 4 }}>
             <Typography variant='h4' sx={{ marginBottom: 6, marginTop: 2 }}>Photos page</Typography>
             <Typography variant='h5' align='left' sx={{ margin: 2 }}>Introduction</Typography>
             <Typography align='left' sx={{ margin: 2, marginBottom: 6 }}>Photos is a central hub for managing your uploaded photos and raw image files. The uploaded photos are displayed in chronological order, allowing you to easily track and manage your collection. For each photo and raw image RAW.Ninja generates a thumbnail image. This image is used in the photos page, while the original image is only accessed for editing and downloading.</Typography>

@@ -112,7 +112,7 @@ const ChangePassword = ({ user }) => {
 }
 
 ChangePassword.propTypes = {
-    user: PropTypes.object.isRequired
+    user: PropTypes.object
 };
 
 export default ChangePassword;

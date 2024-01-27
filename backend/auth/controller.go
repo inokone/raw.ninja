@@ -2,9 +2,7 @@ package auth
 
 import (
 	"fmt"
-	"math"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/microcosm-cc/bluemonday"
@@ -31,6 +29,7 @@ type Controller struct {
 	jwt     JWTHandler
 	p       bluemonday.Policy
 	captcha *common.RecaptchaValidator
+	service *Service
 }
 
 // NewController creates a new `Controller`, based on the user persistence.
@@ -42,6 +41,7 @@ func NewController(users user.Storer, auths account.Storer, jwt JWTHandler, c *c
 		jwt:     jwt,
 		p:       *p,
 		captcha: common.NewRecaptchaValidator(c.RecaptchaSecret),
+		service: NewService(users, auths, jwt),
 	}
 }
 
@@ -59,11 +59,9 @@ func NewController(users user.Storer, auths account.Storer, jwt JWTHandler, c *c
 // @Router /account/login [post]
 func (c Controller) Login(g *gin.Context) {
 	var (
-		s        user.Credentials
-		err      error
-		usr      *user.User
-		verified bool
-		secs     int64
+		s   user.Credentials
+		err error
+		usr *user.User
 	)
 
 	err = g.ShouldBindJSON(&s)
@@ -96,85 +94,32 @@ func (c Controller) Login(g *gin.Context) {
 		return
 	}
 
-	secs, err = c.checkTimeout(usr)
-	if err != nil {
-		log.Err(err).Str("UserID", usr.ID.String()).Msg("Failed to collect login timeout.")
-		g.AbortWithStatusJSON(http.StatusBadRequest, statusInvalidCredentials)
-		return
-	}
-	if secs > 0 {
-		g.AbortWithStatusJSON(http.StatusForbidden, common.StatusMessage{
-			Code:    403,
-			Message: fmt.Sprintf("You have been locked out for failed credentials. You have to wait %v more seconds.", secs),
-		})
+	if usr.Source != "credentials" {
+		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Your account can not be used with credentials!"})
 		return
 	}
 
-	verified = usr.VerifyPassword(s.Password)
-	if !verified {
-		err = c.increaseTimeout(usr)
-		if err != nil {
-			log.Warn().Str("user", usr.ID.String()).Msg("Failed to increase timeout for user")
+	if err = c.service.ValidateCredentials(usr, s.Password); err != nil {
+		switch err.(type) {
+		default:
+			g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error"})
+		case *InvalidCredentials:
+			g.AbortWithStatusJSON(http.StatusBadRequest, statusInvalidCredentials)
+		case *LockedUser:
+			g.AbortWithStatusJSON(http.StatusForbidden, common.StatusMessage{
+				Code:    403,
+				Message: fmt.Sprintf("You have been locked out for failed credentials. You have to wait %v more seconds.", err.(LockedUser).seconds),
+			})
 		}
-		g.AbortWithStatusJSON(http.StatusBadRequest, statusInvalidCredentials)
 		return
 	}
 
-	c.clearTimeout(usr)
 	c.jwt.Issue(g, usr.ID.String())
 
 	g.JSON(http.StatusOK, common.StatusMessage{
 		Code:    200,
 		Message: "Logged in!",
 	})
-}
-
-func (c Controller) checkTimeout(usr *user.User) (int64, error) {
-	var (
-		s   account.Account
-		err error
-	)
-	s, err = c.auths.ByUser(usr.ID)
-	if err != nil {
-		return 0, err
-	}
-	if s.FailedLoginLock.After(time.Now()) {
-		return s.FailedLoginLock.Unix() - time.Now().Unix(), nil
-	}
-	return 0, nil
-}
-
-func (c Controller) increaseTimeout(usr *user.User) error {
-	var (
-		s       account.Account
-		err     error
-		timeout int
-	)
-	s, err = c.auths.ByUser(usr.ID)
-	if err != nil {
-		return err
-	}
-	s.FailedLoginCounter++
-	s.LastFailedLogin = time.Now()
-	if s.FailedLoginCounter > 2 {
-		timeout = int(math.Pow(10, float64(s.FailedLoginCounter-2))) // exponential backoff - 10 sec, 10 sec, 1000 sec, ...
-		s.FailedLoginLock = time.Now().Add(time.Second * time.Duration(timeout))
-	}
-	return c.auths.Update(&s)
-}
-
-func (c Controller) clearTimeout(usr *user.User) error {
-	var (
-		s   account.Account
-		err error
-	)
-	s, err = c.auths.ByUser(usr.ID)
-	if err != nil {
-		return err
-	}
-	s.FailedLoginCounter = 0
-	s.FailedLoginLock = time.Now()
-	return c.auths.Update(&s)
 }
 
 // Logout is a method of `Controller`. Clears the JWT token from the cookies thus logging out the current user.

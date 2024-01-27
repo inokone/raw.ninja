@@ -197,7 +197,7 @@ const AlbumDisplay = ({ user }) => {
                     <DeleteDialog open={isDeleteAlbumDialogOpen} onCancel={handleDeleteAlbumDialogClose} onDelete={handleDeleteAlbumDialogAccept} name="the album" />
                 </Stack>
             }
-            {error && <Alert sx={{ mb: 4, maxWidth: "sm", marginLeft: "auto", marginRight: "auto" }} onClose={() => setError(null)} severity="error">{error}</Alert>}
+            {error && <Alert sx={{ mb: 4, maxWidth: "sm", mx: "auto" }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Updated successfully!</Alert>}
             {data && data.tags && <Stack sx={{ marginBottom: 4 }} justifyContent={'center'} direction="row" spacing={1} onClick={handleEditAlbumDialogOpen}>
                 {data.tags.map(tag => {
@@ -229,7 +229,7 @@ const AlbumDisplay = ({ user }) => {
 }
 
 AlbumDisplay.propTypes = {
-    user: PropTypes.object.isRequired
+    user: PropTypes.object
 };
 
 export default AlbumDisplay;

@@ -56,7 +56,7 @@ func App(path string) {
 	// Set up routes
 	public := r.Group("/api/public/v1")
 	public.Use(cors.Default())
-	web.InitPublic(public, storers)
+	web.InitPublic(public, storers, config)
 
 	r.Use(cors.New(restrictedCORS))
 	private := r.Group("/api/v1")

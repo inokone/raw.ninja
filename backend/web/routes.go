@@ -155,11 +155,22 @@ func InitPrivate(private *gin.RouterGroup, st Storers, se Services, c *common.Ap
 }
 
 // InitPublic is a function to initialize handler mapping for URLs not protected with CORS
-func InitPublic(public *gin.RouterGroup, st Storers) {
+func InitPublic(public *gin.RouterGroup, st Storers, c *common.AppConfig) {
 	ot := onetime.NewController(st.OneTime, st.Images)
+	m := auth.NewJWTHandler(st.Users, c.Auth)
+	gt := auth.NewGoogleController(*c.Auth, st.Users, m)
+	ft := auth.NewFacebookController(*c.Auth, st.Users, m)
 
 	g := public.Group("/onetime")
 	{
 		g.GET("/raw/:id", ot.Raw)
+	}
+
+	g = public.Group("/auth")
+	{
+		g.GET("/google/redirect", gt.Redirect)
+		g.GET("/google", gt.Login)
+		g.GET("/facebook/redirect", ft.Redirect)
+		g.GET("/facebook", ft.Login)
 	}
 }

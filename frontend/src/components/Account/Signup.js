@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { TextField, Button, Alert, Typography, Container, Box, Checkbox, FormControlLabel } from '@mui/material';
 import { Link, useNavigate } from "react-router-dom"
 import ReCAPTCHA from "react-google-recaptcha"
+import SingleSignOn from '../Auth/SingleSignOn';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -63,9 +64,16 @@ const SignupForm = () => {
 
     return (
         <React.Fragment>
-            <Container maxWidth="sm">
-                <Box style={{ flex: 1 }} sx={{ m: 4 }}>
-                    <Typography pb={3} variant='h4'>Registration</Typography>
+            <Container sx={{
+                width: 356,
+                bgcolor: 'white',
+                borderRadius: 2,
+                boxShadow: '0 2px 8px 0 rgba(0, 0, 0, 0.24)',
+                py: 4,
+                mt: 6
+            }}>
+                <Box style={{ flex: 1 }}>
+                    <Typography pb={3} variant='h5'>Sign up</Typography>
                     <form onSubmit={handleSubmit} action={<Link to="/login" />}>
                         <TextField
                             type="email"
@@ -83,7 +91,7 @@ const SignupForm = () => {
                             }}
                             fullWidth
                             required
-                            sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
+                            sx={{ mb: 2, backgroundColor: "#fff", borderRadius: 1 }}
                         />
                         <TextField
                             type="password"
@@ -102,7 +110,7 @@ const SignupForm = () => {
                             value={password}
                             required
                             fullWidth
-                            sx={{ mb: 4, backgroundColor: "#fff", borderRadius: 1 }}
+                            sx={{ mb: 2, backgroundColor: "#fff", borderRadius: 1 }}
                         />
                         <TextField
                             label="Confirm Password"
@@ -122,17 +130,17 @@ const SignupForm = () => {
                             value={confirmation}
                             error={confirmationError}
                             fullWidth
-                            sx={{ mb: 3, backgroundColor: "#fff", borderRadius: 1 }}
+                            sx={{ mb: 2, backgroundColor: "#fff", borderRadius: 1 }}
                             helperText={confirmationError && "New password and confirmation must match."}
                         />
                         <FormControlLabel
-                            sx={{ mb: 4 }}
+                            sx={{ mb: 2 }}
                             control={<Checkbox onChange={(event) => setAccepted(event.target.checked)} />}
-                            label={<Typography>I have read and accept the <Link to="/terms">terms and conditions</Link>.</Typography>}
+                            label={<Typography align='left' fontSize={14}>I have read and accept the <Link to="/terms">terms of service</Link> and <Link to="/privacy">privacy policy</Link>.</Typography>}
                             disabled={loading}
                         />
 
-                        <Box sx={{ mb: 4, placeContent: 'center', display: 'flex' }}>
+                        <Box sx={{ mb: 2, placeContent: 'center', display: 'flex' }}>
                             <ReCAPTCHA
                                 ref={captchaRef}
                                 sitekey="6Let2RIpAAAAANGXcsSJ9aOQEaQmwKqsaZB7IAaQ"
@@ -140,8 +148,9 @@ const SignupForm = () => {
                         </Box>
                         {success && <Alert sx={{ mb: 4 }} onClose={() => setSuccess(null)} severity="success">Signed up successfully! Navigating to login...</Alert>}
                         {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
-                        <Button sx={{ mb: 4 }} variant="contained" color="primary" type="submit" disabled={!accepted || loading}>Sign up</Button>
+                        <Button sx={{ mb: 4, width: '100%' }} variant="contained" color="primary" type="submit" disabled={!accepted || loading}>Sign up</Button>
                     </form>
+                    <SingleSignOn />
                     {!success && <Typography>Already have an account? <Link to="/login">Login Here</Link></Typography>}
                 </Box>
             </Container>
