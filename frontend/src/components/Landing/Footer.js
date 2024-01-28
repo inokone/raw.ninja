@@ -209,10 +209,10 @@ function Footer(props) {
                     </Hidden>
                     <Grid item xs={12} md={6} lg={4}>
                         <Typography variant="h6" paragraph className="text-white">
-                            About the Company
+                            About Us
                         </Typography>
                         <Typography style={{ color: "#8f9296" }} paragraph>
-                            RAWNinja LLC. is an innovative photo-informatics company. Our mission is to make secure photo storage affordable to everyone.
+                            The mission of RAW.Ninja is to make professional photo storage affordable for everyone.
                         </Typography>
                         <Box display="flex">
                             {socialIcons.map((socialIcon, index) => (
