@@ -135,7 +135,7 @@ function HeadSection(props) {
                                                         variant={isWidthUpLg ? "h6" : "body1"}
                                                         color="textSecondary"
                                                     >
-                                                        Low-cost cloud-based image
+                                                        Low-cost cloud image
                                                         storage for professional photographers.
                                                     </Typography>
                                                 </Box>

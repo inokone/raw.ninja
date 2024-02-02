@@ -11,8 +11,8 @@ const PrivacyPolicy = () => {
             <Typography variant='h5' align='left' sx={{ margin: 2 }}>Collection of Personal Information</Typography>
             <Typography align='left' sx={{ margin: 2, marginBottom: 2 }}>We may collect the following personal information from you:</Typography>
             <List sx={{ listStyleType: 'disc', pl: 6 }}>
-                <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>Registration information:</b> When you register for an account, we collect your username, password, email address, and optionally your first name and last name.</Typography></ListItem>
-                <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>Content you upload:</b> When you upload photos or RAW images to our application, we collect the content of those images and any description you provide to the images.</Typography></ListItem>
+                <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>Registration information:</b> When you register for an account, we collect your email address and password. If you register with identity providers (e.g. Google or Facebook) we store your email address only. Later you can optionally provide your first name and last name.</Typography></ListItem>
+                <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>Content you upload:</b> When you upload photos or RAW images to our application, we collect the content of those images and any description you provide additional to the images.</Typography></ListItem>
                 <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>Device information:</b> We may collect information about your device, such as your IP address, browser type, and operating system.</Typography></ListItem>
                 <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>Usage information:</b> We may collect information about how you use our application, such as the pages you visit and the features you use.</Typography></ListItem>
             </List>
@@ -22,6 +22,7 @@ const PrivacyPolicy = () => {
                 <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>To provide our application to you:</b> We use your registration information to create your account and to provide you with access to our application.</Typography></ListItem>
                 <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>To store your photos and RAW images:</b> We store your content on our servers so that you can access it from anywhere.</Typography></ListItem>
                 <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>To improve our application:</b>  We use your usage information to help us improve our application and to make sure it is working properly.</Typography></ListItem>
+                <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>To send you administrative communications:</b> We may send you email or other communications about changes to your account (e.g. quota maximum reached) or changes to our site.</Typography></ListItem>
                 <ListItem sx={{ display: 'list-item' }}><Typography align='left'><b>To send you marketing communications:</b> We may send you email or other communications about our products and services, but you can opt out of receiving these communications at any time.</Typography></ListItem>
             </List>
             <Typography variant='h5' align='left' sx={{ margin: 2 }}>Sharing of Personal Information</Typography>

@@ -15,7 +15,6 @@ const PhotoDocs = () => {
             <Typography variant='h5' align='left' sx={{ margin: 2 }}>Freeze and Unfreeze</Typography>
             <Typography align='left' sx={{ margin: 2, marginBottom: 2 }}><b>Freezing Photos:</b> You can mark a photo as frozen to save upload quota. However, frozen photos cannot be downloaded or edited.</Typography>
             <Typography align='left' sx={{ margin: 2, marginBottom: 6 }}><b>Unfreezing Photos:</b> To download or edit a frozen photo, it needs to be unfrozen first. Keep in mind that every photo unfrozen will not be eligible for freezing again for the next 30 days.</Typography>
-            <Typography variant='h5' align='left' sx={{ margin: 2 }}>Happy uploading!</Typography>
         </Box>
     )
 }

@@ -6,6 +6,7 @@ import RuleDocs from './RuleDocs';
 import { Box, Tabs, Tab} from '@mui/material';
 import PrivacyPolicy from './PrivacyPolicy';
 import TermsOfService from  './TermsOfService';
+import GeneralDocs from './General';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -51,26 +52,30 @@ const Docs = () => {
         <Box sx={{ borderBottom: 1, borderColor: 'divider', maxWidth: 'md', mx: 'auto', marginTop: 2, paddingTop: 2, paddingBottom: 4 }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                    <Tab label="Photos" {...a11yProps(0)} />
-                    <Tab label="Albums" {...a11yProps(1)} />
-                    <Tab label="Lifecycle Rules" {...a11yProps(2)} />
-                    <Tab label="Privacy Policy" {...a11yProps(3)} />
-                    <Tab label="Terms of Service" {...a11yProps(4)} />
+                    <Tab label="General" {...a11yProps(0)} />
+                    <Tab label="Photos" {...a11yProps(1)} />
+                    <Tab label="Albums" {...a11yProps(2)} />
+                    <Tab label="Lifecycle Rules" {...a11yProps(3)} />
+                    <Tab label="Privacy Policy" {...a11yProps(4)} />
+                    <Tab label="Terms of Service" {...a11yProps(5)} />
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
-                <PhotoDocs />
+                <GeneralDocs />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-                <AlbumDocs />
+                <PhotoDocs />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={2}>
-                <RuleDocs/>
+                <AlbumDocs />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={3}>
-                <PrivacyPolicy />
+                <RuleDocs/>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={4}>
+                <PrivacyPolicy />
+            </CustomTabPanel>
+            <CustomTabPanel value={value} index={5}>
                 <TermsOfService />
             </CustomTabPanel>
         </Box>

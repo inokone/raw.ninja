@@ -21,7 +21,7 @@ const GoogleSource = "Google"
 
 // state should be regenerated per auth request
 var (
-	GoogleState = "google_random_csrf_string"
+	GoogleState = "raw.ninja.google.random.csrf.string-c9551e5b-c326-4610-98dd-b1f78f76e25c"
 )
 
 // GoogleController is a handler for endpoints of Google OAuth based autentication

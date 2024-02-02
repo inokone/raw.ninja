@@ -21,7 +21,7 @@ const FacebookSource = "Facebook"
 
 // state should be regenerated per auth request
 var (
-	FacebookState = "facebook_random_csrf_string"
+	FacebookState = "raw.ninja_facebook_random_csrf_string-c9551e5b-c326-4610-98dd-b1f78f76e25c"
 )
 
 // FacebookController is a handler for endpoints of Facebook OAuth based autentication
