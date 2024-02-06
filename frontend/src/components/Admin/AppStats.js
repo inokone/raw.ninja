@@ -82,6 +82,14 @@ const AppStats = () => {
                             <Grid item xs={7}><Typography>{stats.favorites}</Typography></Grid>
                         </Grid>
                         <Grid container>
+                            <Grid item xs={5}><Typography>Albums:</Typography></Grid>
+                            <Grid item xs={7}><Typography>{stats.albums}</Typography></Grid>
+                        </Grid>
+                        <Grid container>
+                            <Grid item xs={5}><Typography>Upload batches:</Typography></Grid>
+                            <Grid item xs={7}><Typography>{stats.uploads}</Typography></Grid>
+                        </Grid>
+                        <Grid container>
                             <Grid item xs={5}><Typography>Used space of quota:</Typography></Grid>
                             <Grid item xs={7}><Typography>{formatBytes(stats.used_space) + " / " + formatBytes(stats.quota)}</Typography></Grid>
                         </Grid>

@@ -105,6 +105,15 @@ func (c Controller) AppStats(g *gin.Context) {
 	stats.Photos = ps.Photos
 	stats.Quota = c.config.Quota
 
+	albums, uploads, err := c.albums.StorerStats()
+	if err != nil {
+		log.Err(err).Msg("Failed to collect album and upload stats")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"})
+		return
+	}
+	stats.Uploads = uploads
+	stats.Albums = albums
+
 	us, err := c.users.Stats()
 	if err != nil {
 		log.Err(err).Msg("Failed to collect user stats")

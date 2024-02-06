@@ -2311,6 +2311,9 @@ const docTemplate = `{
         "stats.AppStats": {
             "type": "object",
             "properties": {
+                "albums": {
+                    "type": "integer"
+                },
                 "favorites": {
                     "type": "integer"
                 },
@@ -2321,6 +2324,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "total_users": {
+                    "type": "integer"
+                },
+                "uploads": {
                     "type": "integer"
                 },
                 "used_space": {

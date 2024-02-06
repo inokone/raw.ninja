@@ -23,6 +23,14 @@ Functionality:
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
     - Display source, image count + used space per user on admin page
+    - Add lifecycle rules
+      - Disable Bin option
+      - Implement Frozen option
+      - eventbridge trigger
+      - lambda processor, iterating through rules and photos associated to these
+    - Add rating option for images (MUI Rating)
+    - Photo page filtering
+    
     - Automate IaC
       - Frontend on S3, later possibly CloudFront (https://aws.plainenglish.io/how-to-host-your-react-application-in-aws-s3-c0940cd4377b)
       - CloudFormation with
@@ -31,11 +39,6 @@ Functionality:
         - ALB deployed by CF
         - CloudWatch logs by CF
         - Credentials should come from AWS Systems Manager Parameter Store
-    - Add lifecycle rules
-      - Disable Bin option
-      - Implement Frozen option
-      - eventbridge trigger
-      - lambda processor, iterating through rules and photos associated to these
     - Make image.Service serve just a single image, and have one image service per size
       - 3 levels for images (instead of 2)
         - raw
@@ -59,7 +62,6 @@ Functionality:
     - Testing (handlers and unit testing) - Backend and Frontend
     - Investigate compression options for storage
     - Advanced concurrency for file upload
-    - Add rating option for images (MUI Rating)
     - Add tags for images (MUI Chip)
     - Generative AI based on the decisions of the user (1to5 rating) to advise a score
     - Extract constants and Status/Error variables on top of Go modules

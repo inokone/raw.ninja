@@ -2304,6 +2304,9 @@
         "stats.AppStats": {
             "type": "object",
             "properties": {
+                "albums": {
+                    "type": "integer"
+                },
                 "favorites": {
                     "type": "integer"
                 },
@@ -2314,6 +2317,9 @@
                     "type": "integer"
                 },
                 "total_users": {
+                    "type": "integer"
+                },
+                "uploads": {
                     "type": "integer"
                 },
                 "used_space": {

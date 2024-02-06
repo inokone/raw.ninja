@@ -44,4 +44,6 @@ type AppStats struct {
 	Favorites        int             `json:"favorites"`
 	UsedSpace        int64           `json:"used_space"`
 	Quota            int64           `json:"quota"`
+	Uploads          int             `json:"uploads"`
+	Albums           int             `json:"albums"`
 }

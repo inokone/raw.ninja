@@ -14,6 +14,8 @@ const (
 	GROUP BY c.id
 	ORDER by c.created_at DESC`
 
+	storerStatsQuery = `SELECT count(*) as collection_count FROM collections WHERE type = ? and deleted_at IS NULL`
+
 	searchQuery = `SELECT c.id as ID, c.name as Name, c.tags as Tags, c.created_at as Created, count(p.photo_id) as Photos, c.thumbnail_id as Thumbnail
 	FROM collections c 
 	LEFT JOIN collection_photos p ON c.id = p.collection_id 
@@ -47,6 +49,7 @@ type Storer interface {
 	Writer
 	Loader
 	Stats(usr *user.User) ([]Stat, error)
+	StorerStats() (int, int, error)
 	Search(usrID uuid.UUID, ct Type, query string) ([]ListItem, error)
 }
 
@@ -105,6 +108,21 @@ func (s *GORMStorer) Stats(usr *user.User) ([]Stat, error) {
 	var collection []Stat
 	res := s.db.Raw(statQuery, usr.ID).Scan(&collection)
 	return collection, res.Error
+}
+
+// StorerStats is a method of the `GORMStorer` struct. List number of albums and uploads.
+func (s *GORMStorer) StorerStats() (int, int, error) {
+	var (
+		albums  int
+		uploads int
+	)
+	if res := s.db.Raw(storerStatsQuery, Album).Scan(&albums); res.Error != nil {
+		return 0, 0, res.Error
+	}
+	if res := s.db.Raw(storerStatsQuery, Upload).Scan(&uploads); res.Error != nil {
+		return 0, 0, res.Error
+	}
+	return albums, uploads, nil
 }
 
 // Search is a method of the `GORMStorer` struct. Takes a user and query string to search `Collection` objects matching these criteria.

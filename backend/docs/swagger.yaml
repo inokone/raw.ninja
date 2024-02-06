@@ -290,6 +290,8 @@ definitions:
     type: object
   stats.AppStats:
     properties:
+      albums:
+        type: integer
       favorites:
         type: integer
       photos:
@@ -297,6 +299,8 @@ definitions:
       quota:
         type: integer
       total_users:
+        type: integer
+      uploads:
         type: integer
       used_space:
         type: integer
