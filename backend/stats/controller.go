@@ -54,7 +54,7 @@ func (c Controller) Users(g *gin.Context) {
 	}
 	res = make([]UserPreview, len(users))
 	for idx, usr := range users {
-		stats, err = c.userStats(&usr)
+		stats, err = c.userStats(usr)
 		if err != nil {
 			log.Err(err).Msg("Failed to collect users stats")
 			g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"})
@@ -85,7 +85,7 @@ func (c Controller) UserStats(g *gin.Context) {
 	)
 	u, _ := g.Get("user")
 	usr = u.(*user.User)
-	stats, err = c.userStats(usr)
+	stats, err = c.userStats(*usr)
 	if err != nil {
 		log.Err(err).Msg("Failed to collect user stats")
 		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"})
@@ -93,7 +93,7 @@ func (c Controller) UserStats(g *gin.Context) {
 	g.JSON(http.StatusOK, stats)
 }
 
-func (c Controller) userStats(usr *user.User) (*UserStats, error) {
+func (c Controller) userStats(usr user.User) (*UserStats, error) {
 	var (
 		stats UserStats
 		ps    photo.UserStats
@@ -101,7 +101,7 @@ func (c Controller) userStats(usr *user.User) (*UserStats, error) {
 		err   error
 	)
 
-	stats = NewUserStats(*usr)
+	stats = NewUserStats(usr)
 	ps, err = c.photos.UserStats(usr.ID.String())
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func (c Controller) userStats(usr *user.User) (*UserStats, error) {
 	if stats.Quota > 0 {
 		stats.AvailableSpace = stats.Quota - ps.UsedSpace
 	}
-	as, err = c.albums.Stats(usr)
+	as, err = c.albums.Stats(&usr)
 	if err != nil {
 		return nil, err
 	}
