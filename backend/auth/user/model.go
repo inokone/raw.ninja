@@ -97,6 +97,7 @@ func (u *User) AsAdminView() AdminView {
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Status:    string(u.Status),
+		Source:    u.Source,
 		Enabled:   u.Enabled,
 		Role:      u.Role.AsProfileRole(),
 		Created:   int(u.CreatedAt.Unix()),
@@ -139,6 +140,7 @@ type AdminView struct {
 	FirstName string           `json:"first_name"`
 	LastName  string           `json:"last_name"`
 	Status    string           `json:"status"`
+	Source    string           `json:"source"`
 	Role      role.ProfileRole `json:"role"`
 	Enabled   bool             `json:"enabled"`
 	Created   int              `json:"created"`

@@ -150,6 +150,7 @@ func InitPrivate(private *gin.RouterGroup, st Storers, se Services, c *common.Ap
 	g = private.Group("/statistics", m.Validate)
 	{
 		g.GET("/user", sts.UserStats)
+		g.GET("/users", sts.Users)
 		g.GET("/app", m.ValidateAdmin, sts.AppStats)
 	}
 }

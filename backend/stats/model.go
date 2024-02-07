@@ -23,6 +23,12 @@ type UserStats struct {
 	Quota          int64             `json:"quota"`
 }
 
+// UserPreview is a view on the User with statistical data
+type UserPreview struct {
+	User  user.AdminView `json:"user"`
+	Stats UserStats      `json:"stats"`
+}
+
 // NewUserStats function creates a new `UserStats` entity for the user provided in the parameters.
 func NewUserStats(u user.User) UserStats {
 	return UserStats{

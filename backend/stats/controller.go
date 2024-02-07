@@ -30,6 +30,43 @@ func NewController(photos photo.Storer, users user.Storer, albums collection.Sto
 	}
 }
 
+// Users is a method of `Controller` returning aggregated data on all users.
+// @Summary Users statistics endpoint
+// @Schemes
+// @Description Returns the users statistics on stored photos
+// @Accept json
+// @Produce json
+// @Success 200 {array} UserPreview
+// @Failure 404 {object} common.StatusMessage
+// @Failure 500 {object} common.StatusMessage
+// @Router /statistics/users [get]
+func (c Controller) Users(g *gin.Context) {
+	var (
+		stats *UserStats
+		users []user.User
+		err   error
+		res   []UserPreview
+	)
+	users, err = c.users.List()
+	if err != nil {
+		log.Err(err).Msg("Failed to collect users stats")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"})
+	}
+	res = make([]UserPreview, len(users))
+	for idx, usr := range users {
+		stats, err = c.userStats(&usr)
+		if err != nil {
+			log.Err(err).Msg("Failed to collect users stats")
+			g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"})
+		}
+		res[idx] = UserPreview{
+			Stats: *stats,
+			User:  usr.AsAdminView(),
+		}
+	}
+	g.JSON(http.StatusOK, res)
+}
+
 // UserStats is a method of `Controller` returning aggregated data on the photos of a user.
 // @Summary User statistics endpoint
 // @Schemes
@@ -42,20 +79,32 @@ func NewController(photos photo.Storer, users user.Storer, albums collection.Sto
 // @Router /statistics/user [get]
 func (c Controller) UserStats(g *gin.Context) {
 	var (
+		stats *UserStats
 		usr   *user.User
+		err   error
+	)
+	u, _ := g.Get("user")
+	usr = u.(*user.User)
+	stats, err = c.userStats(usr)
+	if err != nil {
+		log.Err(err).Msg("Failed to collect user stats")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"})
+	}
+	g.JSON(http.StatusOK, stats)
+}
+
+func (c Controller) userStats(usr *user.User) (*UserStats, error) {
+	var (
 		stats UserStats
 		ps    photo.UserStats
 		as    []collection.Stat
 		err   error
 	)
-	u, _ := g.Get("user")
-	usr = u.(*user.User)
+
 	stats = NewUserStats(*usr)
 	ps, err = c.photos.UserStats(usr.ID.String())
 	if err != nil {
-		log.Err(err).Msg("Failed to collect user stats")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"})
-		return
+		return nil, err
 	}
 	stats.Photos = ps.Photos
 	stats.Favorites = ps.Favorites
@@ -66,9 +115,7 @@ func (c Controller) UserStats(g *gin.Context) {
 	}
 	as, err = c.albums.Stats(usr)
 	if err != nil {
-		log.Err(err).Msg("Failed to collect user album stats")
-		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error, please contact an administrator!"})
-		return
+		return nil, err
 	}
 	stats.Uploads = make(map[time.Time]int)
 	for _, stat := range as {
@@ -78,7 +125,7 @@ func (c Controller) UserStats(g *gin.Context) {
 			stats.Uploads[stat.Created] = stat.Photos
 		}
 	}
-	g.JSON(http.StatusOK, stats)
+	return &stats, nil
 }
 
 // AppStats is a method of `Controller` returning aggregated data on the application for administrators.

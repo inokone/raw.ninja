@@ -36,6 +36,18 @@ const UserTableTemplate = () => {
         }
     }], [])
 
+    const formatBytes = (bytes, decimals = 2) => {
+        if (!+bytes) return '0 Bytes'
+
+        const k = 1024
+        const dm = decimals < 0 ? 0 : decimals
+        const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+    }
+
     const columns = useMemo(
         () => [
             {
@@ -43,6 +55,57 @@ const UserTableTemplate = () => {
                 header: 'Id',
                 enableEditing: false,
                 size: 0,
+            },
+            {
+                accessorKey: 'email',
+                header: 'Email',
+                enableEditing: false,
+                muiEditTextFieldProps: {
+                    type: 'email',
+                    required: true,
+                    error: !!validationErrors?.email,
+                    helperText: validationErrors?.email,
+                    //remove any previous validation errors when user focuses on the input
+                    onFocus: () =>
+                        setValidationErrors({
+                            ...validationErrors,
+                            email: undefined,
+                        }),
+                },
+            },
+            {
+                accessorKey: 'used_space',
+                header: 'Used Space',
+                enableEditing: false,
+                Cell: ({ cell }) => formatBytes(cell.getValue())
+            },
+            {
+                accessorKey: 'photos',
+                header: 'Photo Count',
+                enableEditing: false
+            },
+            {
+                accessorKey: 'source',
+                header: 'Source',
+                enableEditing: false
+            },
+            {
+                accessorKey: 'created',
+                header: 'Created',
+                enableEditing: false,
+                sortingFn: 'datetime',
+                Cell: ({ cell }) => new Date(cell.getValue() * 1000).toLocaleDateString(),  //render Date as a string
+            },
+            {
+                accessorKey: 'role',
+                header: 'Role',
+                editVariant: 'select',
+                editSelectOptions: roles,
+                enableEditing: false, // when backend is fixed, it can be enabled
+                muiEditTextFieldProps: {
+                    select: true
+                },
+                Cell: ({ cell }) => cell.getValue().name  //render Role name only 
             },
             {
                 accessorKey: 'first_name',
@@ -76,41 +139,6 @@ const UserTableTemplate = () => {
                             lastName: undefined,
                         }),
                 },
-            },
-            {
-                accessorKey: 'email',
-                header: 'Email',
-                enableEditing: false,
-                muiEditTextFieldProps: {
-                    type: 'email',
-                    required: true,
-                    error: !!validationErrors?.email,
-                    helperText: validationErrors?.email,
-                    //remove any previous validation errors when user focuses on the input
-                    onFocus: () =>
-                        setValidationErrors({
-                            ...validationErrors,
-                            email: undefined,
-                        }),
-                },
-            },
-            {
-                accessorKey: 'created',
-                header: 'Created',
-                enableEditing: false,
-                sortingFn: 'datetime',
-                Cell: ({ cell }) => new Date(cell.getValue() * 1000).toLocaleDateString(),  //render Date as a string
-            },
-            {
-                accessorKey: 'role',
-                header: 'Role',
-                editVariant: 'select',
-                editSelectOptions: roles,
-                enableEditing: false, // when backend is fixed, it can be enabled
-                muiEditTextFieldProps: {
-                    select: true
-                },
-                Cell: ({ cell }) => cell.getValue().name  //render Role name only 
             },
         ],
         [validationErrors, roles]
@@ -225,7 +253,7 @@ function usePopulate() {
         queryKey: ['users'],
         queryFn: async () => {
             //send api request here
-            return await new Promise((resolve, reject) => fetch(REACT_APP_API_PREFIX + '/api/v1/users/', {
+            return await new Promise((resolve, reject) => fetch(REACT_APP_API_PREFIX + '/api/v1/statistics/users', {
                 method: "GET",
                 mode: "cors",
                 credentials: "include"
@@ -237,7 +265,14 @@ function usePopulate() {
                         });
                     } else {
                         response.json().then(content => {
-                            resolve(content)
+                            content.forEach(data => {
+                                data.user.uploads = data.stats.uploads
+                                data.user.albums = data.stats.albums
+                                data.user.favorites = data.stats.favorites
+                                data.user.photos = data.stats.photos 
+                                data.user.used_space = data.stats.used_space                                
+                            })
+                            resolve(content.map(data => data.user))
                         })
                     }
                 })

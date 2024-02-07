@@ -22,7 +22,6 @@ Functionality:
     - Cookie warning for EU countries
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Display source, image count + used space per user on admin page
     - Add lifecycle rules
       - Disable Bin option
       - Implement Frozen option
