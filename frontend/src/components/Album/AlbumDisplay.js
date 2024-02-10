@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { useLocation, useNavigate } from "react-router-dom";
-import { Stack, Chip, Typography, Alert, IconButton, Tooltip, Box, Fab } from "@mui/material";
+import { Stack, Chip, Typography, Alert, IconButton, Tooltip, Box, SpeedDial, SpeedDialAction } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import StarIcon from '@mui/icons-material/Star';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import PhotoGrid from '../Photos/PhotoGrid';
 import EditAlbumDialog from './EditAlbumDialog';
@@ -122,7 +124,7 @@ const AlbumDisplay = ({ user }) => {
         setDeleteAlbumDialogOpen(false);
     }, [setDeleteAlbumDialogOpen, deleteAlbum]);
 
-    const onAddClick = React.useCallback(() => {
+    const handleAddClick = React.useCallback(() => {
         navigate(path + '/add', { 
             state: {
                 album: data,
@@ -131,7 +133,11 @@ const AlbumDisplay = ({ user }) => {
         })
     }, [navigate, path, data]);
 
-    const onDeleteClick = React.useCallback((items) => {
+    const handleRateClick = React.useCallback(() => {
+        navigate(path + '/ratings')
+    }, [navigate, path]);
+
+    const handleDeleteClick = React.useCallback((items) => {
         setDeleteDialogOpen(true);
         setDeleteItems(items)
     }, [setDeleteDialogOpen, setDeleteItems]);
@@ -156,7 +162,7 @@ const AlbumDisplay = ({ user }) => {
         {
             icon: <DeleteIcon sx={{ color: theme.palette.background.paper }} />,
             tooltip: "Remove photos from album",
-            action: onDeleteClick
+            action: handleDeleteClick
         }
     ]
 
@@ -169,7 +175,7 @@ const AlbumDisplay = ({ user }) => {
         {
             icon: <AddPhotoAlternateIcon />,
             tooltip: "Add photos to the album",
-            action: onAddClick
+            action: handleAddClick
         },
         {
             icon: <DeleteIcon />,
@@ -177,6 +183,13 @@ const AlbumDisplay = ({ user }) => {
             action: handleDeleteAlbumClick
         }
     ]
+
+    const actions = [
+        { icon: <AddIcon />, name: 'Add photos', action: handleAddClick },
+        { icon: <StarIcon />, name: 'Rate photos', action: handleRateClick },
+        { icon: <EditIcon />, name: 'Edit properties', action: handleEditAlbumDialogOpen },
+        { icon: <DeleteIcon />, name: 'Delete album', action: handleDeleteAlbumClick },
+    ];
 
     return (
         <>
@@ -221,9 +234,20 @@ const AlbumDisplay = ({ user }) => {
                 bottom: 16,
                 right: 16
             }}>
-                <Fab onClick={onAddClick} color="primary" aria-label="add">
-                    <AddIcon />
-                </Fab>
+                <SpeedDial
+                    ariaLabel="Album actions"
+                    sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                    icon={<SpeedDialIcon />}
+                >
+                    {actions.map((action) => (
+                        <SpeedDialAction
+                            key={action.name}
+                            icon={action.icon}
+                            tooltipTitle={action.name}
+                            onClick={action.action}
+                        />
+                    ))}
+                </SpeedDial>
             </Box>
         </>)
 }

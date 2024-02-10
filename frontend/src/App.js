@@ -26,6 +26,7 @@ import CookieRulesDialog from './components/Common/CookieRulesDialog';
 import UploadDisplay from './components/Upload/UploadDisplay';
 import CreateAlbum from './components/Album/CreateAlbum';
 import AlbumDisplay from './components/Album/AlbumDisplay';
+import AlbumRating from './components/Album/AlbumRating';
 import AlbumList from './components/Album/AlbumList';
 import RuleSets from './components/Rules/RuleSets';
 import RuleSet from './components/Rules/RuleSet';
@@ -33,6 +34,8 @@ import AddPhotos from './components/Album/AddPhotos';
 import Docs from './components/Docs/Docs';
 import PrivacyPolicy from './components/Docs/PrivacyPolicy';
 import TermsOfService from './components/Docs/TermsOfService';
+import RatingGallery from './components/Photos/RatingGallery';
+import UploadRating from './components/Upload/UploadRating';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -109,13 +112,16 @@ const App = () => {
                   <Route path="/home" element={<Dashboard user={user} />} />
                   <Route path="/upload" element={<Upload user={user} />} />
                   <Route path="/photos" element={<PhotoList user={user} />} />
+                  <Route path="/ratings" element={<RatingGallery user={user} />} />
                   <Route path="/albums" element={<AlbumList user={user} />} />
                   <Route path="/albums/create" element={<CreateAlbum user={user} />} />
                   <Route path="/albums/:albumId/add" element={<AddPhotos user={user} />} />
                   <Route path="/albums/:albumId" element={<AlbumDisplay user={user} />} />
+                  <Route path="/albums/:albumId/ratings" element={<AlbumRating user={user} />} />
                   <Route path="/editor/:photoId" element={<Photopea />} />
                   <Route path="/photos/:photosId" element={<PhotoDisplay user={user} />} />
                   <Route path="/uploads/:uploadId" element={<UploadDisplay user={user} />} />
+                  <Route path="/uploads/:uploadId/ratings" element={<UploadRating user={user} />} />
                   <Route path="/rulesets" element={<RuleSets user={user} />} />
                   <Route path="/rulesets/:ruleSetId" element={<RuleSet user={user} />} />
                   <Route path="/profile" element={<UserProfile user={user} />} />

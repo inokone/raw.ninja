@@ -12,6 +12,11 @@ const SearchResult = () => {
   const navigate = useNavigate()
   const { state } = useLocation()
   const [ data, setData ] = React.useState(null)
+  const gridConfig = {
+    card: {
+      displayTitle: true
+    }
+  }
 
   const populate = () => {
     if (state.query.length < 2) {
@@ -50,7 +55,7 @@ const SearchResult = () => {
             </>
           }
           <Marker mark={state.query}>
-            <PhotoGrid key={state.query} populator={populate} onDataLoaded={handleDataLoaded} displayTitle={true}/>
+            <PhotoGrid key={state.query} populator={populate} onDataLoaded={handleDataLoaded} config={gridConfig}/>
           </Marker>
           {data &&
             <>

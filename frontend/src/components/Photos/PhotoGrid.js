@@ -1,9 +1,8 @@
 import * as React from 'react';
 import PropTypes from "prop-types";
-import { Alert, Box, Fab } from "@mui/material";
+import { Alert, Box } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import AddIcon from '@mui/icons-material/Add';
 import ProgressDisplay from '../Common/ProgressDisplay';
 import DeleteDialog from '../Common/DeleteDialog';
 import CollectionsIcon from '@mui/icons-material/Collections';
@@ -13,7 +12,7 @@ import { convertPhotos, convertPhoto } from './PhotoConverter';
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
-const PhotoGrid = ({ populator, fabAction, onDataLoaded, selectionActionOverride, displayTitle }) => {
+const PhotoGrid = ({ populator, onDataLoaded, selectionActionOverride, config }) => {
     const theme = useTheme()
     const navigate = useNavigate()
     const [error, setError] = React.useState(null)
@@ -24,6 +23,7 @@ const PhotoGrid = ({ populator, fabAction, onDataLoaded, selectionActionOverride
     const updateImage = (photo) => {
         let image = photo.base
         image.descriptor.favorite = photo.favorite
+        image.descriptor.rating = photo.rating
         fetch(REACT_APP_API_PREFIX + '/api/v1/photos/' + image.id, {
             method: "PUT",
             mode: "cors",
@@ -149,29 +149,16 @@ const PhotoGrid = ({ populator, fabAction, onDataLoaded, selectionActionOverride
             <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="the selected photos" />
             {error && <Alert sx={{ mb: 4 }} onClose={() => setError(null)} severity="error">{error}</Alert>}
             {loading && <ProgressDisplay />}
-            {images && <SelectableGallery images={images} setImages={setImages} updateImage={updateImage} selectionActionOverride={selectionActions} displayTitle={displayTitle} />}
-            {fabAction &&
-                <Box onClick={fabAction} sx={{
-                    '& > :not(style)': { m: 1 },
-                    position: "fixed",
-                    bottom: 16,
-                    right: 16
-                }}>
-                    <Fab color="primary" aria-label="add">
-                        <AddIcon />
-                    </Fab>
-                </Box>
-            }
+            {images && <SelectableGallery images={images} setImages={setImages} updateImage={updateImage} selectionActionOverride={selectionActions} config={config} />}
         </Box >
     );
 }
 
 PhotoGrid.propTypes = {
     populator: PropTypes.func.isRequired,
-    fabAction: PropTypes.func,
     onDataLoaded: PropTypes.func,
     selectionActionOverride: PropTypes.array,
-    displayTitle: PropTypes.bool
+    config: PropTypes.object
 };
 
 export default PhotoGrid;

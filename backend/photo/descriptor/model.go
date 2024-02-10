@@ -26,6 +26,7 @@ type Descriptor struct {
 	Format      Format
 	Tags        pq.StringArray `gorm:"type:text[]"`
 	Favorite    bool           `gorm:"index"`
+	Rating      int8           `gorm:"index"`
 	Metadata    img.Metadata   `gorm:"foreignKey:MetadataID"`
 	MetadataID  uuid.UUID
 	ThumbWidth  int
@@ -47,6 +48,7 @@ func (p Descriptor) AsResp() Response {
 		Favorite:    p.Favorite,
 		ThumbWidth:  p.ThumbWidth,
 		ThumbHeight: p.ThumbHeight,
+		Rating:      p.Rating,
 	}
 }
 
@@ -62,4 +64,5 @@ type Response struct {
 	Metadata    img.Response `json:"metadata"`
 	Tags        []string     `json:"tags"`
 	Favorite    bool         `json:"favorite"`
+	Rating      int8         `json:"rating"`
 }

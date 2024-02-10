@@ -64,6 +64,7 @@ export function convertPhoto(photo) {
         title: photo.descriptor.filename,
         description: description(photo),
         favorite: photo.descriptor.favorite,
+        rating: photo.descriptor.rating,
         id: photo.id,
         format: photo.descriptor.format,
         base: photo,

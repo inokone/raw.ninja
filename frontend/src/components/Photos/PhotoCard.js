@@ -4,9 +4,20 @@ import StarIcon from '@mui/icons-material/Star';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Brightness1Icon from '@mui/icons-material/Brightness1';
-import { Box, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, IconButton, Tooltip, Typography, Rating } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 import { useNavigate } from 'react-router-dom';
+
+/*
+Schema of "config":
+{
+  displayTitle: true/false,
+  selectionEnabled: true/false,
+  favoriteEnabled: true/false,
+  editingEnabled: true/false,
+  ratingEnabled: true/false,
+}
+*/
 
 const useStyles = makeStyles(() => ({
   favorite: {
@@ -56,7 +67,15 @@ const useStyles = makeStyles(() => ({
 
 }));
 
-const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, displayTitle, imageProps: { src, alt, style, width, height, ...restImageProps } }) => {
+const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, config, imageProps: { src, alt, style, width, height, ...restImageProps } }) => {
+  const defaultConfig = {
+    displayTitle: false,
+    selectionEnabled: true,
+    favoriteEnabled: true,
+    editingEnabled: true,
+    ratingEnabled: false,
+  }
+  const settings = { ...defaultConfig, ...config }
   const navigate = useNavigate();
   const classes = useStyles();
   const [isHovering, setIsHovering] = React.useState(false);
@@ -75,6 +94,12 @@ const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, displayTitle, ima
     updatePhoto(updatedPhoto)
   }
 
+  const handleRatingChanged = (rating) => {
+    const updatedPhoto = { ...photo };
+    updatedPhoto.rating = rating
+    updatePhoto(updatedPhoto)
+  }
+
   const handleSelectClick = (photo) => {
     photo.selected = !photo.selected
     setSelected(photo)
@@ -83,6 +108,7 @@ const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, displayTitle, ima
   const imgStyle = {
     transition: "transform .135s cubic-bezier(0.0,0.0,0.2,1),opacity linear .15s"
   };
+  
   const selectedImgStyle = {
     transform: "translateZ(0px) scale3d(0.9, 0.9, 1)",
     transition: "transform .135s cubic-bezier(0.0,0.0,0.2,1),opacity linear .15s"
@@ -115,20 +141,20 @@ const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, displayTitle, ima
         {...restImageProps}
         onClick={() => handleClick(photo)}
       />
-      {displayTitle &&
+      {settings.displayTitle &&
         <Box sx={{
-          width: '100%', 
-          background: 
+          width: '100%',
+          background:
             'linear-gradient(to top, rgba(0,0,0, 1) 0%, ' +
             'rgba(0,0,0, 1) 30%, rgba(0,0,0, .35) 100%)',
           position: 'absolute',
           bottom: 0,
           right: 0,
-      }}>
-        <Typography sx={{color: 'white', marginBottom: '2px', marginTop: '2px'}}>{photo.title}</Typography>
-      </Box>
+        }}>
+          <Typography sx={{ color: 'white', marginBottom: '2px', marginTop: '2px' }}>{photo.title}</Typography>
+        </Box>
       }
-      {(photo.favorite || isHovering) && <Box sx={{
+      {((settings.favoriteEnabled && photo.favorite) || ((settings.favoriteEnabled || settings.editingEnabled) && isHovering) || settings.ratingEnabled) && <Box sx={{
         background:
           'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
           'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
@@ -138,20 +164,35 @@ const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, displayTitle, ima
         top: 0,
         right: 0,
       }}>
-        {isHovering &&
-          <>
-            <Tooltip title="Edit photo">
-              <IconButton aria-label="Edit this photo" onClick={() => handleEditClick(photo)} sx={{ color: 'lightgray' }}>
-                <EditIcon />
-              </IconButton>
-            </Tooltip></>}
-        <Tooltip title="Mark as favorite">
-          <IconButton aria-label="Add to favorites" onClick={() => handleFavoriteClick(photo)}>
-            <StarIcon className={photo.favorite ? classes.favorite : classes.nonfavorite} />
-          </IconButton>
-        </Tooltip>
+        {settings.editingEnabled && isHovering &&
+          <Tooltip title="Edit photo">
+            <IconButton aria-label="Edit this photo" onClick={() => handleEditClick(photo)} sx={{ color: 'lightgray' }}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+        }
+        {settings.favoriteEnabled &&
+          <Tooltip title="Mark as favorite">
+            <IconButton aria-label="Add to favorites" onClick={() => handleFavoriteClick(photo)}>
+              <StarIcon className={photo.favorite ? classes.favorite : classes.nonfavorite} />
+            </IconButton>
+          </Tooltip>
+        }
+        {settings.ratingEnabled &&
+          <Box sx={{ width: '100%', display: 'flex' }}>
+            <Tooltip title="Rate photo">
+              <Rating
+                key="rating"
+                sx={{ pt: 1, mx: 'auto'}}
+                value={photo.rating}
+                onChange={(_, rating) => handleRatingChanged(rating)}
+                emptyIcon={<StarIcon style={{ opacity: 0.55, color: 'white' }} fontSize="inherit" />}
+              />
+            </Tooltip>
+          </Box>
+        }
       </Box>}
-      {(isHovering || photo.selected) && <Box sx={{
+      {settings.selectionEnabled && (isHovering || photo.selected) && <Box sx={{
         position: 'absolute',
         textAlign: 'left',
         top: 0,
@@ -179,10 +220,10 @@ const PhotoCard = ({ photo, updatePhoto, setSelected, onClick, displayTitle, ima
 
 PhotoCard.propTypes = {
   photo: PropTypes.object.isRequired,
+  config: PropTypes.object,
   updatePhoto: PropTypes.func.isRequired,
   setSelected: PropTypes.func.isRequired,
-  onClick: PropTypes.func.isRequired,
-  displayTitle: PropTypes.bool
+  onClick: PropTypes.func.isRequired
 };
 
 export default PhotoCard;

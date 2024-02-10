@@ -27,7 +27,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     }),
 );
 
-const SelectableGallery = ({ images, setImages, updateImage, selectionActionOverride, displayTitle }) => {
+const SelectableGallery = ({ images, setImages, updateImage, selectionActionOverride, config }) => {
     const theme = useTheme()
     const [isSelectionBarOpen, setSelectionBarOpen] = React.useState(false)
 
@@ -65,7 +65,7 @@ const SelectableGallery = ({ images, setImages, updateImage, selectionActionOver
         <>
             <SelectionActionBar open={isSelectionBarOpen} items={images} actions={selectionActions} setSelected={setSelected}/>
             <Main open={isSelectionBarOpen}>
-                {images && <PhotoGallery displayTitle={displayTitle} photos={images} updatePhoto={updateImage} setSelected={setSelected} />}
+                {images && <PhotoGallery config={config} photos={images} updatePhoto={updateImage} setSelected={setSelected} />}
             </Main>
         </>
     );
@@ -76,7 +76,7 @@ SelectableGallery.propTypes = {
     setImages: PropTypes.func.isRequired,
     updateImage: PropTypes.func.isRequired,
     selectionActionOverride: PropTypes.array,
-    displayTitle: PropTypes.bool
+    config: PropTypes.object
 };
 
 export default SelectableGallery;

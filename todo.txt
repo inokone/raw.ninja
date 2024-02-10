@@ -1,34 +1,52 @@
 Functionality:
-  - MVP:
-    - Landing page with features, subscription options and signup 
-    - Auth for 2 roles - free user and administrator with captcha
-    - Upload RAW files with option for multiple files with user and global quota check
-    - Images store: filesystem or AWS S3
-    - Display file list - thumbnails
-    - Display image with details and download option
-    - Quick search by file names
-    - Favorite option for images
-    - Albums and Uploads as collections
-    - Delete image
-    - Dashboard (with the favorite images)
-    - Administrator page (app stats, users, roles and used / total quota)
-    - Profile page (connection details, registration date, image count, favorite count and used quota) 
-    - Account: Email confirmation, account (password) recovery and password change
-    - Cloudflare proxy with cool domain name and e-mail forwarding
-    - Support HTTPS and database encryption
-    - Docker containers for backend and frontend 
-    - Docker compose for running everything locally
-    - Terms of use for registration
+    - Landing page describing features, subscription options and social media
+    - Signup with credentials or SSO (Google and Facebook) with Captcha
+    - Login with credentials or SSO (Google and Facebook) with Captcha
+    - Email address confirmation, account (password) recovery and password change
+    - Terms of service and privacy policy documents
     - Cookie warning for EU countries
+    - Logout
+    - User types with user quota
+      - Free tier
+      - Administrator
+    - Upload RAW and processed image files with user and global quota check
+    - Batch upload image files, with permanent batch identifier
+    - Image store:
+      - Local filesystem
+      - AWS S3
+    - Thumbnail generation for all uploaded image
+      - Extract thumbnail from RAW files
+      - Generate thumbnail if can not be extracted or image is processes 
+    - Image list view with
+      - Selection mechanism
+      - Mark as favorite
+      - Download option
+      - Delete option
+    - Fullscreen zoomable photo-display with details
+    - Create album from selected images and manage
+    - Quick search on images, albums and uploads by text matching
+    - Dashboard with
+      - Statistics on images, storage and uploads
+      - Favorite images
+      - Latest uploads
+    - Administrator page (app stats, users, roles and used / total quota)
+    - Profile page with user details and statistics
+    - Cloudflare proxy with cool domain name and e-mail forwarding
+    - Sendgrid email sending mechanism
+    - Postgres database with automatic database migration, SSL connection and on-rest encryption
+    - Support HTTPS for production and HTTP for local development
+    - JWT token for authenticated users
+    - Docker containers for backend and frontend 
+    - Docker compose for local development
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
+    - Fix rating update in Lightbox
+    - Photo page filtering for date range onf upload and taken, rating, favorites, etc.
     - Add lifecycle rules
       - Disable Bin option
       - Implement Frozen option
       - eventbridge trigger
       - lambda processor, iterating through rules and photos associated to these
-    - Add rating option for images (MUI Rating)
-    - Photo page filtering
     
     - Automate IaC
       - Frontend on S3, later possibly CloudFront (https://aws.plainenglish.io/how-to-host-your-react-application-in-aws-s3-c0940cd4377b)

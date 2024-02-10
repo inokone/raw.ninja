@@ -216,6 +216,7 @@ func applyChange(persisted *Photo, newVersion Response) error {
 	}
 	persisted.Desc.Tags = newVersion.Desc.Tags
 	persisted.Desc.Favorite = newVersion.Desc.Favorite
+	persisted.Desc.Rating = newVersion.Desc.Rating
 	return nil
 }
 
