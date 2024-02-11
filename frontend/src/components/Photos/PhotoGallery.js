@@ -6,8 +6,8 @@ import { Box } from "@mui/material";
 import PhotoAlbum from "react-photo-album";
 
 import PhotoCard from "./PhotoCard";
-import RatingLightbox from "./Lightbox";
-
+import Lightbox from "./Lightbox";
+import RatingLightbox from "./RatingLightbox";
 
 const { REACT_APP_API_PREFIX } = process.env || "https://localhost:8080";
 
@@ -69,14 +69,20 @@ const PhotoGallery = ({ photos, updatePhoto, setSelected, config }) => {
                             onClick={() => handleFullscreenClick(photo)} />
                     )}
                 />
+                {config && config.lightbox && config.lightbox.ratingEnabled ?
                     <RatingLightbox
                         photos={photos}
-                        config={config && config.lightbox} 
                         index={index}
                         setIndex={setIndex}
-                        onRatingChange={handleRatingChange} 
-                        onDeleteClick={handleDeleteClick} 
-                        onEditClick={handleEditClick} />
+                        onRatingChange={handleRatingChange} /> :
+                    <Lightbox
+                        photos={photos}
+                        config={config && config.lightbox}
+                        index={index}
+                        setIndex={setIndex}
+                        onDeleteClick={handleDeleteClick}
+                        onEditClick={handleEditClick} />     
+                }
             </>}
         </Box>
     );

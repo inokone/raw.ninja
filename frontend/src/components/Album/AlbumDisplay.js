@@ -236,7 +236,7 @@ const AlbumDisplay = ({ user }) => {
             }}>
                 <SpeedDial
                     ariaLabel="Album actions"
-                    sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                    sx={{ position: 'fixed', bottom: 16, right: 16 }}
                     icon={<SpeedDialIcon />}
                 >
                     {actions.map((action) => (

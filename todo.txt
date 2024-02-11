@@ -22,6 +22,7 @@ Functionality:
       - Mark as favorite
       - Download option
       - Delete option
+      - Rating (on scale 1 to 5 stars)
     - Fullscreen zoomable photo-display with details
     - Create album from selected images and manage
     - Quick search on images, albums and uploads by text matching
@@ -40,7 +41,6 @@ Functionality:
     - Docker compose for local development
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
     ----
-    - Fix rating update in Lightbox
     - Photo page filtering for date range onf upload and taken, rating, favorites, etc.
     - Add lifecycle rules
       - Disable Bin option
