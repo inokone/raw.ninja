@@ -34,7 +34,7 @@ const UploadRating = ({user}) => {
       selectionEnabled: false,
       favoriteEnabled: false
     },
-    lightroom: {
+    lightbox: {
       favoriteEnabled: false,
       editingEnabled: false,
       ratingEnabled: true,
