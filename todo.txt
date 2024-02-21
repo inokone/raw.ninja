@@ -40,14 +40,18 @@ Functionality:
     - Docker containers for backend and frontend 
     - Docker compose for local development
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
+    
+    
     ----
-    - Photo page filtering for date range onf upload and taken, rating, favorites, etc.
+    - GraphQL: Implement full search, filtering for date range of upload and taken, rating, favorites, ordering etc.
+    - Testing (handlers and unit testing) - Backend and Frontend
     - Add lifecycle rules
+      - Set default lifecycle rules and rules for albums
       - Disable Bin option
+      - Set lifecycle rules based on rating 
       - Implement Frozen option
       - eventbridge trigger
       - lambda processor, iterating through rules and photos associated to these
-    
     - Automate IaC
       - Frontend on S3, later possibly CloudFront (https://aws.plainenglish.io/how-to-host-your-react-application-in-aws-s3-c0940cd4377b)
       - CloudFormation with
@@ -61,7 +65,6 @@ Functionality:
         - raw
         - thumbnails
         - NEW fullscreen
-    - Implement full search
     - add encryption for credentials in login and register
     - fix send message button on landing page
     - Revamp profile page
@@ -76,16 +79,15 @@ Functionality:
     - Fix editing users and roles on admin page
     - Show quota on profile dropdown maybe?
   - Next steps:
-    - Testing (handlers and unit testing) - Backend and Frontend
     - Investigate compression options for storage
     - Advanced concurrency for file upload
     - Add tags for images (MUI Chip)
     - Generative AI based on the decisions of the user (1to5 rating) to advise a score
-    - Extract constants and Status/Error variables on top of Go modules
+    - Face recognition - learn based on 5-6 marked images and then categorize all images (embedding model for images to create vectors, then KNN for similarity search. Use VDB to store stuff. The model can be complicated)
+    - Object recognition - (tensorflow with inception v5 model example in Go: https://medium.com/@ishwarsawale/image-classification-with-go-lang-d72eef451597 or https://github.com/tinrab/go-tensorflow-image-recognition/tree/master)
     - Refactor with dependency injection (no framework)
     - HATEOAS - links for objects
     - Create secondary image (~FHD size), optional on user preferences - for better image display
-    - Add tooltips and info icons everywhere
     - Add filtering, ordering and pagination for images
     - Add batch uploading files
     - Implement advanced search (fulltext search with ES)
