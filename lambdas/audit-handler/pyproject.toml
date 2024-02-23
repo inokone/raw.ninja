@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "audit-handler"
+version = "0.1.0"
+description = "AWS Lambda function storing audit events for photos of the application in DynamoDB"
+authors = ["Imre Barna <inokone@gmail.com>"]
+readme = "README.md"
+packages = [{include = "handler"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+boto3 = "^1.34.49"
+inject = "^5.2.0"
+pydantic = "^2.6.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.2.0"
+mypy = "^1.8.0"
+pydantic = "^2.6.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

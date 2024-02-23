@@ -23,6 +23,7 @@ tmp
 backend/main
 /photostorage
 /business-model.md
+frontend/*/node_modules/*
 raw
 thumbnail.jpg
 
