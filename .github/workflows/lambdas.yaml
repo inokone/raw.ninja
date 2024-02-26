@@ -1,0 +1,56 @@
+name: audit-handler-build
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: '1.6.1'
+
+      - name: Create a poetry cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.poetry/cache
+          key: ${{ runner.os }}-poetry-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Install dependencies
+        working-directory: lambdas/audit_handler/
+        run: |
+          poetry install
+
+      - name: Run pylint
+        working-directory: lambdas/audit_handler/
+        run: |
+          poetry run pylint rawninja/ --fail-under=10
+
+      - name: Run black
+        working-directory: lambdas/audit_handler/
+        run: |
+          poetry run black rawninja/
+
+      - name: Run mypy
+        working-directory: lambdas/audit_handler/
+        run: |
+          poetry run mypy rawninja/
+
+      - name: Run bandit
+        working-directory: lambdas/audit_handler/
+        run: |
+          poetry run bandit -r rawninja/
+
+      - name: Run unit tests
+        working-directory: lambdas/audit_handler/
+        run: |
+          poetry run pytest rawninja/
+

@@ -1,18 +1,20 @@
 import logging
-from typing import Optional, List
+from typing import Sequence
 
-DEFAULT_SUPPRESSED_LOGS = [
+
+DEFAULT_SUPPRESSED_LOGS = (
     "boto",
     "boto3",
     "botocore",
     "urllib3.connectionpool",
     "aiobotocore",
     "uvicorn.access"
-]
+)
+
 
 def initialize_logger(
     log_level: str,
-    log_categories_to_suppress: Optional[List[str]] = DEFAULT_SUPPRESSED_LOGS,
+    log_categories_to_suppress: Sequence[str] = DEFAULT_SUPPRESSED_LOGS,
 ) -> None:
     logging.basicConfig(level=log_level)
 
