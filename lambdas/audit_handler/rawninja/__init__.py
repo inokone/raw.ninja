@@ -1,8 +1,8 @@
 import logging
-from typing import Sequence
+from rawninja.config import AppConfig
 
 
-DEFAULT_SUPPRESSED_LOGS = (
+SUPPRESSED_LOGS = (
     "boto",
     "boto3",
     "botocore",
@@ -11,12 +11,10 @@ DEFAULT_SUPPRESSED_LOGS = (
     "uvicorn.access"
 )
 
+app_config = AppConfig()
 
-def initialize_logger(
-    log_level: str,
-    log_categories_to_suppress: Sequence[str] = DEFAULT_SUPPRESSED_LOGS,
-) -> None:
-    logging.basicConfig(level=log_level)
+logging.basicConfig(level=app_config.log_level)
+for category in SUPPRESSED_LOGS:
+    logging.getLogger(category).setLevel(logging.WARNING)
 
-    for category in log_categories_to_suppress:
-        logging.getLogger(category).setLevel(logging.WARNING)
+logger = logging.getLogger("audit_handler")
