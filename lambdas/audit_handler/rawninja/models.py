@@ -1,4 +1,4 @@
-from typing import Optional, TypedDict, Any
+from typing import Optional, TypedDict
 
 from pydantic import BaseModel
 

@@ -10,8 +10,13 @@ from rawninja.models import (
 )
 
 
-class AuditHandler:
-    
+class AuditPersistenceError(Exception):
+    pass
+
+# Plyint disabled as callable class does not need public method
+class AuditHandler: # pylint: disable=too-few-public-methods
+    """ Handler class for audit lambda """
+
     def __init__(self) -> None:
         self._audit_log = AuditLog(app_config.dynamo_db)
 
@@ -20,7 +25,7 @@ class AuditHandler:
             self._audit_log.insert(event)
         except Exception as e:
             logger.error("Insert failed:", exc_info=True)
-            raise Exception("Failed to insert audit event") from e
+            raise AuditPersistenceError("Failed to insert audit event") from e
 
     def _handler(self, event: AuditEvent) -> AuditResponse:
         response = AuditResponse(

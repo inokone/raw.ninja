@@ -16,4 +16,20 @@ The target of this code piece is to mark photo objects in the database with an e
 ## Considerations
 
 - Audit events can be stored async, we do not have strict requirements on when it needs to appear for the user
-- DynamoDB is a storage that matches our expectations, as we do not plan extensive search over the data
+- DynamoDB is a storage that matches our expectations, as we do not plan extensive search over the data.
+
+## Interfaces
+
+### Input data from SNS
+
+``` json
+{
+        "correlation_id": "correlation_id",
+        "user_id": "user_id",
+        "action": "upload",
+        "target_id": "target_id",
+        "target_type": "target_type",
+        "meta": {"key": "value"},
+        "outcome": "success"
+}
+```

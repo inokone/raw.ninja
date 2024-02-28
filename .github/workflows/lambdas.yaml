@@ -52,5 +52,5 @@ jobs:
       - name: Run unit tests
         working-directory: lambdas/audit_handler/
         run: |
-          poetry run pytest rawninja/
+          poetry run pytest tests/
 

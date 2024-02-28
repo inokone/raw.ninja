@@ -11,7 +11,7 @@ SUPPRESSED_LOGS = (
     "uvicorn.access"
 )
 
-app_config = AppConfig()
+app_config = AppConfig() # type: ignore  # parameters filled from ENV
 
 logging.basicConfig(level=app_config.log_level)
 for category in SUPPRESSED_LOGS:
