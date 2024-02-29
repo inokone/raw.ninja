@@ -1,5 +1,5 @@
 import logging
-from rawninja.config import AppConfig
+from audit_handler.config import AppConfig
 
 
 SUPPRESSED_LOGS = (
@@ -8,10 +8,10 @@ SUPPRESSED_LOGS = (
     "botocore",
     "urllib3.connectionpool",
     "aiobotocore",
-    "uvicorn.access"
+    "uvicorn.access",
 )
 
-app_config = AppConfig() # type: ignore  # parameters filled from ENV
+app_config = AppConfig()  # type: ignore  # parameters filled from ENV
 
 logging.basicConfig(level=app_config.log_level)
 for category in SUPPRESSED_LOGS:

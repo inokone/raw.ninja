@@ -25,32 +25,32 @@ jobs:
             ${{ runner.os }}-poetry-
 
       - name: Install dependencies
-        working-directory: lambdas/audit_handler/
+        working-directory: lambdas/audit-handler/
         run: |
           poetry install
 
       - name: Run pylint
-        working-directory: lambdas/audit_handler/
+        working-directory: lambdas/audit-handler/
         run: |
-          poetry run pylint rawninja/ --fail-under=10
+          poetry run pylint audit_handler/ --fail-under=10
 
       - name: Run black
-        working-directory: lambdas/audit_handler/
+        working-directory: lambdas/audit-handler/
         run: |
-          poetry run black rawninja/
+          poetry run black .
 
       - name: Run mypy
-        working-directory: lambdas/audit_handler/
+        working-directory: lambdas/audit-handler/
         run: |
-          poetry run mypy rawninja/
+          poetry run mypy .
 
       - name: Run bandit
-        working-directory: lambdas/audit_handler/
+        working-directory: lambdas/audit-handler/
         run: |
-          poetry run bandit -r rawninja/
+          poetry run bandit -r .
 
       - name: Run unit tests
-        working-directory: lambdas/audit_handler/
+        working-directory: lambdas/audit-handler/
         run: |
-          poetry run pytest tests/
+          poetry run pytest .
 

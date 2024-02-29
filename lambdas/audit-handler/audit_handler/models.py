@@ -4,12 +4,12 @@ from pydantic import BaseModel
 
 
 class AuditEvent(BaseModel):
-    """ Data type for auditable events in RAW.Ninja application
+    """Data type for auditable events in RAW.Ninja application
 
     Attributes
     ----------
     correlation_id : str
-        UUID identifying all changes related to the audited event 
+        UUID identifying all changes related to the audited event
     user_id : Optional[str]
         UUID the actor user in the RAW.Ninja application
     action : str
@@ -34,6 +34,6 @@ class AuditEvent(BaseModel):
 
 
 class AuditResponse(TypedDict):
-    """ Data type for result of audit event persistence. """
+    """Data type for result of audit event persistence."""
 
     status: str

@@ -1,10 +1,8 @@
 from typing import Any
 
-import json
-
-from rawninja.database import AuditLog
-from rawninja import logger, app_config
-from rawninja.models import (
+from audit_handler.database import AuditLog
+from audit_handler import logger, app_config
+from audit_handler.models import (
     AuditEvent,
     AuditResponse,
 )
@@ -13,12 +11,13 @@ from rawninja.models import (
 class AuditPersistenceError(Exception):
     pass
 
+
 # Plyint disabled as callable class does not need public method
-class AuditHandler: # pylint: disable=too-few-public-methods
-    """ Handler class for audit lambda """
+class AuditHandler:  # pylint: disable=too-few-public-methods
+    """Handler class for audit lambda"""
 
     def __init__(self) -> None:
-        self._audit_log = AuditLog(app_config.dynamo_db)
+        self._audit_log = AuditLog(app_config.dynamo_db, app_config.aws_region)
 
     def _insert_event(self, event: AuditEvent):
         try:
@@ -28,15 +27,13 @@ class AuditHandler: # pylint: disable=too-few-public-methods
             raise AuditPersistenceError("Failed to insert audit event") from e
 
     def _handler(self, event: AuditEvent) -> AuditResponse:
-        response = AuditResponse(
-            status="SUCCESS"
-        )
+        response = AuditResponse(status="SUCCESS")
         self._insert_event(event)
         logger.info("Responding to request with: %s", response)
         return response
 
     def __call__(self, event_message: Any, context: Any) -> AuditResponse:
-        event: AuditEvent = AuditEvent.parse_obj(
-            json.loads(event_message["Records"][0]["Sns"]["Message"])
+        event: AuditEvent = AuditEvent.model_validate_json(
+            event_message["Records"][0]["Sns"]["Message"]
         )
         return self._handler(event)
