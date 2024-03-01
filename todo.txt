@@ -43,7 +43,7 @@ Functionality:
     
     
     ----
-    - GraphQL: Implement full search, filtering for date range of upload and taken, rating, favorites, ordering etc.
+    - OpenAI CLIP for image search
     - Testing (handlers and unit testing) - Backend and Frontend
     - Add lifecycle rules
       - Set default lifecycle rules and rules for albums
@@ -61,10 +61,11 @@ Functionality:
         - CloudWatch logs by CF
         - Credentials should come from AWS Systems Manager Parameter Store
     - Make image.Service serve just a single image, and have one image service per size
-      - 3 levels for images (instead of 2)
+      - 3-4 levels for images (instead of 2)
         - raw
         - thumbnails
         - NEW fullscreen
+        - (optional) AI search 224x224 pixels
     - add encryption for credentials in login and register
     - fix send message button on landing page
     - Revamp profile page
@@ -93,7 +94,8 @@ Functionality:
     - Implement advanced search (fulltext search with ES)
 
 Backend:
-- Add CSRF - https://www.stackhawk.com/blog/react-csrf-protection-guide-examples-and-how-to-enable-it/
+- [Not realistic] GraphQL: Implement full search, filtering for date range of upload and taken, rating, favorites, ordering etc.
+- [Not necessary for now] Add CSRF - https://www.stackhawk.com/blog/react-csrf-protection-guide-examples-and-how-to-enable-it/
 - Move out GORM, use plain SQL instead
     - rewrite to plain SQL
     - create migration mechanism

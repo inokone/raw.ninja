@@ -37,3 +37,6 @@ class AuditHandler:  # pylint: disable=too-few-public-methods
             event_message["Records"][0]["Sns"]["Message"]
         )
         return self._handler(event)
+
+
+handler = AuditHandler()
