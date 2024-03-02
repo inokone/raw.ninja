@@ -15,7 +15,11 @@ class AuditLog:  # pylint: disable=too-few-public-methods
     def insert(self, event: AuditEvent):
         try:
             self._table.put_item(
-                Item={"user": event.user_id, "audit": event.model_dump()}
+                Item={
+                    "user_id": event.user_id,
+                    "entry_date": event.entry_date,
+                    "audit": event.model_dump(),
+                }
             )
         except ClientError as err:
             logger.error(

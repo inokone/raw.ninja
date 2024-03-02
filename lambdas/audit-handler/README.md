@@ -7,6 +7,7 @@ AWS Lambda function storing audit events for photos of the application in Dynamo
 Users can upload and delete their photos, and also can set lifecycle rules - that can also delete photos.
 
 The backend component emits the following relevant events on the common SNS topic:
+
 - Photo uploaded by user
 - Photo deleted by user
 - Photo deleted by lifecycle enforcer
@@ -40,7 +41,7 @@ A lambda function with SNS topic subscription is already set up. Deploying is up
 
 ### Configuration from environment
 
-Configuration can be set up from environmet variable and env files. Folder `tests` contains a mock .env file. 
+Configuration can be set up from environmet variable and env files. Folder `tests` contains a mock .env file.
 
 ### Input data from SNS
 

@@ -19,6 +19,7 @@ MOCK_MESSAGE = """{
     "meta": {
         "key": "value"
     },
+    "entry_date": 1709415102,
     "outcome": "success"
 }"""
 

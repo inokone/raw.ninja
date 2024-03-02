@@ -20,6 +20,8 @@ class AuditEvent(BaseModel):
         the type of the event target. e.g. "photo", "album"
     meta : dict
         additional metadata for the action
+    entry_date : int
+        unix epoch of the audited event
     outcome : str
         whether the action was successful (default "success")
     """
@@ -30,6 +32,7 @@ class AuditEvent(BaseModel):
     target_id: str
     target_type: str
     meta: dict
+    entry_date: int
     outcome: str = "success"
 
 

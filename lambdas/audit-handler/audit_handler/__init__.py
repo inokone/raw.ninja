@@ -13,8 +13,8 @@ SUPPRESSED_LOGS = (
 
 app_config = AppConfig()  # type: ignore  # parameters filled from ENV
 
-logging.basicConfig(level=app_config.log_level)
 for category in SUPPRESSED_LOGS:
     logging.getLogger(category).setLevel(logging.WARNING)
 
 logger = logging.getLogger("audit_handler")
+logger.setLevel(app_config.log_level)
