@@ -1,20 +1,20 @@
 import logging
-from typing import Optional, List
+from expiry_marker.config import AppConfig
 
-DEFAULT_SUPPRESSED_LOGS = [
+
+SUPPRESSED_LOGS = (
     "boto",
     "boto3",
     "botocore",
     "urllib3.connectionpool",
     "aiobotocore",
-    "uvicorn.access"
-]
+    "uvicorn.access",
+)
 
-def initialize_logger(
-    log_level: str,
-    log_categories_to_suppress: Optional[List[str]] = DEFAULT_SUPPRESSED_LOGS,
-) -> None:
-    logging.basicConfig(level=log_level)
+app_config = AppConfig()  # type: ignore  # parameters filled from ENV
 
-    for category in log_categories_to_suppress:
-        logging.getLogger(category).setLevel(logging.WARNING)
+for category in SUPPRESSED_LOGS:
+    logging.getLogger(category).setLevel(logging.WARNING)
+
+logger = logging.getLogger("expiry_marker")
+logger.setLevel(app_config.log_level)

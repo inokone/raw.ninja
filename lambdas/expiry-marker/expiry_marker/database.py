@@ -1,18 +1,34 @@
 import datetime
 from enum import Enum
 from typing import Dict, List
+
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import create_engine
 from sqlalchemy import String, func, DateTime, JSON, Integer
 from sqlalchemy.orm import DeclarativeBase, Mapped, Table, Column, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
 
+
 # Key for albums in collections table
 ALBUM_COLLECTION_TYPE = "ALBUM"
+
+
+def create_session_maker(db_connection_string):
+    engine = create_engine(db_connection_string)
+
+    def create_session():
+        _session = sessionmaker(engine)
+        return _session
+
+    return create_session
+
 
 class Action(Enum):
     # Delete is an action to delete a photo from storage
     DELETE = 1
     # MoveTo is an action to move photo to the storage specified by the "Action target"
     MOVE_TO = 2
+
 
 class ActionTarget(Enum):
     # StandardStorage is a target of an action, planned to count 1x from quota
@@ -21,6 +37,7 @@ class ActionTarget(Enum):
     FROZEN_STORAGE = 2
     # Bin is storage for files marked as deleted (not sure this is needed at all)
     BIN = 3
+
 
 class Base(DeclarativeBase):
     pass
@@ -86,32 +103,5 @@ class Photo(Base):
 
     @staticmethod
     def get_all(session, limit=10) -> List["Photo"]:
-        rows = session.query(AuditLog).limit(limit).all()
+        rows = session.query(Photo).limit(limit).all()
         return rows
-    
-    @staticmethod
-    def get_missing_dates(
-        session,
-        vin: str,
-        start: datetime.date,
-        end: datetime.date,
-        sensor_source: SensorSource,
-        sensor_type: SensorType,
-    ):
-        stmt = (
-            select(SensorFile.sensor_date)
-            .filter(SensorFile.vin == vin)
-            .filter(SensorFile.sensor_source == sensor_source.value)
-            .filter(SensorFile.sensor_type == sensor_type.value)
-            .filter(SensorFile.file_type == SensorFileType.JSON_GZIP.value)
-            .filter(SensorFile.sensor_date >= start)
-            .filter(SensorFile.sensor_date <= end)
-        )
-
-        dates_exists = session.scalars(stmt).all()
-
-        missing = SensorFile.missing_dates(
-            start_date=start, end_date=end, dates_exists=dates_exists
-        )
-
-        return missing

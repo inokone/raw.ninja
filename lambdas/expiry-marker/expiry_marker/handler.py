@@ -1,5 +1,11 @@
-import inject
+import json
+from typing import Any
+
 from sqlalchemy.orm import sessionmaker, Session
+
+from expiry_marker import logger, app_config
+from expiry_marker.models import AlbumEvent, Response
+from expiry_marker.database import Photo, create_session_maker
 
 
 class Status(str, Enum):
@@ -8,36 +14,32 @@ class Status(str, Enum):
 
 
 class ExpiryMarker:
-    session: sessionmaker[Session] = inject.attr(sessionmaker[Session])
-    audit_log = inject.attr(AuditLog)
 
-    def _insert_event(self, session: Session, event: AuditEvent):
+    def __init__(self) -> None:
+        self.session = sessionmaker[Session] = create_session_maker(app_config.get_connection_string())
+
+    def _insert_event(self, session: Session, event: AlbumEvent):
         try:
-            self.audit_log.insert(
-                session=session,
-                action=event.action,
-                target_id=event.target_id,
-                target_type=event.target_type,
-                outcome=event.outcome,
-                meta=event.meta,
-            )
+            photos = collect_photos(session, event.album_id)
+            recalculate_expiry_dates(session, photos)
         except Exception as e:
             self.logger.error("Insert failed:", exc_info=True)
             raise Exception("Failed to insert into audit log") from e
 
-    def _handler(self, event: AuditEvent) -> AuditResponse:
+    def _handler(self, event: AlbumEvent) -> Response:
         with self.session() as session, session.begin():
-            response = AuditResponse(
-                status=Status.SUCCESS
-            )
+            response = Response(status=Status.SUCCESS)
             self._insert_event(session=session, event=event)
-            self.logger.info("Responding to request with: %s", response)
+            logger.info("Responding to request with: %s", response)
             return response
 
-
-    def __call__(self, event_message: AuditSnsEvent, contex: Any) -> AuditResponse:
-        event: AuditEvent = AuditEvent.parse_obj(
+    def __call__(self, event_message: Any, context: Any) -> Response:
+        logger.info("Initializing expiry marker")
+        event: AlbumEvent = AlbumEvent.parse_obj(
             json.loads(event_message["Records"][0]["Sns"]["Message"])
         )
-        response: AuditResponse = self._handler(event)
+        response: Response = self._handler(event)
         return response
+
+
+handler = ExpiryMarker()
