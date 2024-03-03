@@ -11,11 +11,14 @@ from audit_handler.audit_handler import AuditHandler
 
 
 MOCK_MESSAGE = """{
-    "correlation_id": "correlation",
-    "user_id": "user",
+    "correlation_id": "correlation_id_1",
+    "user_id": "user_id_1",
     "action": "upload",
-    "target_id": "target",
-    "target_type": "targettype",
+    "target_ids": [
+        "photo_id_1",
+        "photo_id_2"
+    ],
+    "target_type": "photo",
     "meta": {
         "key": "value"
     },

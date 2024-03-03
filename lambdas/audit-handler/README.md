@@ -31,11 +31,10 @@ cd dist/lambda
 zip -x '*.pyc' -r ../lambda.zip .
 ```
 
-The zip can be used for the existing lamba on AWS account
-
 ## Deployment
 
-A lambda function with SNS topic subscription is already set up. Deploying is updating the ZIP file for the AWS Lambda.
+A lambda function with SNS topic subscription is already set up.
+Deploying means updating the ZIP file for the AWS Lambda.
 
 ## Interfaces
 
@@ -47,12 +46,18 @@ Configuration can be set up from environmet variable and env files. Folder `test
 
 ``` json
 {
-        "correlation_id": "correlation_id",
-        "user_id": "user_id",
-        "action": "upload",
-        "target_id": "target_id",
-        "target_type": "target_type",
-        "meta": {"key": "value"},
-        "outcome": "success"
+    "correlation_id": "correlation_id_1",
+    "user_id": "user_id_1",
+    "action": "upload",
+    "target_ids": [
+        "photo_id_1",
+        "photo_id_2"
+    ],
+    "target_type": "photo",
+    "meta": {
+        "key": "value"
+    },
+    "entry_date": 1709415102,
+    "outcome": "success"
 }
 ```

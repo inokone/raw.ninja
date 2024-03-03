@@ -1,4 +1,4 @@
-from typing import Optional, TypedDict
+from typing import Optional, TypedDict, List
 
 from pydantic import BaseModel
 
@@ -8,31 +8,31 @@ class AuditEvent(BaseModel):
 
     Attributes
     ----------
-    correlation_id : str
-        UUID identifying all changes related to the audited event
-    user_id : Optional[str]
+    user_id : str
         UUID the actor user in the RAW.Ninja application
+    entry_date : int
+        unix epoch of the audited event
+    correlation_id : Optional[str]
+        UUID identifying all changes related to the audited event
     action : str
         the name of the action. e.g. "upload", "delete"
-    target_id : str
+    target_ids : List[str]
         UUID for the target of the action
     target_type : str
         the type of the event target. e.g. "photo", "album"
     meta : dict
         additional metadata for the action
-    entry_date : int
-        unix epoch of the audited event
     outcome : str
         whether the action was successful (default "success")
     """
 
-    correlation_id: str
-    user_id: Optional[str]
+    user_id: str
+    entry_date: int
+    correlation_id: Optional[str]
     action: str
-    target_id: str
+    target_ids: List[str]
     target_type: str
     meta: dict
-    entry_date: int
     outcome: str = "success"
 
 
