@@ -5,6 +5,10 @@ from audit_handler import logger
 from audit_handler.models import AuditEvent
 
 
+class AuditPersistenceError(Exception):
+    pass
+
+
 class AuditLog:  # pylint: disable=too-few-public-methods
     """AWS DynamoDB implementation of audit log storage"""
 
@@ -30,4 +34,4 @@ class AuditLog:  # pylint: disable=too-few-public-methods
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
-            raise
+            raise AuditPersistenceError("failed to insert audit event") from err

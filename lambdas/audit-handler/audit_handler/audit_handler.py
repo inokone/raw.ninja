@@ -8,10 +8,6 @@ from audit_handler.models import (
 )
 
 
-class AuditPersistenceError(Exception):
-    pass
-
-
 # Plyint disabled as callable class does not need public method
 class AuditHandler:  # pylint: disable=too-few-public-methods
     """Handler class for audit lambda"""
@@ -21,19 +17,6 @@ class AuditHandler:  # pylint: disable=too-few-public-methods
             region=app_config.aws_region, tablename=app_config.dynamo_db
         )
 
-    def _insert_event(self, event: AuditEvent):
-        try:
-            self._audit_log.insert(event)
-        except Exception as e:
-            logger.error("Insert failed:", exc_info=True)
-            raise AuditPersistenceError("Failed to insert audit event") from e
-
-    def _handler(self, event: AuditEvent) -> AuditResponse:
-        response = AuditResponse(status="SUCCESS")
-        self._insert_event(event)
-        logger.info("Responding to request with: %s", response)
-        return response
-
     def __call__(self, event_message: Any, context: Any) -> AuditResponse:
         logger.info("Initializing audit handler...")
         logger.debug("Event [%s]", event_message)
@@ -41,7 +24,13 @@ class AuditHandler:  # pylint: disable=too-few-public-methods
             event_message["Records"][0]["Sns"]["Message"]
         )
         logger.debug("Event extracted [%s]", event.model_dump())
-        return self._handler(event)
+        return self._handle_event(event)
+
+    def _handle_event(self, event: AuditEvent) -> AuditResponse:
+        response = AuditResponse(status="SUCCESS")
+        self._audit_log.insert(event)
+        logger.info("Responding to request with: %s", response)
+        return response
 
 
 handler = AuditHandler()
