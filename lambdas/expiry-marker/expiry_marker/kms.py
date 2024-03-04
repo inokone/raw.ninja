@@ -9,13 +9,6 @@ from pydantic import SecretStr
 class KMSSecret(SecretStr):
     kms_client: Any = None
 
-    @staticmethod
-    def __init_kms():
-        if not KMSSecret.kms_client:
-            KMSSecret.kms_client = boto3.client(
-                "kms", region_name=os.getenv("AWS_REGION")
-            )
-
     def __init__(self, value: str):
         self.__init_kms()
         encrypted_value = base64.b64decode(value)
@@ -23,3 +16,10 @@ class KMSSecret(SecretStr):
             "Plaintext"
         ].decode("utf-8")
         super().__init__(decrypted_value)
+
+    @staticmethod
+    def __init_kms():
+        if not KMSSecret.kms_client:
+            KMSSecret.kms_client = boto3.client(
+                "kms", region_name=os.getenv("AWS_REGION")
+            )
