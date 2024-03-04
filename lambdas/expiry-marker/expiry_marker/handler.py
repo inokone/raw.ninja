@@ -1,12 +1,8 @@
 import json
 from typing import Any
 
-from sqlalchemy.orm import sessionmaker, Session
-
-from expiry_marker import logger, app_config
+from expiry_marker import logger, session
 from expiry_marker.models import AlbumEvent, Response
-from expiry_marker.database import Photo, create_session_maker
-
 
 class Status(str, Enum):
     SUCCESS = "SUCCESS"
@@ -15,19 +11,17 @@ class Status(str, Enum):
 
 class ExpiryMarker:
 
-    def __init__(self) -> None:
-        self.session = sessionmaker[Session] = create_session_maker(app_config.get_connection_string())
-
-    def _insert_event(self, session: Session, event: AlbumEvent):
+    def _insert_event(self, event: AlbumEvent):
         try:
-            photos = collect_photos(session, event.album_id)
-            recalculate_expiry_dates(session, photos)
+            photos = collect_photos(event.album_id)
+            expiry_in_days = get_expiration_days(event.album_id)
+            recalculate_expiry_dates(photos, expiry_in_days)
         except Exception as e:
             self.logger.error("Insert failed:", exc_info=True)
             raise Exception("Failed to insert into audit log") from e
 
     def _handler(self, event: AlbumEvent) -> Response:
-        with self.session() as session, session.begin():
+        with session.begin(): # transaction
             response = Response(status=Status.SUCCESS)
             self._insert_event(session=session, event=event)
             logger.info("Responding to request with: %s", response)

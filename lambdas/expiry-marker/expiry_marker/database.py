@@ -2,11 +2,8 @@ import datetime
 from enum import Enum
 from typing import Dict, List
 
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy import create_engine
-from sqlalchemy import String, func, DateTime, JSON, Integer
-from sqlalchemy.orm import DeclarativeBase, Mapped, Table, Column, ForeignKey
-from sqlalchemy.orm import mapped_column, relationship
+from sqlalchemy import sessionmaker, create_engine, String, func, DateTime, JSON, Integer
+from sqlalchemy.orm import DeclarativeBase, Mapped, Table, Column, ForeignKey, mapped_column, relationship
 
 
 # Key for albums in collections table
