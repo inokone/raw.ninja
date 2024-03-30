@@ -106,6 +106,14 @@ func (s Service) Update(cl *Collection, cr Resp) (*Collection, error) {
 			return nil, err
 		}
 	}
+	// update ruleset
+	if cr.RuleSet != nil {
+		id, err := uuid.Parse(cr.RuleSet.ID)
+		if err != nil {
+			return nil, err
+		}
+		cl.RuleSetID = &id
+	}
 	// check whether the thumbnail of the album is still associated to the album
 	if len(cl.Photos) > 0 {
 		cl.ThumbnailID = &cl.Photos[0].ID

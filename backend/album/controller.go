@@ -47,6 +47,7 @@ func (c Controller) Create(g *gin.Context) {
 		usr    *user.User
 		ids    []uuid.UUID
 		result *collection.Collection
+		res    collection.Resp
 	)
 
 	usr, err = currentUser(g)
@@ -73,7 +74,14 @@ func (c Controller) Create(g *gin.Context) {
 		return
 	}
 
-	g.JSON(http.StatusCreated, result.AsResp())
+	res, err = result.AsResp()
+	if err != nil {
+		log.Err(err).Msg("Failed to convert album to JSON!")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error!"})
+		return
+	}
+
+	g.JSON(http.StatusCreated, res)
 }
 
 func convertIDs(s []string) ([]uuid.UUID, error) {
@@ -128,7 +136,13 @@ func (c Controller) Get(g *gin.Context) {
 		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Unauthorized!"})
 		return
 	}
-	res = cl.AsResp()
+
+	res, err = cl.AsResp()
+	if err != nil {
+		log.Err(err).Msg("Failed to convert album to JSON!")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error!"})
+		return
+	}
 
 	protocol = "http"
 	if g.Request.TLS != nil {
@@ -162,6 +176,7 @@ func (c Controller) Patch(g *gin.Context) {
 		cr  collection.Resp
 		cl  *collection.Collection
 		id  uuid.UUID
+		res collection.Resp
 	)
 	id, err = uuid.Parse(g.Param("id"))
 	if err != nil {
@@ -187,7 +202,15 @@ func (c Controller) Patch(g *gin.Context) {
 		log.Err(err).Msg("Failed to patch album!")
 		return
 	}
-	g.JSON(http.StatusOK, cl.AsResp())
+
+	res, err = cl.AsResp()
+	if err != nil {
+		log.Err(err).Msg("Failed to convert album to JSON!")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error!"})
+		return
+	}
+
+	g.JSON(http.StatusOK, res)
 }
 
 // List is a REST handler for retrieving albums of a user
@@ -257,6 +280,7 @@ func (c Controller) Delete(g *gin.Context) {
 		err    error
 		result *collection.Collection
 		id     uuid.UUID
+		res    collection.Resp
 	)
 	id, err = uuid.Parse(g.Param("id"))
 	if err != nil {
@@ -278,7 +302,15 @@ func (c Controller) Delete(g *gin.Context) {
 		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error!"})
 		return
 	}
-	g.JSON(http.StatusOK, result.AsResp())
+
+	res, err = result.AsResp()
+	if err != nil {
+		log.Err(err).Msg("Failed to convert album to JSON!")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Unknown error!"})
+		return
+	}
+
+	g.JSON(http.StatusOK, res)
 }
 
 func authorize(g *gin.Context, userID uuid.UUID) error {

@@ -26,5 +26,6 @@
     "go.lintFlags": [
         "--fast"
     ],
-    "docwriter.style": "GoDoc"
+    "docwriter.style": "GoDoc",
+    "workbench.editor.enablePreview": false
 }

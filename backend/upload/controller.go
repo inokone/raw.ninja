@@ -17,19 +17,23 @@ import (
 
 // Controller is a struct for all REST handlers related to uploads in the application.
 type Controller struct {
-	uploads  collection.Storer
-	service  *collection.Service
-	uploader *photo.UploadService
-	loader   *photo.LoadService
+	uploads   collection.Storer
+	service   *collection.Service
+	uploader  *photo.UploadService
+	loader    *photo.LoadService
+	messaging common.EventMessaging
 }
 
 // NewController creates a new `Controller` instance based on the collection persistence provided in the parameter.
-func NewController(uploads collection.Storer, uploader *photo.UploadService, loader *photo.LoadService, service *collection.Service) Controller {
+func NewController(uploads collection.Storer, uploader *photo.UploadService, loader *photo.LoadService,
+	service *collection.Service, messaging common.EventMessaging,
+) Controller {
 	return Controller{
-		uploads:  uploads,
-		service:  service,
-		uploader: uploader,
-		loader:   loader,
+		uploads:   uploads,
+		service:   service,
+		uploader:  uploader,
+		loader:    loader,
+		messaging: messaging,
 	}
 }
 
@@ -107,6 +111,15 @@ func (c Controller) Upload(g *gin.Context) {
 		return
 	}
 
+	event := common.NewAuditEvent(
+		usr.ID.String(),
+		"upload",
+		common.UUIDtoString(ids),
+		"photo",
+		nil,
+		"success")
+	c.messaging.Publish(&event)
+
 	g.JSON(http.StatusCreated, u.ID)
 }
 
@@ -146,7 +159,11 @@ func (c Controller) Get(g *gin.Context) {
 		g.AbortWithStatusJSON(http.StatusUnauthorized, common.StatusMessage{Code: 401, Message: "Unauthorized!"})
 		return
 	}
-	res = cl.AsResp()
+	res, err = cl.AsResp()
+	if err != nil {
+		log.Err(err).Msg("Could not convert collection to JSON!")
+		g.AbortWithStatusJSON(http.StatusInternalServerError, common.StatusMessage{Code: 500, Message: "Failed to collect images!"})
+	}
 
 	protocol = "http"
 	if g.Request.TLS != nil {

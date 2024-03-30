@@ -39,12 +39,13 @@ type Services struct {
 }
 
 // InitPrivate is a function to initialize handler mapping for URLs protected with CORS
-func InitPrivate(private *gin.RouterGroup, st Storers, se Services, c *common.AppConfig) {
+func InitPrivate(private *gin.RouterGroup, st Storers, se Services, c *common.AppConfig) error {
 	var (
 		mailer   = mail.NewService(c.Mail)
 		colls    = collection.NewService(st.Collections)
 		uploader = photo.NewUploadService(st.Photos, st.Images, c.Store)
 		loader   = photo.NewLoadService(st.Photos, st.Images, c.Store)
+		msg, err = common.NewEventMessaging(*c.Msg)
 		p        = photo.NewController(st.Photos, st.Images, c.Store)
 		m        = auth.NewJWTHandler(st.Users, c.Auth)
 		a        = auth.NewController(st.Users, st.Accounts, m, c.Auth)
@@ -54,11 +55,15 @@ func InitPrivate(private *gin.RouterGroup, st Storers, se Services, c *common.Ap
 		u        = user.NewController(st.Users)
 		r        = role.NewController(st.Roles)
 		al       = album.NewController(st.Collections, loader, colls)
-		up       = upload.NewController(st.Collections, uploader, loader, colls)
+		up       = upload.NewController(st.Collections, uploader, loader, colls, msg)
 		rs       = ruleset.NewController(st.RuleSets, st.Rules)
 		ru       = rule.NewController(st.Rules)
 		ot       = onetime.NewController(st.OneTime, st.Images)
 	)
+
+	if err != nil {
+		return err
+	}
 
 	private.GET("healthcheck", common.Healthcheck)
 
@@ -153,6 +158,7 @@ func InitPrivate(private *gin.RouterGroup, st Storers, se Services, c *common.Ap
 		g.GET("/users", sts.Users)
 		g.GET("/app", m.ValidateAdmin, sts.AppStats)
 	}
+	return nil
 }
 
 // InitPublic is a function to initialize handler mapping for URLs not protected with CORS

@@ -60,18 +60,22 @@ func App(path string) {
 
 	r.Use(cors.New(restrictedCORS))
 	private := r.Group("/api/v1")
-	web.InitPrivate(private, storers, services, config)
+	err = web.InitPrivate(private, storers, services, config)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to initialize the application")
+		os.Exit(1)
+	}
 
 	p := fmt.Sprintf("0.0.0.0:%d", config.Web.Port)
 	if len(config.Auth.TLSCert) > 0 {
 		err = r.RunTLS(p, config.Auth.TLSCert, config.Auth.TLSKey)
 		if err != nil {
-			log.Err(err).Msg("Failed to start the application")
+			log.Err(err).Msg("Failed to initialize the application")
 		}
 	} else {
 		err = r.Run(p)
 		if err != nil {
-			log.Err(err).Msg("Failed to start the application")
+			log.Err(err).Msg("Failed to initialize the application")
 		}
 	}
 }

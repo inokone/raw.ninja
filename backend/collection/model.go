@@ -8,6 +8,7 @@ import (
 	"github.com/inokone/photostorage/auth/user"
 	"github.com/inokone/photostorage/image"
 	"github.com/inokone/photostorage/photo"
+	"github.com/inokone/photostorage/ruleset"
 	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
@@ -44,19 +45,32 @@ type Collection struct {
 	Photos      []photo.Photo  `gorm:"many2many:collection_photos;"`
 	ThumbnailID *uuid.UUID
 	Thumbnail   photo.Photo `gorm:"foreignKey:ThumbnailID"`
+	RuleSetID   *uuid.UUID
+	RuleSet     *ruleset.RuleSet `gorm:"foreignKey:RuleSetID"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt
 }
 
 // AsResp is a method of `Collection` to convert to JSON representation.
-func (c Collection) AsResp() Resp {
+func (c Collection) AsResp() (Resp, error) {
+	var (
+		ruleResp *ruleset.Resp
+		err      error
+	)
+	if c.RuleSet != nil {
+		*ruleResp, err = c.RuleSet.AsResp()
+		if err != nil {
+			return Resp{}, err
+		}
+	}
 	return Resp{
 		ID:        c.ID.String(),
 		Name:      c.Name,
 		Tags:      c.Tags,
 		CreatedAt: c.CreatedAt,
-	}
+		RuleSet:   ruleResp,
+	}, nil
 }
 
 // Resp is a JSON type for photo collection responses
@@ -66,6 +80,7 @@ type Resp struct {
 	Tags      []string         `json:"tags"`
 	Photos    []photo.Response `json:"photos"`
 	CreatedAt time.Time        `json:"created_at" time_format:"unix"`
+	RuleSet   *ruleset.Resp    `json:"ruleset"`
 }
 
 // ListItem is an entry for listing `Collection` items

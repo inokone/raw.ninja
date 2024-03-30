@@ -38,6 +38,15 @@ type ImageStoreConfig struct {
 	PresignedTTL int64  `mapstructure:"IMG_STORE_PRESIGNED_TTL"`
 }
 
+// MessagingConfig is a configuration of the message bus.
+type MessagingConfig struct {
+	Type        string `mapstructure:"MESSAGING_TYPE"`
+	AwsKey      string `mapstructure:"MESSAGING_AWS_KEY"`
+	AwsSecret   string `mapstructure:"MESSAGING_AWS_SECRET"`
+	SnsTopicArn string `mapstructure:"MESSAGING_SNS_TOPIC_ARN"`
+	AwsRegion   string `mapstructure:"MESSAGING_AWS_REGION"`
+}
+
 // AuthConfig is a configuration of the authentication.
 type AuthConfig struct {
 	JWTSecret       string `mapstructure:"JWT_SIGN_SECRET"`
@@ -77,6 +86,7 @@ type AppConfig struct {
 	Log      *LogConfig
 	Mail     *MailConfig
 	Web      *WebConfig
+	Msg      *MessagingConfig
 }
 
 // LoadConfig is a function loading the configuration from app.env file in the runtime directory or environment variables.
@@ -88,6 +98,7 @@ func LoadConfig(path string) (*AppConfig, error) {
 	var lg LogConfig
 	var ml MailConfig
 	var wb WebConfig
+	var ms MessagingConfig
 	viper.AddConfigPath(path)
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc/rawninja/")
@@ -124,5 +135,8 @@ func LoadConfig(path string) (*AppConfig, error) {
 	if err = viper.Unmarshal(&ml); err != nil {
 		return nil, err
 	}
-	return &AppConfig{Database: &db, Store: &is, Auth: &au, Log: &lg, Mail: &ml, Web: &wb}, nil
+	if err = viper.Unmarshal(&ms); err != nil {
+		return nil, err
+	}
+	return &AppConfig{Database: &db, Store: &is, Auth: &au, Log: &lg, Mail: &ml, Web: &wb, Msg: &ms}, nil
 }
