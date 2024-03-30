@@ -74,22 +74,6 @@ func createPhotos(photoIDs []uuid.UUID) []photo.Photo {
 	return res
 }
 
-// SetProperties is a method of `Service` for updating name and tags of a persisted collection
-func (s Service) SetProperties(collectionID uuid.UUID, name string, tags []string) error {
-	var (
-		c   *Collection
-		err error
-	)
-	c, err = s.s.ByID(collectionID)
-	if err != nil {
-		return err
-	}
-
-	c.Tags = tags
-	c.Name = name
-	return s.s.Update(c)
-}
-
 // Update manages changes of a collection. Current supported fields are name, tags and photos
 func (s Service) Update(cl *Collection, cr Resp) (*Collection, error) {
 	var err error
@@ -113,6 +97,7 @@ func (s Service) Update(cl *Collection, cr Resp) (*Collection, error) {
 			return nil, err
 		}
 		cl.RuleSetID = &id
+		cl.RuleSet.ID = id
 	}
 	// check whether the thumbnail of the album is still associated to the album
 	if len(cl.Photos) > 0 {

@@ -29,6 +29,7 @@ const AlbumDisplay = ({ user }) => {
     const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
     const [isDeleteAlbumDialogOpen, setDeleteAlbumDialogOpen] = React.useState(false)
     const [deleteItems, setDeleteItems] = React.useState(null)
+    const [defaultRules, setDefaultRules] = React.useState(null)
 
 
     const populate = () => {
@@ -44,7 +45,7 @@ const AlbumDisplay = ({ user }) => {
         })
     }
 
-    const update = React.useCallback((name, tags, photos) => {
+    const update = React.useCallback((name, tags, ruleset, photos) => {
         return fetch(REACT_APP_API_PREFIX + '/api/v1' + path, {
             method: "PATCH",
             mode: "cors",
@@ -53,6 +54,9 @@ const AlbumDisplay = ({ user }) => {
                 "name": name,
                 "tags": tags,
                 "photos": photos,
+                "ruleset": {
+                    "id": ruleset
+                }
             })
         }).then(response => {
             response.json().then(content => {
@@ -69,7 +73,11 @@ const AlbumDisplay = ({ user }) => {
         setTitle(data.name)
         if (data.tags === null) {
             data.tags = []
-            setData(data)
+        }
+        if (!data.ruleset) {
+            data.ruleset = ''
+        } else {
+            data.ruleset = data.ruleset.id
         }
         setData(data)
     }
@@ -82,9 +90,9 @@ const AlbumDisplay = ({ user }) => {
         setIsEditAlbumDialogOpen(false);
     }, [setIsEditAlbumDialogOpen]);
 
-    const handleEditAlbumDialogSave = React.useCallback((name, tags) => {
+    const handleEditAlbumDialogSave = React.useCallback((name, tags, ruleset) => {
         setIsEditAlbumDialogOpen(false);
-        update(name, tags)
+        update(name, tags, ruleset)
     }, [setIsEditAlbumDialogOpen, update]);
 
     const handleMouseOver = () => {
@@ -149,7 +157,7 @@ const AlbumDisplay = ({ user }) => {
 
     const deleteFromAlbum = React.useCallback((items) => {
         let keptItems = items.filter(photo => !photo.selected).map(item => ({id: item.id}))
-        update(null, null, keptItems)
+        update(null, null, null, keptItems)
     }, [update])
 
     const handleDeleteDialogAccept = React.useCallback(() => {
@@ -191,6 +199,26 @@ const AlbumDisplay = ({ user }) => {
         { icon: <DeleteIcon />, name: 'Delete album', action: handleDeleteAlbumClick },
     ];
 
+    React.useEffect(() => {
+        fetch(REACT_APP_API_PREFIX + '/api/v1/rulesets/', {
+            method: "GET",
+            mode: "cors",
+            credentials: "include"
+        }).then(response => {
+            if (!response.ok) {
+                response.json().then(content => {
+                    setError(content.message)
+                });
+            } else {
+                response.json().then(content => {
+                    setDefaultRules(content)
+                })
+            }
+        }).catch(error => {
+            setError(error.message)
+        });
+    },[setDefaultRules, setError])
+
     return (
         <>
             {title &&
@@ -223,7 +251,8 @@ const AlbumDisplay = ({ user }) => {
                         open={isEditAlbumDialogOpen}
                         onSave={handleEditAlbumDialogSave}
                         onCancel={handleEditAlbumDialogClose}
-                        input={{ name: data.name, tags: data.tags }}
+                        input={{ name: data.name, tags: data.tags, ruleset: data.ruleset }}
+                        defaultRules={defaultRules}
                      />
                 <DeleteDialog open={isDeleteDialogOpen} onCancel={handleDeleteDialogClose} onDelete={handleDeleteDialogAccept} name="the selected photos from the album" />
             </>}

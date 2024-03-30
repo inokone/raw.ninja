@@ -85,7 +85,7 @@ func (s *GORMStorer) Update(collection *Collection) error {
 // ByID is a method of the `GORMStorer` struct. Takes an UUID as parameter to load a `Collection` object from persistence.
 func (s *GORMStorer) ByID(id uuid.UUID) (*Collection, error) {
 	var collection Collection
-	result := s.db.Preload("Photos.Desc.Metadata").First(&collection, "id = ?", id.String())
+	result := s.db.Preload("Photos.Desc.Metadata").Preload("RuleSet.Rules").First(&collection, "id = ?", id.String())
 	return &collection, result.Error
 }
 

@@ -55,11 +55,11 @@ type Collection struct {
 // AsResp is a method of `Collection` to convert to JSON representation.
 func (c Collection) AsResp() (Resp, error) {
 	var (
-		ruleResp *ruleset.Resp
+		ruleResp ruleset.Resp
 		err      error
 	)
 	if c.RuleSet != nil {
-		*ruleResp, err = c.RuleSet.AsResp()
+		ruleResp, err = c.RuleSet.AsResp()
 		if err != nil {
 			return Resp{}, err
 		}
@@ -69,7 +69,7 @@ func (c Collection) AsResp() (Resp, error) {
 		Name:      c.Name,
 		Tags:      c.Tags,
 		CreatedAt: c.CreatedAt,
-		RuleSet:   ruleResp,
+		RuleSet:   &ruleResp,
 	}, nil
 }
 

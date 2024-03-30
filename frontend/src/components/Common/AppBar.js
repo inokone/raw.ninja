@@ -130,16 +130,6 @@ const ResponsiveAppBar = ({ theme, classes, user }) => {
           >
             Ninja
           </Typography>
-          <Typography
-            ml={1}
-            sx={{ typography: { sm: 'h4', xs: 'h5' } }}
-            className={classes.brandText}
-            display="inline"
-            color="orange"
-            onClick={() => navigate(user ? '/home' : '/')}
-          >
-            BETA
-          </Typography>
           <Box sx={{ flexGrow: 1 }} />
           {isAuthenticated() &&
             <React.Fragment>

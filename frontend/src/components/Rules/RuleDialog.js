@@ -12,9 +12,6 @@ const styles = theme => ({
     },
     dialog: {
         zIndex: 1400
-    },
-    backIcon: {
-        marginRight: theme.spacing(1)
     }
 });
 
@@ -92,11 +89,12 @@ function RuleDialog({ classes, onSave, onCancel, open, input, constants }) {
 
     return (
         <Dialog
-            PaperProps={{ style: { overflowY: 'visible', zIndex: 1 } }}
             open={open}
             fullWidth
             scroll="paper"
             onClose={onCancel}
+            className={classes.dialog}
+            PaperProps={{ style: { overflowY: 'visible', zIndex: 1 } }}
         >
             <DialogTitle>{input ? "Change" : "Create"} rule</DialogTitle>
             <DialogContent style={{ overflowY: 'visible' }}>
