@@ -1,4 +1,56 @@
-Functionality:
+Functionality:    
+  Planned:
+    - Testing (handlers and unit testing) - Backend and Frontend
+    - OpenAI CLIP for image search or Detectron2 for image recognition and labeling
+    - Add lifecycle rules
+      - Disable Bin option
+      - Create lifecycle rules based on rating 
+      - Implement Frozen option
+      - eventbridge trigger
+      - lambda processor, iterating through rules and photos associated to these
+    - Automate IaC
+      - Frontend on S3, later possibly CloudFront (https://aws.plainenglish.io/how-to-host-your-react-application-in-aws-s3-c0940cd4377b)
+      - CloudFormation with
+        - Backend docker uploaded to ECR
+        - Backend running in ECS from ECR
+        - ALB deployed by CF
+        - CloudWatch logs by CF
+        - Credentials should come from AWS Systems Manager Parameter Store
+    - Make image.Service serve just a single image, and have one image service per size
+      - 3-4 levels for images (instead of 2)
+        - raw
+        - thumbnails
+        - NEW fullscreen
+        - (optional) AI search 224x224 pixels
+    - add encryption for credentials in login and register
+    - fix send message button on landing page
+    - Revamp profile page
+    - Deleted/Bin folder (shared ruleset?)
+    - Display multiple image groups (group by date or smg)
+    - Status message object should have no status, object should be kept though - KISS
+    - Extract services from controllers. controllers should be about conversion between DB to JSON object
+    - Encrypt settings file on EC2 - store private key to somewhere else - e.g. Google passwords 
+    - Add history/audit - with SNS and DynamoDB
+    - Create dark mode
+    - Whitelist only CloudFlare domain !!!
+    - Fix editing users and roles on admin page
+    - Show quota on profile dropdown maybe?
+  
+  Next steps:
+    - Investigate compression options for storage
+    - Advanced concurrency for file upload
+    - Add tags for images (MUI Chip)
+    - Generative AI based on the decisions of the user (1to5 rating) to advise a score
+    - Face recognition - learn based on 5-6 marked images and then categorize all images (embedding model for images to create vectors, then KNN for similarity search. Use VDB to store stuff. The model can be complicated)
+    - Object recognition - (tensorflow with inception v5 model example in Go: https://medium.com/@ishwarsawale/image-classification-with-go-lang-d72eef451597 or https://github.com/tinrab/go-tensorflow-image-recognition/tree/master)
+    - Refactor with dependency injection (no framework)
+    - HATEOAS - links for objects
+    - Create secondary image (~FHD size), optional on user preferences - for better image display
+    - Add filtering, ordering and pagination for images
+    - Add batch uploading files
+    - Implement advanced search (fulltext search with ES)
+
+  Released:
     - Landing page describing features, subscription options and social media
     - Signup with credentials or SSO (Google and Facebook) with Captcha
     - Login with credentials or SSO (Google and Facebook) with Captcha
@@ -40,65 +92,3 @@ Functionality:
     - Docker containers for backend and frontend 
     - Docker compose for local development
     - Deployed on AWS - running in docker on EC2 free tier with ALB, hostname and CloudFlare protection
-    
-    
-    ----
-    - OpenAI CLIP for image search
-    - Testing (handlers and unit testing) - Backend and Frontend
-    - Add lifecycle rules
-      - Set default lifecycle rules and rules for albums
-      - Disable Bin option
-      - Set lifecycle rules based on rating 
-      - Implement Frozen option
-      - eventbridge trigger
-      - lambda processor, iterating through rules and photos associated to these
-    - Automate IaC
-      - Frontend on S3, later possibly CloudFront (https://aws.plainenglish.io/how-to-host-your-react-application-in-aws-s3-c0940cd4377b)
-      - CloudFormation with
-        - Backend docker uploaded to ECR
-        - Backend running in ECS from ECR
-        - ALB deployed by CF
-        - CloudWatch logs by CF
-        - Credentials should come from AWS Systems Manager Parameter Store
-    - Make image.Service serve just a single image, and have one image service per size
-      - 3-4 levels for images (instead of 2)
-        - raw
-        - thumbnails
-        - NEW fullscreen
-        - (optional) AI search 224x224 pixels
-    - add encryption for credentials in login and register
-    - fix send message button on landing page
-    - Revamp profile page
-    - Deleted/Bin folder (shared ruleset?)
-    - Display multiple image groups (group by date or smg)
-    - Status message object should have no status, object should be kept though - KISS
-    - Extract services from controllers. controllers should be about conversion between DB to JSON object
-    - Encrypt settings file on EC2 - store private key to somewhere else - e.g. Google passwords 
-    - Add history/audit - with SNS and DynamoDB
-    - Create dark mode
-    - Whitelist only CloudFlare domain !!!
-    - Fix editing users and roles on admin page
-    - Show quota on profile dropdown maybe?
-  - Next steps:
-    - Investigate compression options for storage
-    - Advanced concurrency for file upload
-    - Add tags for images (MUI Chip)
-    - Generative AI based on the decisions of the user (1to5 rating) to advise a score
-    - Face recognition - learn based on 5-6 marked images and then categorize all images (embedding model for images to create vectors, then KNN for similarity search. Use VDB to store stuff. The model can be complicated)
-    - Object recognition - (tensorflow with inception v5 model example in Go: https://medium.com/@ishwarsawale/image-classification-with-go-lang-d72eef451597 or https://github.com/tinrab/go-tensorflow-image-recognition/tree/master)
-    - Refactor with dependency injection (no framework)
-    - HATEOAS - links for objects
-    - Create secondary image (~FHD size), optional on user preferences - for better image display
-    - Add filtering, ordering and pagination for images
-    - Add batch uploading files
-    - Implement advanced search (fulltext search with ES)
-
-Backend:
-- [Not realistic] GraphQL: Implement full search, filtering for date range of upload and taken, rating, favorites, ordering etc.
-- [Not necessary for now] Add CSRF - https://www.stackhawk.com/blog/react-csrf-protection-guide-examples-and-how-to-enable-it/
-- Move out GORM, use plain SQL instead
-    - rewrite to plain SQL
-    - create migration mechanism
-- Think about integration tests
-- Create microservices architecture
-- Kubernetes IaC for microservices
