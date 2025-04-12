@@ -1,17 +1,59 @@
 # RAW.Ninja
 
-Cheap photo storage for professional purposes. A personal project to learn Go language.
-The target is a web application capable of handling reltively large image files (>50Mb), generating thumbnails.
+Source code of a decomissioned cheap photo storage for professional purposes. A personal project to learn Go language.
 
-## Functional requirements (planned)
+The target was an SAAS web application that supports Professional needs of image storage  - including uploading, editing and sharing raw and processed image files, assisting contract-based image retention.
 
-- Authentication/Authorization including OpenId Connect
-- Uploading and storing RAW image files of various types
-- Browse accessible files
-- Download/Delete single/selected file(s)
-- Share files between users
-- Setting up lifecycle for uploaded images
-- Marking favorite images (exempt from lifecycle rules)
+The application was written in Go and React + JS, hosted in AWS and was available at https://raw.ninja
+
+## Features
+
+### User Management
+
+- User authentication with email/password or social login (Google, Facebook)
+- Email verification and password recovery
+- User roles (Free tier, Administrator)
+- User quotas and storage limits
+- Profile management and statistics
+
+### Image Management
+
+- Upload RAW and processed images (single or batch)
+- Multiple storage backends (local filesystem, AWS S3)
+- Automatic thumbnail generation
+- Image organization with albums
+- Image rating and favorites
+- Fullscreen image viewer with zoom
+- Quick search across images and albums
+- Editing raw image files
+- Customizable retention rule sets based on upload time
+- Analytics on uploded images and trends
+
+### Security & Compliance
+
+- HTTPS support (HTTP for local development)
+- JWT-based authentication
+- Cookie consent for EU compliance
+- Terms of service and privacy policy
+- Cloudflare protection and domain management
+- Googlr recaptcha for login and registration flows
+
+### Technical Infrastructure
+
+- Docker-based deployment
+- AWS S3 for image and blob storage - with retrieval
+- PostgreSQL database for the rest with SSL and encryption
+- SendGrid email integration
+- AWS deployment (EC2, ALB)
+- Automated database migrations
+- API doc using Swagger
+
+### Administrative Features
+
+- User management dashboard
+- System statistics and monitoring
+- Storage and quota management
+- Upload tracking and analytics
 
 ## Set up for development
 
@@ -22,7 +64,7 @@ Created using Golang in the [backend](/backend) folder. The RAW processing is ba
 - **File storage:** either local storage or a CDN used for storing image blobs and thumbnail blobs
 - **Postgres:** relational database - storing all data except blob
 
-Configuration of the backend is environment variables or env file. Here is a [sample](/environments/local.env) env file.
+Configuration of the backend is environment variables or env file. Here is a [sample](/environments/local.env) env file. When in production [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) should be used instead.
 The backend also uses the following set of external files and folders:
 
 - **tmp:** The system temp folder is used by Libraw to store temporary files while processing RAW images.
@@ -145,9 +187,9 @@ There are multiple options for running the application locally.
 The following commands can be used for running the individual docker images:
 
 ``` sh
-docker run -p 80:80 -v /Users/inokone/git/raw.ninja/environments/local/certificates:/etc/rawninja/certificates rawninja-frontend
+docker run -p 80:80 -v ~/git/raw.ninja/environments/local/certificates:/etc/rawninja/certificates rawninja-frontend
 
-docker run -p 8080:8080 -v /Users/inokone/git/raw.ninja/environments/local:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 rawninja-backend
+docker run -p 8080:8080 -v ~/git/raw.ninja/environments/local:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 rawninja-backend
 ```
 
 Also if we just want to spin the application up with local database:
@@ -155,68 +197,3 @@ Also if we just want to spin the application up with local database:
 ``` sh
 docker compose up
 ```
-
-## Deploying to EC2
-
-### Build
-
-``` sh
-cd frontend
-docker build --build-arg PRODUCTION=1 -t rawninja-frontend -f Dockerfile .
-cd backend
-docker build -t rawninja-backend -f Dockerfile . 
-```
-
-### Uploading artifacts
-
-``` sh
-cd ~/Downloads
-docker save -o backend.tar rawninja-backend
-docker save -o frontend.tar rawninja-frontend
-
-scp -i rawninja-ec2-kp.pem frontend.tar ec2-user@3.123.42.65:~/
-scp -i rawninja-ec2-kp.pem backend.tar ec2-user@3.123.42.65:~/
-scp -r -i rawninja-ec2-kp.pem ../git/raw.ninja/environments/production ec2-user@3.123.42.65:~/
-```
-
-### Setting up ALB
-
-ALB should be created to handle HTTPS certificates. The APL can use the following URLS for healthcheck:
-
-- Backend:  `http://localhost:8080/api/v1/healthcheck`
-- Frontend: `http://localhost:80/health`
-
-### Setting up services on EC2
-
-#### Test database access
-
-``` sh
-psql -h rawninja-rds.c9xvfg3kuua1.eu-central-1.rds.amazonaws.com -p 5432 -U postgres -d postgres
-```
-
-#### Start up the containers
-
-``` sh
-sudo docker load -i backend.tar
-sudo docker load -i frontend.tar
-
-sudo docker run -d --restart always -p 80:80 rawninja-frontend &
-sudo docker run -d --restart always -p 8080:8080 -v ~/production:/etc/rawninja --mount type=tmpfs,destination=/tmp/photos,tmpfs-size=4096 --mount type=bind,source=/etc/ssl/certs,target=/etc/ssl/certs rawninja-backend &
-```
-
-or just the frontend:
-
-``` sh
-sudo nohup serve -p 80 -s build
-```
-
-## CI
-
-The project has Github actions set up for every push.
-Steps included
-
-- [Backend](.github/workflows/build.yaml)
-  - OpenAPI re-generation
-  - Build
-  - Run unit tests
-- [Backend Static code analysis](.github/workflows/golangci-lint.yml)
